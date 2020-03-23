@@ -10,7 +10,7 @@ import io
 import ast
 # import munch
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 
 def ctrlc(signum, frame):
@@ -102,7 +102,13 @@ def pyquery(data, query, slurp=False):
         if slurp:
             result = result_list
         else:
-            result = '\n'.join(result_list)
+            if isinstance(result_list[0], (dict, list)):
+                list_of_dicts = []
+                for dictionary in result_list:
+                    list_of_dicts.append(json.dumps(dictionary))
+                result = '\n'.join(list_of_dicts)
+            else:
+                result = '\n'.join(result_list)
 
 
     # f = io.StringIO()
