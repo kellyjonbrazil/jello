@@ -8,7 +8,7 @@ import signal
 from contextlib import redirect_stdout
 import io
 import ast
-import munch
+# import munch
 
 __version__ = '0.1.1'
 
@@ -46,6 +46,9 @@ def print_error(message):
 
 
 def print_json(data, compact=False):
+    # if isinstance(data, munch.Munch):
+    #     data = munch.unmunchify(data)
+
     if isinstance(data, (list, dict)):
         if compact:
             print(json.dumps(data))
@@ -65,8 +68,9 @@ def pyquery(data, query, slurp=False):
         print(f'jwlk:  Not JSON Data: {e}')
         sys.exit(1)
 
+    _ = json_dict
     # convert JSON to an object that can use dot notation
-    _ = munch.munchify(json_dict)
+    # _ = munch.munchify(json_dict)
 
     # get single statement results
     f = io.StringIO()
