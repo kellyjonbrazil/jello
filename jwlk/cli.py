@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""jpyq - query JSON at the command line with python syntax"""
+"""jwlk - query JSON at the command line with python syntax"""
 
 import sys
 import textwrap
@@ -8,9 +8,9 @@ import signal
 from contextlib import redirect_stdout
 import io
 import ast
+import munch
 
-
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 def ctrlc(signum, frame):
@@ -28,11 +28,12 @@ def get_stdin():
 
 def helptext():
     print_error(textwrap.dedent('''\
-        jpyq:   query JSON at the command line with python syntax
+        jwlk:   query JSON at the command line with python syntax
 
         Usage:  <JSON Data> | jpyq [OPTIONS] QUERY
 
-                -p    pretty print
+                -c    compact JSON output
+                -s    slurp items into an array
                 -v    version info
                 -h    help
     '''))
@@ -44,24 +45,28 @@ def print_error(message):
     sys.exit(1)
 
 
-def print_json(data, pretty=False):
+def print_json(data, compact=False):
     if isinstance(data, (list, dict)):
-        if pretty:
-            print(json.dumps(data, indent=2))
-        else:
+        if compact:
             print(json.dumps(data))
+        else:
+            print(json.dumps(data, indent=2))
     else:
         print(data)
 
 
-def pyquery(data, query):
+def pyquery(data, query, slurp=False):
     _ = None
     result = None
 
     try:
-        _ = json.loads(data)
+        json_dict = json.loads(data)
     except Exception as e:
-        print(f'jpyq:  Not JSON Data: {e}')
+        print(f'jwlk:  Not JSON Data: {e}')
+        sys.exit(1)
+
+    # convert JSON to an object that can use dot notation
+    _ = munch.munchify(json_dict)
 
     # get single statement results
     f = io.StringIO()
@@ -90,7 +95,11 @@ def pyquery(data, query):
         print(e)
 
     if result_list:
-        result = result_list
+        if slurp:
+            result = result_list
+        else:
+            result = '\n'.join(result_list)
+
 
     # f = io.StringIO()
     # with redirect_stdout(f):
@@ -151,13 +160,20 @@ def main():
         else:
             query = arg
 
-    pretty = 'p' in options
-    # version_info = 'v' in options
-    # helpme = 'h' in options
+    compact = 'c' in options
+    slurp = 's' in options
+    version_info = 'v' in options
+    helpme = 'h' in options
 
-    result = pyquery(stdin, query)
+    if helpme:
+        helptext()
 
-    print_json(result, pretty=pretty)
+    if version_info:
+        print_error(f'jwlk:   version {__version__}\n')
+
+    result = pyquery(stdin, query, slurp=slurp)
+
+    print_json(result, compact=compact)
 
 
 if __name__ == '__main__':
