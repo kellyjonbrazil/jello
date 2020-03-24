@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='jello',
-    version='0.1.6',
+    version='0.1.7',
     author='Kelly Brazil',
     author_email='kellyjonbrazil@gmail.com',
     description='Filter JSON and JSON Lines data with Python syntax.',

@@ -1,5 +1,8 @@
 jtbl changelog
 
+20200324 v0.1.7
+- fix helptext and version printing
+
 20200324 v0.1.6
 - Add __init__.py to package
 

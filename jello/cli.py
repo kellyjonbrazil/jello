@@ -10,7 +10,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 
 
 def ctrlc(signum, frame):
@@ -139,9 +139,6 @@ def main():
     signal.signal(signal.SIGINT, ctrlc)
     stdin = get_stdin()
 
-    if stdin is None:
-        print_error('jello:  missing piped JSON or JSON Lines data\n')
-
     query = 'r = _'
 
     options = []
@@ -169,6 +166,9 @@ def main():
 
     if version_info:
         print_error(f'jello:   version {__version__}\n')
+
+    if stdin is None:
+        print_error('jello:  missing piped JSON or JSON Lines data\n')
 
     result = pyquery(stdin, query)
 
