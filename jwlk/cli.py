@@ -30,12 +30,17 @@ def helptext():
     print_error(textwrap.dedent('''\
         jwlk:   query JSON at the command line with python syntax
 
-        Usage:  <JSON Data> | jpyq [OPTIONS] QUERY
+        Usage:  <JSON Data> | jwlk [OPTIONS] QUERY
 
                 -c    compact JSON output
                 -s    slurp items into an array
                 -v    version info
                 -h    help
+
+        Use _ as the input data and use python dict syntax
+
+        Example:
+                <JSON Data> | jwlk '_["foo"]'
     '''))
 
 
