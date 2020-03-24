@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """jello - query JSON at the command line with python syntax"""
 
+import os
 import sys
 import textwrap
 import json
