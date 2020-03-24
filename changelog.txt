@@ -1,4 +1,7 @@
 jtbl changelog
 
+20200324 v0.1.6
+- Add __init__.py to package
+
 20200324 v0.1.5
 - Initial release
