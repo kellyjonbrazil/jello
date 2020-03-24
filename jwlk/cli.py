@@ -10,7 +10,7 @@ import io
 import ast
 # import munch
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 
 def ctrlc(signum, frame):
@@ -103,7 +103,7 @@ def execute(data, slurp=False):
 def pyquery(data, query, slurp=False):
     _ = None
     result = None
-    query = query + '\nprint(r)'
+    query = 'r = None\n' + query + '\nprint(r)'
 
     try:
         json_dict = json.loads(data)
