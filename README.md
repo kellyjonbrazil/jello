@@ -1,5 +1,5 @@
 # jello
-Filter JSON data with Python syntax
+Filter JSON and JSON Lines data with Python syntax
 
 `jello` is similar to `jq` in that it processes JSON and JSON lines data except `jello` uses standard python dict and list syntax.
 
