@@ -18,3 +18,16 @@ dict(zip(keys, cel))'
   "t4": -17.77777777777778
 }
 ```
+```
+$ jc -a | jwlk '\
+for entry in _["parsers"]:
+  if "darwin" in entry["compatible"]:
+    entry["name"]
+'
+airport
+airport_s
+arp
+crontab
+crontab_u
+...
+```
