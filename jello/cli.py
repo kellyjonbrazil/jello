@@ -54,6 +54,8 @@ def print_json(data, compact=False):
             print(json.dumps(data))
         else:
             print(json.dumps(data, indent=2))
+    elif data is None:
+        exit()
     else:
         print(data)
 
@@ -135,6 +137,10 @@ def main():
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
     stdin = get_stdin()
+
+    if stdin is None:
+        print_error('jello:  missing piped JSON or JSON Lines data\n')
+
     query = 'r = _'
 
     options = []
