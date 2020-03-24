@@ -103,7 +103,7 @@ crontab_u
 ```
 ### Environment Variables
 ```
-$ echo '{"login_name": "kbrazil"}' | jello '\
+$ echo '{"login_name": "joeuser"}' | jello '\
 r = True if os.getenv("LOGNAME") == _["login_name"] else False'
 
 True
