@@ -50,6 +50,7 @@ airport_s
 arp
 crontab
 crontab_u
+...
 ```
 ### List and Dictionary Comprehension
 Output as JSON arrauy
@@ -69,14 +70,12 @@ Output as bash array
 ```
 $ jc -a | jello 'r = "\n".join([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
 
-[
-  "airport",
-  "airport_s",
-  "arp",
-  "crontab",
-  "crontab_u",
-  ...
-]
+airport
+airport_s
+arp
+crontab
+crontab_u
+...
 ```
 ```
 $ jc -a | jello 'r = len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
