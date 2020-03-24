@@ -18,7 +18,7 @@ pip3 install --upgrade jello
 ```
 $ cat data.json | jello 'r = _["key"]'
 ```
-The JSON output is pretty printed by default, but can be compact prented by using the `-c` option.
+The JSON output is pretty printed by default, but can be compact printed by using the `-c` option.
 
 ## Examples:
 ### lambda functions and math
