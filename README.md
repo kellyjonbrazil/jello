@@ -37,6 +37,11 @@ r = dict(zip(keys, cel))'
 }
 
 ```
+```
+$ jc -a | jello 'r = len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+
+32
+```
 ### for loops
 Output as JSON array
 ```
@@ -95,11 +100,6 @@ arp
 crontab
 crontab_u
 ...
-```
-```
-$ jc -a | jello 'r = len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
-
-32
 ```
 ### Environment Variables
 ```
