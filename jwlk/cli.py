@@ -33,7 +33,6 @@ def helptext():
         Usage:  <JSON Data> | jwlk [OPTIONS] QUERY
 
                 -c    compact JSON output
-                -s    slurp items into an array
                 -v    version info
                 -h    help
 
@@ -63,7 +62,7 @@ def print_json(data, compact=False):
         print(data)
 
 
-def execute(data, slurp=False):
+def process(data):
     result = None
     result_list = []
     try:
@@ -86,30 +85,49 @@ def execute(data, slurp=False):
         sys.exit(1)
 
     if result_list:
-        if slurp:
-            result = result_list
+        if isinstance(result_list[0], (dict, list)):
+            list_of_objs = []
+            for obj in result_list:
+                list_of_objs.append(json.dumps(obj))
+            result = '\n'.join(list_of_objs)
         else:
-            if isinstance(result_list[0], (dict, list)):
-                list_of_objs = []
-                for obj in result_list:
-                    list_of_objs.append(json.dumps(obj))
-                result = '\n'.join(list_of_objs)
-            else:
-                result = '\n'.join(result_list)
+            result = '\n'.join(result_list)
 
     return result
 
 
-def pyquery(data, query, slurp=False):
+def pyquery(data, query):
     _ = None
     result = None
     query = 'r = None\n' + query + '\nprint(r)'
 
+    # try:
+    #     json_dict = json.loads(data)
+    # except Exception as e:
+    #     print(f'jwlk:  Not JSON Data: {e}')
+    #     sys.exit(1)
+
+    # load the JSON or JSON Lines data
     try:
         json_dict = json.loads(data)
-    except Exception as e:
-        print(f'jwlk:  Not JSON Data: {e}')
-        sys.exit(1)
+
+    except Exception:
+        # if json.loads fails, assume the data is formatted as json lines and parse
+        data = data.splitlines()
+        data_list = []
+        for i, jsonline in enumerate(data):
+            try:
+                entry = json.loads(jsonline)
+                data_list.append(entry)
+            except Exception as e:
+                # can't parse the data. Throw a nice message and quit
+                return textwrap.dedent(f'''\
+                    jtbl:  Exception - {e}
+                           Cannot parse line {i + 1} (Not JSON or JSON Lines data):
+                           {str(jsonline)[:70]}
+                           ''')
+
+        json_dict = data_list
 
     _ = json_dict
 
@@ -118,7 +136,7 @@ def pyquery(data, query, slurp=False):
         print(exec(compile(query, '<string>', 'exec')))
         output = f.getvalue()[0:-6]
 
-    result = execute(output, slurp=slurp)
+    result = process(output)
 
     return result
 
@@ -126,10 +144,8 @@ def pyquery(data, query, slurp=False):
 def main():
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
-
     stdin = get_stdin()
-
-    query = '_'
+    query = 'r = _'
 
     options = []
     long_options = {}
@@ -148,7 +164,6 @@ def main():
             query = arg
 
     compact = 'c' in options
-    slurp = 's' in options
     version_info = 'v' in options
     helpme = 'h' in options
 
@@ -158,7 +173,7 @@ def main():
     if version_info:
         print_error(f'jwlk:   version {__version__}\n')
 
-    result = pyquery(stdin, query, slurp=slurp)
+    result = pyquery(stdin, query)
 
     print_json(result, compact=compact)
 
