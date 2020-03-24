@@ -10,7 +10,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 
 
 def ctrlc(signum, frame):
@@ -114,20 +114,34 @@ def pyquery(data, query):
                 data_list.append(entry)
             except Exception as e:
                 # can't parse the data. Throw a nice message and quit
-                return textwrap.dedent(f'''\
+                print(textwrap.dedent(f'''\
                     jello:  Exception - {e}
                             Cannot parse line {i + 1} (Not JSON or JSON Lines data):
                             {str(jsonline)[:70]}
-                            ''')
+                    '''))
+                sys.exit(1)
 
         json_dict = data_list
 
     _ = json_dict
 
     f = io.StringIO()
-    with redirect_stdout(f):
-        print(exec(compile(query, '<string>', 'exec')))
-        output = f.getvalue()[0:-6]
+    try:
+        with redirect_stdout(f):
+            print(exec(compile(query, '<string>', 'exec')))
+            output = f.getvalue()[0:-6]
+
+    except KeyError as e:
+        print(textwrap.dedent(f'''\
+            jello:  Key does not exist: {e}
+        '''))
+        sys.exit(1)
+
+    except IndexError as e:
+        print(textwrap.dedent(f'''\
+            jello:  {e}
+        '''))
+        sys.exit(1)
 
     result = process(output)
 
