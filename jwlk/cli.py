@@ -103,10 +103,10 @@ def pyquery(data, query, slurp=False):
             result = result_list
         else:
             if isinstance(result_list[0], (dict, list)):
-                list_of_dicts = []
-                for dictionary in result_list:
-                    list_of_dicts.append(json.dumps(dictionary))
-                result = '\n'.join(list_of_dicts)
+                list_of_objs = []
+                for obj in result_list:
+                    list_of_objs.append(json.dumps(obj))
+                result = '\n'.join(list_of_objs)
             else:
                 result = '\n'.join(result_list)
 
