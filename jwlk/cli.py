@@ -37,10 +37,10 @@ def helptext():
                 -v    version info
                 -h    help
 
-        Use _ as the input data and use python dict syntax
+        Use '_' as the input data and assign the result to 'r'. Use python dict syntax.
 
         Example:
-                <JSON Data> | jwlk '_["foo"]'
+                <JSON Data> | jwlk 'r = _["foo"]'
     '''))
 
 
@@ -63,37 +63,18 @@ def print_json(data, compact=False):
         print(data)
 
 
-def pyquery(data, query, slurp=False):
-    _ = None
+def execute(data, slurp=False):
     result = None
-
-    try:
-        json_dict = json.loads(data)
-    except Exception as e:
-        print(f'jwlk:  Not JSON Data: {e}')
-        sys.exit(1)
-
-    _ = json_dict
-    # convert JSON to an object that can use dot notation
-    # _ = munch.munchify(json_dict)
-
-    # get single statement results
-    f = io.StringIO()
-    with redirect_stdout(f):
-        eval(compile(query, '<string>', 'single'))
-
-    output = f.getvalue()[0:-1]
-
     result_list = []
     try:
-        if len(output.splitlines()) == 1:
+        if len(data.splitlines()) == 1:
             try:
-                result = ast.literal_eval(output)
+                result = ast.literal_eval(data)
             except Exception:
                 # if exception then it was not a list or dict
-                result = output.lstrip("'").rstrip("'")
+                result = data.lstrip("'").rstrip("'")
         else:
-            for entry in output.splitlines():
+            for entry in data.splitlines():
                 try:
                     result_list.append(ast.literal_eval(entry))
                 except Exception:
@@ -102,6 +83,7 @@ def pyquery(data, query, slurp=False):
 
     except Exception as e:
         print(e)
+        sys.exit(1)
 
     if result_list:
         if slurp:
@@ -115,39 +97,29 @@ def pyquery(data, query, slurp=False):
             else:
                 result = '\n'.join(result_list)
 
+    return result
 
-    # f = io.StringIO()
-    # with redirect_stdout(f):
-        # code_block = (compile(query, '<string>', 'exec'))
-        # print(exec(code_block))
-        # if r: print(r)
 
-    # Above prints result to stdout and returns None. Need to capture stdout and ignore None
-    # then turn the stdout string result into a dictionary:
-    # dict_string = f.getvalue()[0:-6]
+def pyquery(data, query, slurp=False):
+    _ = None
+    result = None
+    query = query + '\nprint(r)'
 
-    # result_list = []
-    # try:
-    #     result = ast.literal_eval(dict_string)
-        # if type(result) is not list:
-        #     result_list.append(result)
-        #     result = result_list
+    try:
+        json_dict = json.loads(data)
+    except Exception as e:
+        print(f'jwlk:  Not JSON Data: {e}')
+        sys.exit(1)
 
-    # except Exception as e:
-    #     # if json.loads fails, assume the data is formatted as json lines and parse
-    #     result_list = []
-    #     for dict_line in dict_string.splitlines():
-    #         try:
-    #             result = ast.literal_eval(dict_line)
-    #             result_list.append(result)
-    #         except Exception as e:
-    #             # can't parse the data. Throw a nice message and quit
-    #             return (textwrap.dedent(f'''\
-    #                 jpyq:  Exception - {e}
-    #                 {dict_line}'''))
-    #     result = result_list
+    _ = json_dict
 
-    # '\n'.join(f.getvalue().splitlines()[0:-1]).lstrip('"').rstrip('"')
+    f = io.StringIO()
+    with redirect_stdout(f):
+        print(exec(compile(query, '<string>', 'exec')))
+        output = f.getvalue()[0:-6]
+
+    result = execute(output, slurp=slurp)
+
     return result
 
 
