@@ -1,9 +1,9 @@
-# jwlk
+# jello
 Filter JSON data with Python syntax
 
 ## Examples:
 ```
-$ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}'' | jwlk '\
+$ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}'' | jello '\
 keys = _.keys(); \
 vals = _.values(); \
 cel = list(map(lambda x: (float(5)/9)*(x-32), vals)); \
@@ -16,7 +16,7 @@ dict(zip(keys, cel))'
 }
 ```
 ```
-$ jc -a | jwlk '\
+$ jc -a | jello '\
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
     entry["name"]
@@ -29,7 +29,7 @@ crontab_u
 ...
 ```
 ```
-$ jc -a | ./cli.py '[entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
+$ jc -a | jello '[entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
 [
   "airport",
   "airport_s",
@@ -43,6 +43,6 @@ $ jc -a | ./cli.py '[entry["name"] for entry in _["parsers"] if "darwin" in entr
 
 ```
 ```
-$ jc -a | ./cli.py 'len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+$ jc -a | jello 'len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
 32
 ```
