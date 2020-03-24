@@ -1,7 +1,7 @@
 # jello
 Filter JSON and JSON Lines data with Python syntax
 
-`jello` is similar to `jq` in that it processes JSON and JSON lines data except `jello` uses standard python dict and list syntax.
+`jello` is similar to `jq` in that it processes JSON and JSON Lines data except `jello` uses standard python dict and list syntax.
 
 JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurped into a list of dictionaries) and are available as the variable `_`. Assign the output the the variable `r` to print as JSON or simple lines.
 

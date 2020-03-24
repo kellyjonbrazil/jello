@@ -1,5 +1,8 @@
 jtbl changelog
 
+20200324 v0.1.9
+- More exception handling
+
 20200324 v0.1.8
 - Enhance error messages
 
