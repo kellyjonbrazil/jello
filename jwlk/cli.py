@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""jwlk - query JSON at the command line with python syntax"""
+"""jello - query JSON at the command line with python syntax"""
 
 import sys
 import textwrap
@@ -8,9 +8,8 @@ import signal
 from contextlib import redirect_stdout
 import io
 import ast
-# import munch
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 
 def ctrlc(signum, frame):
@@ -28,9 +27,9 @@ def get_stdin():
 
 def helptext():
     print_error(textwrap.dedent('''\
-        jwlk:   query JSON at the command line with python syntax
+        jello:   query JSON at the command line with python syntax
 
-        Usage:  <JSON Data> | jwlk [OPTIONS] QUERY
+        Usage:  <JSON Data> | jello [OPTIONS] QUERY
 
                 -c    compact JSON output
                 -v    version info
@@ -39,7 +38,7 @@ def helptext():
         Use '_' as the input data and assign the result to 'r'. Use python dict syntax.
 
         Example:
-                <JSON Data> | jwlk 'r = _["foo"]'
+                <JSON Data> | jello 'r = _["foo"]'
     '''))
 
 
@@ -50,9 +49,6 @@ def print_error(message):
 
 
 def print_json(data, compact=False):
-    # if isinstance(data, munch.Munch):
-    #     data = munch.unmunchify(data)
-
     if isinstance(data, (list, dict)):
         if compact:
             print(json.dumps(data))
@@ -101,12 +97,6 @@ def pyquery(data, query):
     result = None
     query = 'r = None\n' + query + '\nprint(r)'
 
-    # try:
-    #     json_dict = json.loads(data)
-    # except Exception as e:
-    #     print(f'jwlk:  Not JSON Data: {e}')
-    #     sys.exit(1)
-
     # load the JSON or JSON Lines data
     try:
         json_dict = json.loads(data)
@@ -122,10 +112,10 @@ def pyquery(data, query):
             except Exception as e:
                 # can't parse the data. Throw a nice message and quit
                 return textwrap.dedent(f'''\
-                    jtbl:  Exception - {e}
-                           Cannot parse line {i + 1} (Not JSON or JSON Lines data):
-                           {str(jsonline)[:70]}
-                           ''')
+                    jello:  Exception - {e}
+                            Cannot parse line {i + 1} (Not JSON or JSON Lines data):
+                            {str(jsonline)[:70]}
+                            ''')
 
         json_dict = data_list
 
@@ -171,7 +161,7 @@ def main():
         helptext()
 
     if version_info:
-        print_error(f'jwlk:   version {__version__}\n')
+        print_error(f'jello:   version {__version__}\n')
 
     result = pyquery(stdin, query)
 
