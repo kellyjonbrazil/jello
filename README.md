@@ -1,6 +1,25 @@
 # jello
 Filter JSON data with Python syntax
 
+`jello` is similar to `jq` in that it processes JSON and JSON lines data except `jello` uses standard python dict and list syntax.
+
+JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurped into a list of dictionaries) and are available as the variable `_`. Assign the output the the variale `r` to print as JSON or simple lines.
+
+## Install
+```
+pip3 install --upgrade jello
+```
+
+### Usage
+```
+<JSON Data> | jello [OPTIONS] query
+``` 
+`query` can be most any valid python code as long as the result is assigned to `r`. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. For example:
+```
+$ cat data.json | jello 'r = _["key"]'
+```
+The JSON output is pretty printed by default, but can be compact prented by using the `-c` option.
+
 ## Examples:
 ### lambda functions and math
 ```
