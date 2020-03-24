@@ -80,7 +80,9 @@ def process(data):
                     result_list.append(entry.lstrip("'").rstrip("'"))
 
     except Exception as e:
-        print(e)
+        print(textwrap.dedent(f'''\
+            jello:  Exception - {e}
+            '''))
         sys.exit(1)
 
     if result_list:
@@ -140,6 +142,13 @@ def pyquery(data, query):
     except IndexError as e:
         print(textwrap.dedent(f'''\
             jello:  {e}
+        '''))
+        sys.exit(1)
+
+    except SyntaxError as e:
+        print(textwrap.dedent(f'''\
+            jello:  {e}
+                    {e.text}
         '''))
         sys.exit(1)
 
