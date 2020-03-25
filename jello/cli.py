@@ -155,7 +155,9 @@ def pyquery(data, query):
     except TypeError as e:
         print(textwrap.dedent(f'''\
             jello:  TypeError: {e}
-                    Consider: r = "\\n".join(str(i) for i in the_list)
+
+                    If joining a list to output as a bash array, consider:
+                    r = "\\n".join(str(i) for i in the_list)
         '''), file=sys.stderr)
         sys.exit(1)
 
