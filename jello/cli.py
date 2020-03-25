@@ -33,6 +33,7 @@ def helptext():
         Usage:  <JSON Data> | jello [OPTIONS] QUERY
 
                 -c    compact JSON output
+                -r    raw string output (no quotes)
                 -v    version info
                 -h    help
 
