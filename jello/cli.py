@@ -82,7 +82,7 @@ def process(data):
     except Exception as e:
         print(textwrap.dedent(f'''\
             jello:  Exception - {e}
-            '''))
+            '''), file=sys.stderr)
         sys.exit(1)
 
     if result_list:
@@ -120,7 +120,7 @@ def pyquery(data, query):
                     jello:  Exception - {e}
                             Cannot parse line {i + 1} (Not JSON or JSON Lines data):
                             {str(jsonline)[:70]}
-                    '''))
+                    '''), file=sys.stderr)
                 sys.exit(1)
 
         json_dict = data_list
@@ -136,20 +136,20 @@ def pyquery(data, query):
     except KeyError as e:
         print(textwrap.dedent(f'''\
             jello:  Key does not exist: {e}
-        '''))
+        '''), file=sys.stderr)
         sys.exit(1)
 
     except IndexError as e:
         print(textwrap.dedent(f'''\
             jello:  {e}
-        '''))
+        '''), file=sys.stderr)
         sys.exit(1)
 
     except SyntaxError as e:
         print(textwrap.dedent(f'''\
             jello:  {e}
                     {e.text}
-        '''))
+        '''), file=sys.stderr)
         sys.exit(1)
 
     result = process(output)
