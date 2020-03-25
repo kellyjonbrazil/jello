@@ -161,6 +161,12 @@ def pyquery(data, query):
         '''), file=sys.stderr)
         sys.exit(1)
 
+    except Exception as e:
+        print(textwrap.dedent(f'''\
+            jello:  Exception - {e}
+        '''), file=sys.stderr)
+        sys.exit(1)
+
     result = process(output)
 
     return result
