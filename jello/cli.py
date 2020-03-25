@@ -10,7 +10,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 
 def ctrlc(signum, frame):
@@ -61,23 +61,37 @@ def print_json(data, compact=False):
         print(data)
 
 
-def process(data):
+def process(data, raw=None):
     result = None
     result_list = []
     try:
         if len(data.splitlines()) == 1:
             try:
-                result = ast.literal_eval(data)
+                if data == 'True': result = 'true'
+                elif data == 'False': result = 'false'
+                elif data == 'None': result = ''
+                else: result = ast.literal_eval(data)
+
             except Exception:
                 # if exception then it was not a list or dict
-                result = data.lstrip("'").rstrip("'")
+                if raw:
+                    result = data
+                else:
+                    result = '"' + data + '"'
         else:
             for entry in data.splitlines():
                 try:
-                    result_list.append(ast.literal_eval(entry))
+                    if entry == 'True': result_list.append('true')
+                    elif entry == 'False': result_list.append('false')
+                    elif entry == 'None': result_list.append('')
+                    else: result_list.append(ast.literal_eval(entry))
+
                 except Exception:
                     # if exception then it was not a list or dict
-                    result_list.append(entry.lstrip("'").rstrip("'"))
+                    if raw:
+                        result_list.append(entry)
+                    else:
+                        result_list.append('"' + entry + '"')
 
     except Exception as e:
         print(textwrap.dedent(f'''\
@@ -97,7 +111,7 @@ def process(data):
     return result
 
 
-def pyquery(data, query):
+def pyquery(data, query, raw=None):
     _ = None
     result = None
     query = 'r = None\n' + query + '\nprint(r)'
@@ -167,7 +181,7 @@ def pyquery(data, query):
         '''), file=sys.stderr)
         sys.exit(1)
 
-    result = process(output)
+    result = process(output, raw=raw)
 
     return result
 
@@ -196,6 +210,7 @@ def main():
             query = arg
 
     compact = 'c' in options
+    raw = 'r' in options
     version_info = 'v' in options
     helpme = 'h' in options
 
@@ -208,7 +223,7 @@ def main():
     if stdin is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
 
-    result = pyquery(stdin, query)
+    result = pyquery(stdin, query, raw=raw)
 
     print_json(result, compact=compact)
 
