@@ -1,4 +1,7 @@
-jtbl changelog
+jello changelog
+
+20200325 v0.2.0
+- Handle TypeError for bash array joins
 
 20200324 v0.1.9
 - More exception handling

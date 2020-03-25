@@ -10,7 +10,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.1.9'
+__version__ = '0.2.0'
 
 
 def ctrlc(signum, frame):
@@ -92,7 +92,7 @@ def process(data):
                 list_of_objs.append(json.dumps(obj))
             result = '\n'.join(list_of_objs)
         else:
-            result = '\n'.join(result_list)
+            result = '\n'.join(str(i) for i in result_list)
 
     return result
 
@@ -149,6 +149,13 @@ def pyquery(data, query):
         print(textwrap.dedent(f'''\
             jello:  {e}
                     {e.text}
+        '''), file=sys.stderr)
+        sys.exit(1)
+
+    except TypeError as e:
+        print(textwrap.dedent(f'''\
+            jello:  TypeError: {e}
+                    Consider: r = "\\n".join(str(i) for i in the_list)
         '''), file=sys.stderr)
         sys.exit(1)
 
