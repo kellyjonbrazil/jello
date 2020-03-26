@@ -10,7 +10,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 
 def ctrlc(signum, frame):

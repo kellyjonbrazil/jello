@@ -1,5 +1,8 @@
 jello changelog
 
+20200325 v0.3.1
+- Enhanced exception handling
+
 20200325 v0.3.0
 - Add -r option for raw output
 - Fix null, and boolean values
