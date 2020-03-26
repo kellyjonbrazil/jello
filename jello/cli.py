@@ -10,7 +10,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.2.1'
+__version__ = '0.3.0'
 
 
 def ctrlc(signum, frame):
@@ -39,11 +39,11 @@ def helptext():
                 -h    help
 
         Use '_' as the input data and assign the result to 'r'. Use python dict syntax.
-        Use the bash() function for output suitable for a bash array.
+        Use the lines() function for output suitable for a bash array.
 
         Example:
                 <JSON Data> | jello 'r = _["foo"]'
-                <JSON Data> | jello 'r = bash(_["foo"])'
+                <JSON Data> | jello 'r = lines(_["foo"])'
     '''))
 
 
@@ -65,8 +65,17 @@ def print_json(data, compact=False):
         print(data)
 
 
-def bash(data):
+def lines(data):
+    """
+    Convenience function to format each element on its own line for output suitable to be
+    assigned to a bash array.
+
+    Example:
+
+        r = lines(_["foo"])
+    """
     return "\n".join(str(i) for i in data)
+
 
 def process(data, raw=None, nulls=None):
     result = None
