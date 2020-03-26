@@ -93,8 +93,8 @@ def process(data, raw=None, nulls=None):
                     elif data == 'None': result = 'null' if nulls else ''
                     else: result = ast.literal_eval(data)
 
-                except Exception:
-                    # if exception then it was not a list or dict
+                except (ValueError, SyntaxError):
+                    # if ValueError or SyntaxError exception then it was not a list or dict
                     if raw:
                         result = data
                     else:
@@ -109,8 +109,8 @@ def process(data, raw=None, nulls=None):
                             else: result_list.append('')
                         else: result_list.append(ast.literal_eval(entry))
 
-                    except Exception:
-                        # if exception then it was not a list or dict
+                    except (ValueError, SyntaxError):
+                        # if ValueError or SyntaxError exception then it was not a list or dict
                         if raw:
                             result_list.append(entry)
                         else:
@@ -118,7 +118,10 @@ def process(data, raw=None, nulls=None):
 
         except Exception as e:
             print(textwrap.dedent(f'''\
-                jello:  Exception: {e}
+                jello:  Exception 100: {e}
+                        data: {data}
+                        result: {result}
+                        result_list: {result_list}
                 '''), file=sys.stderr)
             sys.exit(1)
 
@@ -154,7 +157,7 @@ def pyquery(data, query):
             except Exception as e:
                 # can't parse the data. Throw a nice message and quit
                 print(textwrap.dedent(f'''\
-                    jello:  Exception: {e}
+                    jello:  Exception 110: {e}
                             Cannot parse line {i + 1} (Not JSON or JSON Lines data):
                             {str(jsonline)[:70]}
                     '''), file=sys.stderr)
@@ -200,7 +203,10 @@ def pyquery(data, query):
 
     except Exception as e:
         print(textwrap.dedent(f'''\
-            jello:  Exception: {e}
+            jello:  Exception 120: {e}
+                    _: {_}
+                    query: {query}
+                    f: {f.getvalue()}
         '''), file=sys.stderr)
         sys.exit(1)
 
