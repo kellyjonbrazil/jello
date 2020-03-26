@@ -39,9 +39,11 @@ def helptext():
                 -h    help
 
         Use '_' as the input data and assign the result to 'r'. Use python dict syntax.
+        Use the bash() function for output suitable for a bash array.
 
         Example:
                 <JSON Data> | jello 'r = _["foo"]'
+                <JSON Data> | jello 'r = bash(_["foo"])'
     '''))
 
 
@@ -62,6 +64,9 @@ def print_json(data, compact=False):
     else:
         print(data)
 
+
+def bash(data):
+    return "\n".join(str(i) for i in data)
 
 def process(data, raw=None, nulls=None):
     result = None
@@ -99,7 +104,7 @@ def process(data, raw=None, nulls=None):
 
     except Exception as e:
         print(textwrap.dedent(f'''\
-            jello:  Exception - {e}
+            jello:  Exception: {e}
             '''), file=sys.stderr)
         sys.exit(1)
 
@@ -134,7 +139,7 @@ def pyquery(data, query):
             except Exception as e:
                 # can't parse the data. Throw a nice message and quit
                 print(textwrap.dedent(f'''\
-                    jello:  Exception - {e}
+                    jello:  Exception: {e}
                             Cannot parse line {i + 1} (Not JSON or JSON Lines data):
                             {str(jsonline)[:70]}
                     '''), file=sys.stderr)
@@ -172,15 +177,12 @@ def pyquery(data, query):
     except TypeError as e:
         print(textwrap.dedent(f'''\
             jello:  TypeError: {e}
-
-                    If joining a list to output as a bash array, consider:
-                    r = "\\n".join(str(i) for i in the_list)
         '''), file=sys.stderr)
         sys.exit(1)
 
     except Exception as e:
         print(textwrap.dedent(f'''\
-            jello:  Exception - {e}
+            jello:  Exception: {e}
         '''), file=sys.stderr)
         sys.exit(1)
 
