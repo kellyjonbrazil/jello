@@ -26,7 +26,7 @@ $ cat data.json | jello 'r = lines(_["key"])'
 **Options**
 - `-c` compact print JSON output instead of pretty printing
 - `-r` raw output of selected keys (no quotes)
-- `-n` print null values
+- `-n` print selected null values
 - `-h` help
 - `-v` version info
 
