@@ -33,6 +33,7 @@ def helptext():
         Usage:  <JSON Data> | jello [OPTIONS] QUERY
 
                 -c    compact JSON output
+                -n    print selected null values
                 -r    raw string output (no quotes)
                 -v    version info
                 -h    help
@@ -62,7 +63,7 @@ def print_json(data, compact=False):
         print(data)
 
 
-def process(data, raw=None):
+def process(data, raw=None, nulls=None):
     result = None
     result_list = []
     try:
@@ -70,7 +71,7 @@ def process(data, raw=None):
             try:
                 if data == 'True': result = 'true'
                 elif data == 'False': result = 'false'
-                elif data == 'None': result = ''
+                elif data == 'None': result = 'null' if nulls else ''
                 else: result = ast.literal_eval(data)
 
             except Exception:
@@ -84,7 +85,9 @@ def process(data, raw=None):
                 try:
                     if entry == 'True': result_list.append('true')
                     elif entry == 'False': result_list.append('false')
-                    elif entry == 'None': result_list.append('')
+                    elif entry == 'None': 
+                        if nulls: result_list.append('null')
+                        else: result_list.append('')
                     else: result_list.append(ast.literal_eval(entry))
 
                 except Exception:
@@ -112,9 +115,8 @@ def process(data, raw=None):
     return result
 
 
-def pyquery(data, query, raw=None):
+def pyquery(data, query):
     _ = None
-    result = None
     query = 'r = None\n' + query + '\nprint(r)'
 
     # load the JSON or JSON Lines data
@@ -182,9 +184,7 @@ def pyquery(data, query, raw=None):
         '''), file=sys.stderr)
         sys.exit(1)
 
-    result = process(output, raw=raw)
-
-    return result
+    return output
 
 
 def main():
@@ -211,6 +211,7 @@ def main():
             query = arg
 
     compact = 'c' in options
+    nulls = 'n' in options
     raw = 'r' in options
     version_info = 'v' in options
     helpme = 'h' in options
@@ -224,7 +225,9 @@ def main():
     if stdin is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
 
-    result = pyquery(stdin, query, raw=raw)
+    data = pyquery(stdin, query)
+
+    result = process(data, raw=raw, nulls=nulls)
 
     print_json(result, compact=compact)
 
