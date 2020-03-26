@@ -1,5 +1,10 @@
 jello changelog
 
+20200325 v0.3.0
+- Add -r option for raw output
+- Fix null, and boolean values
+- Add -n option to print selected null values
+
 20200325 v0.2.0
 - Handle TypeError for bash array joins
 
