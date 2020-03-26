@@ -74,7 +74,7 @@ def lines(data):
 
         r = lines(_["foo"])
     """
-    return "\n".join(str(i) for i in data)
+    return '\n'.join(str(i) for i in data)
 
 
 def process(data, raw=None, nulls=None):
