@@ -80,42 +80,47 @@ def lines(data):
 def process(data, raw=None, nulls=None):
     result = None
     result_list = []
-    try:
-        if len(data.splitlines()) == 1:
-            try:
-                if data == 'True': result = 'true'
-                elif data == 'False': result = 'false'
-                elif data == 'None': result = 'null' if nulls else ''
-                else: result = ast.literal_eval(data)
 
-            except Exception:
-                # if exception then it was not a list or dict
-                if raw:
-                    result = data
-                else:
-                    result = '"' + data + '"'
-        else:
-            for entry in data.splitlines():
+    if data is None:
+        result = 'null' if nulls else ''
+
+    else:
+        try:
+            if len(data.splitlines()) == 1:
                 try:
-                    if entry == 'True': result_list.append('true')
-                    elif entry == 'False': result_list.append('false')
-                    elif entry == 'None': 
-                        if nulls: result_list.append('null')
-                        else: result_list.append('')
-                    else: result_list.append(ast.literal_eval(entry))
+                    if data == 'True': result = 'true'
+                    elif data == 'False': result = 'false'
+                    elif data == 'None': result = 'null' if nulls else ''
+                    else: result = ast.literal_eval(data)
 
                 except Exception:
                     # if exception then it was not a list or dict
                     if raw:
-                        result_list.append(entry)
+                        result = data
                     else:
-                        result_list.append('"' + entry + '"')
+                        result = '"' + data + '"'
+            else:
+                for entry in data.splitlines():
+                    try:
+                        if entry == 'True': result_list.append('true')
+                        elif entry == 'False': result_list.append('false')
+                        elif entry == 'None': 
+                            if nulls: result_list.append('null')
+                            else: result_list.append('')
+                        else: result_list.append(ast.literal_eval(entry))
 
-    except Exception as e:
-        print(textwrap.dedent(f'''\
-            jello:  Exception: {e}
-            '''), file=sys.stderr)
-        sys.exit(1)
+                    except Exception:
+                        # if exception then it was not a list or dict
+                        if raw:
+                            result_list.append(entry)
+                        else:
+                            result_list.append('"' + entry + '"')
+
+        except Exception as e:
+            print(textwrap.dedent(f'''\
+                jello:  Exception: {e}
+                '''), file=sys.stderr)
+            sys.exit(1)
 
     if result_list:
         if isinstance(result_list[0], (dict, list)):
@@ -132,6 +137,7 @@ def process(data, raw=None, nulls=None):
 def pyquery(data, query):
     _ = None
     query = 'r = None\n' + query + '\nprint(r)'
+    output = None
 
     # load the JSON or JSON Lines data
     try:
@@ -184,10 +190,13 @@ def pyquery(data, query):
         sys.exit(1)
 
     except TypeError as e:
-        print(textwrap.dedent(f'''\
-            jello:  TypeError: {e}
-        '''), file=sys.stderr)
-        sys.exit(1)
+        if output is None:
+            pass
+        else:
+            print(textwrap.dedent(f'''\
+                jello:  TypeError: {e}
+            '''), file=sys.stderr)
+            sys.exit(1)
 
     except Exception as e:
         print(textwrap.dedent(f'''\
