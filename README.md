@@ -18,10 +18,17 @@ pip3 install --upgrade jello
 ```
 $ cat data.json | jello 'r = _["key"]'
 ```
+A convenience function called `lines()` outputs each element on its own line for output suitable to be assigned to a bash array:
+```
+$ cat data.json | jello 'r = lines(_["key"])'
+```
+
 **Options**
 - `-c` compact print JSON output instead of pretty printing
 - `-r` raw output of selected keys (no quotes)
 - `-n` print null values
+- `-h` help
+- `-v` version info
 
 ## Examples:
 ### lambda functions and math
@@ -70,7 +77,7 @@ r = []
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
     r.append(entry["name"])
-r = bash(r)'
+r = lines(r)'
 
 airport
 airport_s
@@ -95,7 +102,7 @@ $ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in ent
 ```
 Output as bash array
 ```
-$ jc -a | jello -r 'r = bash([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+$ jc -a | jello -r 'r = lines([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
 
 airport
 airport_s
