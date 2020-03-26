@@ -18,7 +18,10 @@ pip3 install --upgrade jello
 ```
 $ cat data.json | jello 'r = _["key"]'
 ```
-The JSON output is pretty printed by default, but can be compact printed by using the `-c` option.
+**Options**
+- `-c` compact print JSON output instead of pretty printing
+- `-r` raw output of selected keys (no quotes)
+- `-n` print null values
 
 ## Examples:
 ### lambda functions and math
@@ -62,7 +65,7 @@ for entry in _["parsers"]:
 ```
 Output as bash array
 ```
-jc -a | jello '\
+jc -a | jello -r '\
 r = []
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
@@ -92,7 +95,7 @@ $ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in ent
 ```
 Output as bash array
 ```
-$ jc -a | jello 'r = "\n".join([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+$ jc -a | jello -r 'r = "\n".join([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
 
 airport
 airport_s
@@ -106,5 +109,5 @@ crontab_u
 $ echo '{"login_name": "joeuser"}' | jello '\
 r = True if os.getenv("LOGNAME") == _["login_name"] else False'
 
-True
+true
 ```
