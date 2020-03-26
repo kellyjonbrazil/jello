@@ -70,7 +70,7 @@ r = []
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
     r.append(entry["name"])
-r = "\n".join(r)'
+r = bash(r)'
 
 airport
 airport_s
@@ -95,7 +95,7 @@ $ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in ent
 ```
 Output as bash array
 ```
-$ jc -a | jello -r 'r = "\n".join([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+$ jc -a | jello -r 'r = bash([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
 
 airport
 airport_s
