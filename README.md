@@ -87,7 +87,7 @@ crontab_u
 ...
 ```
 ### List and Dictionary Comprehension
-Output as JSON arrauy
+Output as JSON array
 ```
 $ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
 
