@@ -145,7 +145,7 @@ for user in user_ids:
                 "user_followers": tweet["user"]["followers_count"]})
             tweet_ids.append(str(tweet["id"]))
     user_profile["tweet_ids"] = ";".join(tweet_ids)
-    r.append(str(user_profile))
+    r.append(user_profile)
 r = lines(r)'
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
