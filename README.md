@@ -5,6 +5,8 @@ Filter JSON and JSON Lines data with Python syntax
 
 JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurped into a list of dictionaries) and are available as the variable `_`. Assign the output the the variable `r` to print as JSON or simple lines.
 
+For more information on the motivations for this project, see my [blog post](https://blog.kellybrazil.com/2020/03/25/jello-the-jq-alternative-for-pythonistas/).
+
 ## Install
 ```
 pip3 install --upgrade jello
