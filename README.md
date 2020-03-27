@@ -123,7 +123,7 @@ true
 ### Complex JSON Manipulation
 The data from this example comes from https://programminghistorian.org/assets/jq_twitter.json
 
-Under Grouping and Counting, Matthew describes an advanced jq filter against a sample Twitter dataset that includes JSON Lines data. There he describes the following query:
+Under **Grouping and Counting**, Matthew describes an advanced jq filter against a sample Twitter dataset that includes JSON Lines data. There he describes the following query:
 
 “We can now create a table of users. Let’s create a table with columns for the user id, user name, followers count, and a column of their tweet ids separated by a semicolon.”
 
