@@ -91,6 +91,7 @@ def process(data, raw=None, nulls=None):
                     if data == 'True': result = 'true'
                     elif data == 'False': result = 'false'
                     elif data == 'None': result = 'null' if nulls else ''
+                    # the following will match a list or dict since they do not contain any newline chars
                     else: result = ast.literal_eval(data)
 
                 except (ValueError, SyntaxError):
@@ -98,7 +99,7 @@ def process(data, raw=None, nulls=None):
                     if raw:
                         result = data
                     else:
-                        result = '"' + data + '"'
+                        result = f'"{data}"'
             else:
                 for entry in data.splitlines():
                     try:
@@ -107,6 +108,7 @@ def process(data, raw=None, nulls=None):
                         elif entry == 'None': 
                             if nulls: result_list.append('null')
                             else: result_list.append('')
+                        # the following will match a list or dict since they do not contain any newline chars
                         else: result_list.append(ast.literal_eval(entry))
 
                     except (ValueError, SyntaxError):
@@ -114,7 +116,7 @@ def process(data, raw=None, nulls=None):
                         if raw:
                             result_list.append(entry)
                         else:
-                            result_list.append('"' + entry + '"')
+                            result_list.append(f'"{entry}"')
 
         except Exception as e:
             print(textwrap.dedent(f'''\
