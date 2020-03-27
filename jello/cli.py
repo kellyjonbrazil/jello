@@ -91,13 +91,14 @@ def process(data, raw=None, nulls=None):
                     if data == 'True': result = 'true'
                     elif data == 'False': result = 'false'
                     elif data == 'None': result = 'null' if nulls else ''
+
                     # the following will match a list, dict, int, and float
                     # since they do not contain any newline chars
                     else: result = ast.literal_eval(data)
 
                 except (ValueError, SyntaxError):
                     # if ValueError or SyntaxError exception then it was not a
-                    # list or dict, bool, None, int, or float - must be a string
+                    # list, dict, bool, None, int, or float - must be a string
                     if raw:
                         result = data
                     else:
@@ -110,13 +111,14 @@ def process(data, raw=None, nulls=None):
                         elif entry == 'None': 
                             if nulls: result_list.append('null')
                             else: result_list.append('')
+
                         # the following will match a list, dict, int, and float
                         # since they do not contain any newline chars
                         else: result_list.append(ast.literal_eval(entry))
 
                     except (ValueError, SyntaxError):
                         # if ValueError or SyntaxError exception then it was not a
-                        # list or dict, bool, None, int, or float - must be a string
+                        # list, dict, bool, None, int, or float - must be a string
                         if raw:
                             result_list.append(entry)
                         else:
