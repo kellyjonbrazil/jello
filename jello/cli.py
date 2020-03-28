@@ -33,7 +33,7 @@ def helptext():
         Usage:  <JSON Data> | jello [OPTIONS] QUERY
 
                 -c    compact JSON output
-                -l    output as lines suitable for a bash array
+                -l    output as lines suitable for assignment to a bash array
                 -n    print selected null values
                 -r    raw string output (no quotes)
                 -v    version info
@@ -43,6 +43,7 @@ def helptext():
 
         Example:
                 <JSON Data> | jello 'r = _["foo"]'
+                variable=($(cat data.json | jello -l 'r = _["foo"]))
     '''))
 
 
