@@ -53,6 +53,14 @@ def print_error(message):
 
 
 def print_json(data, compact=False, nulls=None, lines=None, raw=None):
+    # check if this list is the last node
+    check_type = data[0]
+    list_includes_obj = False
+    if isinstance(check_type, list):
+        for item in check_type:
+            if isinstance(item, (list)):
+                list_includes_obj = True
+
     if isinstance(data[0], (list, dict)):
         if not lines:
             if compact:
@@ -60,7 +68,7 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
             else:
                 print(json.dumps(data[0], indent=2))
 
-        elif lines:
+        elif lines and not list_includes_obj:
             for line in data[0]:
                 if line is None:
                     if nulls:
@@ -75,16 +83,18 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
                     print('false')
 
                 elif isinstance(line, str):
+                    string_data = line.replace('\u2063', r'\n')
                     if raw:
-                        print(line)
+                        print(string_data)
                     else:
-                        print(f'"{line}"')
+                        print(f'"{string_data}"')
 
                 else:
-                    if compact:
-                        print(json.dumps(line))
-                    else:
-                        print(json.dumps(line, indent=2))
+                    # don't pretty print JSON Lines
+                    print(json.dumps(line))
+        else:
+            print('jello:  Cannot print list of lists as lines.\n', file=sys.stderr)
+            sys.exit(1)
 
     elif data[0] is None:
         if nulls:
@@ -99,26 +109,46 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
         print('false')
 
     elif isinstance(data[0], str):
+        string_data = data[0].replace('\u2063', r'\n')
         if raw:
-            print(data[0])
+            print(string_data)
         else:
-            print(f'"{data[0]}"')
+            print(f'"{string_data}"')
 
 
 def normalize(data, nulls=None, raw=None):
     result_list = []
     try:
         for entry in data.splitlines():
+            # first check if the result is a single list with no dicts or other lists inside
             try:
-                result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+                # result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+                check_type = ast.literal_eval(entry)
+
+                list_includes_obj = False
+                if isinstance(check_type, list):
+                    for item in check_type:
+                        if isinstance(item, (list, dict)):
+                            list_includes_obj = True
+
+                if list_includes_obj:
+                    result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+                else:
+                    # this is the last node. Don't replace \u2063 with newline yet...
+                    # do this in print_json()
+                    result_list.append(ast.literal_eval(entry))
 
             except (ValueError, SyntaxError):
                 # if ValueError or SyntaxError exception then it was not a
                 # list, dict, bool, None, int, or float - must be a string
-                if raw:
-                    result_list.append(str(entry).replace(r'\u2063', r'\n'))
-                else:
-                    result_list.append(str(f'"{entry}"').replace(r'\u2063', r'\n'))
+                # don't replace \u2063 value in strings yet - need to do that
+                # in print_json() so we can properly keep entries on a single line
+                # if raw:
+                #     # result_list.append(str(entry).replace(r'\u2063', r'\n'))
+                #     result_list.append(str(entry))
+                # else:
+                #     # result_list.append(str(f'"{entry}"').replace(r'\u2063', r'\n'))
+                result_list.append(str(entry))
 
     except Exception as e:
         print(textwrap.dedent(f'''\
