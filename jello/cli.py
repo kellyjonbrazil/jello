@@ -55,11 +55,11 @@ def print_error(message):
 def print_json(data, compact=False, nulls=None, lines=None, raw=None):
     # check if this list is the last node
     check_type = data[0]
-    list_includes_obj = False
+    list_includes_lists = False
     if isinstance(check_type, list):
         for item in check_type:
             if isinstance(item, (list)):
-                list_includes_obj = True
+                list_includes_lists = True
 
     if isinstance(data[0], (list, dict)):
         if not lines:
@@ -68,7 +68,12 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
             else:
                 print(json.dumps(data[0], indent=2))
 
-        elif lines and not list_includes_obj:
+        elif lines and list_includes_lists:
+            print('jello:  Cannot print list of lists as lines.\n', file=sys.stderr)
+            sys.exit(1)
+
+        # only print lines for a flat list
+        else:
             for line in data[0]:
                 if line is None:
                     if nulls:
@@ -92,9 +97,6 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
                 else:
                     # don't pretty print JSON Lines
                     print(json.dumps(line))
-        else:
-            print('jello:  Cannot print list of lists as lines.\n', file=sys.stderr)
-            sys.exit(1)
 
     elif data[0] is None:
         if nulls:
