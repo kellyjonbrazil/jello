@@ -55,27 +55,27 @@ def print_error(message):
 
 def print_json(data, compact=False, nulls=None, lines=None, raw=None):
     # check if this list is the last node
-    check_type = data[0]
-    list_includes_lists = False
+    check_type = data
+    list_includes_list = False
     if isinstance(check_type, list):
         for item in check_type:
             if isinstance(item, (list)):
-                list_includes_lists = True
+                list_includes_list = True
 
-    if isinstance(data[0], (list, dict)):
+    if isinstance(data, (list, dict)):
         if not lines:
             if compact:
-                print(json.dumps(data[0]))
+                print(json.dumps(data))
             else:
-                print(json.dumps(data[0], indent=2))
+                print(json.dumps(data, indent=2))
 
-        elif lines and list_includes_lists:
-            print('jello:  Cannot print list of lists as lines.\n', file=sys.stderr)
+        elif lines and list_includes_list:
+            print('jello:  Cannot print list of lists as lines. Try normal JSON output.\n', file=sys.stderr)
             sys.exit(1)
 
         # only print lines for a flat list
         else:
-            for line in data[0]:
+            for line in data:
                 if line is None:
                     if nulls:
                         print('null')
@@ -99,20 +99,20 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
                     # don't pretty print JSON Lines
                     print(json.dumps(line))
 
-    elif data[0] is None:
+    elif data is None:
         if nulls:
             print('null')
         else:
             print('')
 
-    elif data[0] is True:
+    elif data is True:
         print('true')
 
-    elif data[0] is False:
+    elif data is False:
         print('false')
 
-    elif isinstance(data[0], str):
-        string_data = data[0].replace('\u2063', r'\n')
+    elif isinstance(data, str):
+        string_data = data.replace('\u2063', r'\n')
         if raw:
             print(string_data)
         else:
@@ -161,7 +161,7 @@ def normalize(data, nulls=None, raw=None):
             '''), file=sys.stderr)
         sys.exit(1)
 
-    return result_list
+    return result_list[0]
 
 
 def pyquery(data, query):
