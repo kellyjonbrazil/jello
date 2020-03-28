@@ -33,17 +33,16 @@ def helptext():
         Usage:  <JSON Data> | jello [OPTIONS] QUERY
 
                 -c    compact JSON output
+                -l    output as lines suitable for a bash array
                 -n    print selected null values
                 -r    raw string output (no quotes)
                 -v    version info
                 -h    help
 
         Use '_' as the input data and assign the result to 'r'. Use python dict syntax.
-        Use the lines() function for output suitable for a bash array.
 
         Example:
                 <JSON Data> | jello 'r = _["foo"]'
-                <JSON Data> | jello 'r = lines(_["foo"])'
     '''))
 
 
@@ -53,127 +52,89 @@ def print_error(message):
     sys.exit(1)
 
 
-def print_json(data, compact=False):
-    if isinstance(data, (list, dict)):
-        if compact:
-            print(json.dumps(data))
-        else:
-            print(json.dumps(data, indent=2))
-    elif data is None:
-        exit()
-    else:
-        print(data)
-
-
-def lines(data):
-    """
-    Convenience function to format each element on its own line for output suitable to be
-    assigned to a bash array.
-
-    Example:
-
-        r = lines(_["foo"])
-    """
-    return '\n'.join(str(i).replace('\n', '\\n') for i in data)
-
-
-def process(data, raw=None, nulls=None):
-    result = None
-    result_list = []
-
-    if data is None:
-        result = 'null' if nulls else ''
-
-    else:
-        try:
-            if len(data.splitlines()) == 1:
-                try:
-                    if data == 'True': result = 'true'
-                    elif data == 'False': result = 'false'
-                    elif data == 'None': result = 'null' if nulls else ''
-
-                    # the following will match a list, dict, int, and float
-                    # since they do not contain any newline chars
-                    else: result = ast.literal_eval(data)
-
-                except (ValueError, SyntaxError):
-                    # if ValueError or SyntaxError exception then it was not a
-                    # list, dict, bool, None, int, or float - must be a string
-                    if raw:
-                        result = data
-                    else:
-                        result = f'"{data}"'
+def print_json(data, compact=False, nulls=None, lines=None, raw=None):
+    if isinstance(data[0], (list, dict)):
+        if not lines:
+            if compact:
+                print(json.dumps(data[0]))
             else:
-                for entry in data.splitlines():
-                    try:
-                        if entry == 'True': result_list.append('true')
-                        elif entry == 'False': result_list.append('false')
-                        elif entry == 'None': 
-                            if nulls: result_list.append('null')
-                            else: result_list.append('')
+                print(json.dumps(data[0], indent=2))
 
-                        # the following will match a list, dict, int, and float
-                        # since they do not contain any newline chars
-                        else: result_list.append(ast.literal_eval(entry))
+        elif lines:
+            for line in data[0]:
+                if line is None:
+                    if nulls:
+                        print('null')
+                    else:
+                        print('')
 
-                    except (ValueError, SyntaxError):
-                        # if ValueError or SyntaxError exception then it was not a
-                        # list, dict, bool, None, int, or float - must be a string
-                        if raw:
-                            result_list.append(entry)
-                        else:
-                            result_list.append(f'"{entry}"')
+                elif line is True:
+                    print('true')
 
-        except Exception as e:
-            print(textwrap.dedent(f'''\
-                jello:  Exception 100: {e}
-                        data: {data}
-                        result: {result}
-                        result_list: {result_list}
-                '''), file=sys.stderr)
-            sys.exit(1)
+                elif line is False:
+                    print('false')
 
-    if result_list:
-        if isinstance(result_list[0], (dict, list)):
-            list_of_objs = []
-            for obj in result_list:
-                list_of_objs.append(json.dumps(obj))
-            result = '\n'.join(list_of_objs)
+                elif isinstance(line, str):
+                    if raw:
+                        print(line)
+                    else:
+                        print(f'"{line}"')
+
+                else:
+                    if compact:
+                        print(json.dumps(line))
+                    else:
+                        print(json.dumps(line, indent=2))
+
+    elif data[0] is None:
+        if nulls:
+            print('null')
         else:
-            result = '\n'.join(str(i) for i in result_list)
+            print('')
 
-    return result
+    elif data[0] is True:
+        print('true')
+
+    elif data[0] is False:
+        print('false')
+
+    elif isinstance(data[0], str):
+        if raw:
+            print(data[0])
+        else:
+            print(f'"{data[0]}"')
+
+
+def normalize(data, nulls=None, raw=None):
+    result_list = []
+    try:
+        for entry in data.splitlines():
+            try:
+                result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+
+            except (ValueError, SyntaxError):
+                # if ValueError or SyntaxError exception then it was not a
+                # list, dict, bool, None, int, or float - must be a string
+                if raw:
+                    result_list.append(str(entry).replace(r'\u2063', r'\n'))
+                else:
+                    result_list.append(str(f'"{entry}"').replace(r'\u2063', r'\n'))
+
+    except Exception as e:
+        print(textwrap.dedent(f'''\
+            jello:  Normalize Exception: {e}
+                    data: {data}
+                    result_list: {result_list}
+            '''), file=sys.stderr)
+        sys.exit(1)
+
+    return result_list
 
 
 def pyquery(data, query):
-    _ = None
+    _ = data
     query = 'r = None\n' + query + '\nprint(r)'
     output = None
-
-    # load the JSON or JSON Lines data
-    try:
-        json_dict = json.loads(data)
-
-    except Exception:
-        # if json.loads fails, assume the data is formatted as json lines and parse
-        data = data.splitlines()
-        data_list = []
-        for i, jsonline in enumerate(data):
-            try:
-                entry = json.loads(jsonline)
-                data_list.append(entry)
-            except Exception as e:
-                # can't parse the data. Throw a nice message and quit
-                print(textwrap.dedent(f'''\
-                    jello:  Exception 110: {e}
-                            Cannot parse line {i + 1} (Not JSON or JSON Lines data):
-                            {str(jsonline)[:70]}
-                    '''), file=sys.stderr)
-                sys.exit(1)
-
-        json_dict = data_list
-
-    _ = json_dict
 
     f = io.StringIO()
     try:
@@ -202,7 +163,7 @@ def pyquery(data, query):
 
     except TypeError as e:
         if output is None:
-            pass
+            output = ''
         else:
             print(textwrap.dedent(f'''\
                 jello:  TypeError: {e}
@@ -211,20 +172,52 @@ def pyquery(data, query):
 
     except Exception as e:
         print(textwrap.dedent(f'''\
-            jello:  Exception 120: {e}
+            jello:  Query Exception: {e}
                     _: {_}
                     query: {query}
-                    f: {f.getvalue()}
+                    output: {output}
         '''), file=sys.stderr)
         sys.exit(1)
 
     return output
 
 
+def load_json(data):
+    # replace newline characters in the input text with unicode separator \u2063
+    data = data.strip().replace(r'\n', '\u2063')
+
+    # load the JSON or JSON Lines data
+    try:
+        json_dict = json.loads(data)
+
+    except Exception:
+        # if json.loads fails, assume the data is json lines and parse
+        data = data.splitlines()
+        data_list = []
+        for i, jsonline in enumerate(data):
+            try:
+                entry = json.loads(jsonline)
+                data_list.append(entry)
+            except Exception as e:
+                # can't parse the data. Throw a nice message and quit
+                print(textwrap.dedent(f'''\
+                    jello:  JSON Load Exception: {e}
+                            Cannot parse line {i + 1} (Not JSON or JSON Lines data):
+                            {str(jsonline)[:70]}
+                    '''), file=sys.stderr)
+                sys.exit(1)
+
+        json_dict = data_list
+
+    return json_dict
+
+
 def main():
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
     stdin = get_stdin()
+    # for debugging
+    # stdin = r'''["word", null, false, 1, 3.14, true, "multiple words", false, "words\nwith\nnewlines", 42]'''
 
     query = 'r = _'
 
@@ -245,6 +238,7 @@ def main():
             query = arg
 
     compact = 'c' in options
+    lines = 'l' in options
     nulls = 'n' in options
     raw = 'r' in options
     version_info = 'v' in options
@@ -259,11 +253,11 @@ def main():
     if stdin is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
 
-    data = pyquery(stdin, query)
-
-    result = process(data, raw=raw, nulls=nulls)
-
-    print_json(result, compact=compact)
+    list_dict_data = load_json(stdin)
+    raw_response = pyquery(list_dict_data, query)
+    normalized_response = normalize(raw_response, raw=raw, nulls=nulls)  # returns a list of results
+    # result = process(normalized_response, lines=lines)
+    print_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
 
 if __name__ == '__main__':
