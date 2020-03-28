@@ -255,8 +255,7 @@ def main():
 
     list_dict_data = load_json(stdin)
     raw_response = pyquery(list_dict_data, query)
-    normalized_response = normalize(raw_response, raw=raw, nulls=nulls)  # returns a list of results
-    # result = process(normalized_response, lines=lines)
+    normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
     print_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
 
