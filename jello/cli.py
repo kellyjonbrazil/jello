@@ -181,7 +181,14 @@ def normalize(data, nulls=None, raw=None):
             '''), file=sys.stderr)
         sys.exit(1)
 
-    return result_list[0]
+    try:
+        return result_list[0]
+
+    except IndexError as e:
+        print(textwrap.dedent(f'''\
+            jello:  {e}
+        '''), file=sys.stderr)
+        sys.exit(1)
 
 
 def pyquery(data, query):
