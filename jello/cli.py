@@ -67,7 +67,7 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
             new_list = []
             for line in data:
                 if isinstance(line, str):
-                    new_list.append(line.replace('\u2063', r'\n'))
+                    new_list.append(line.replace('\u2063', '\n'))
                 else:
                     new_list.append(line)
 
@@ -153,7 +153,6 @@ def normalize(data, nulls=None, raw=None):
         for entry in data.splitlines():
             # first check if the result is a single list with no dicts or other lists inside
             try:
-                # result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
                 check_type = ast.literal_eval(entry)
 
                 list_includes_obj = False
@@ -163,6 +162,8 @@ def normalize(data, nulls=None, raw=None):
                             list_includes_obj = True
 
                 if list_includes_obj:
+                    # this is a higher-level list of dicts. We can safely replace
+                    # \u2063 with newlines here.
                     result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
                 else:
                     # this is the last node. Don't replace \u2063 with newline yet...
@@ -172,13 +173,7 @@ def normalize(data, nulls=None, raw=None):
             except (ValueError, SyntaxError):
                 # if ValueError or SyntaxError exception then it was not a
                 # list, dict, bool, None, int, or float - must be a string
-                # don't replace \u2063 value in strings yet - need to do that
-                # in print_json() so we can properly keep entries on a single line
-                # if raw:
-                #     # result_list.append(str(entry).replace(r'\u2063', r'\n'))
-                #     result_list.append(str(entry))
-                # else:
-                #     # result_list.append(str(f'"{entry}"').replace(r'\u2063', r'\n'))
+                # we will replace \u2063 with newlines in print_json()
                 result_list.append(str(entry))
 
     except Exception as e:
