@@ -54,20 +54,41 @@ def print_error(message):
 
 
 def print_json(data, compact=False, nulls=None, lines=None, raw=None):
-    # check if this list is the last node
+    # check if this list includes lists
     check_type = data
     list_includes_list = False
     if isinstance(check_type, list):
         for item in check_type:
-            if isinstance(item, (list)):
+            if isinstance(item, list):
                 list_includes_list = True
 
     if isinstance(data, (list, dict)):
+        if not lines and not list_includes_list:
+            new_list = []
+            for line in data:
+                if isinstance(line, str):
+                    new_list.append(line.replace('\u2063', r'\n'))
+                else:
+                    new_list.append(line)
+
+            if compact:
+                print(json.dumps(new_list))
+                exit()
+            else:
+                print(json.dumps(new_list, indent=2))
+                exit()
+
         if not lines:
             if compact:
                 print(json.dumps(data))
+                exit()
             else:
                 print(json.dumps(data, indent=2))
+                exit()
+
+        elif lines and isinstance(data, dict):
+            print(json.dumps(data))
+            exit()
 
         elif lines and list_includes_list:
             print('jello:  Cannot print list of lists as lines. Try normal JSON output.\n', file=sys.stderr)
@@ -98,25 +119,32 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
                 else:
                     # don't pretty print JSON Lines
                     print(json.dumps(line))
+            exit()
 
     elif data is None:
         if nulls:
             print('null')
+            exit()
         else:
             print('')
+            exit()
 
     elif data is True:
         print('true')
+        exit()
 
     elif data is False:
         print('false')
+        exit()
 
     elif isinstance(data, str):
         string_data = data.replace('\u2063', r'\n')
         if raw:
             print(string_data)
+            exit()
         else:
             print(f'"{string_data}"')
+            exit()
 
 
 def normalize(data, nulls=None, raw=None):
