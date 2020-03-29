@@ -53,7 +53,7 @@ def print_error(message):
     sys.exit(1)
 
 
-def print_json(data, compact=False, nulls=None, lines=None, raw=None):
+def create_json(data, compact=False, nulls=None, lines=None, raw=None):
     # check if this list includes lists
     check_type = data
     list_includes_list = False
@@ -72,23 +72,19 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
                     new_list.append(line)
 
             if compact:
-                print(json.dumps(new_list))
-                exit()
+                return json.dumps(new_list)
+
             else:
-                print(json.dumps(new_list, indent=2))
-                exit()
+                return json.dumps(new_list, indent=2)
 
         if not lines:
             if compact:
-                print(json.dumps(data))
-                exit()
+                return json.dumps(data)
             else:
-                print(json.dumps(data, indent=2))
-                exit()
+                return json.dumps(data, indent=2)
 
         elif lines and isinstance(data, dict):
-            print(json.dumps(data))
-            exit()
+            return json.dumps(data)
 
         elif lines and list_includes_list:
             print('jello:  Cannot print list of lists as lines. Try normal JSON output.\n', file=sys.stderr)
@@ -96,55 +92,51 @@ def print_json(data, compact=False, nulls=None, lines=None, raw=None):
 
         # only print lines for a flat list
         else:
+            flat_list = ''
             for line in data:
                 if line is None:
                     if nulls:
-                        print('null')
+                        flat_list += 'null\n'
                     else:
-                        print('')
+                        flat_list += '\n'
 
                 elif line is True:
-                    print('true')
+                    flat_list += 'true\n'
 
                 elif line is False:
-                    print('false')
+                    flat_list += 'false\n'
 
                 elif isinstance(line, str):
                     string_data = line.replace('\u2063', r'\n')
                     if raw:
-                        print(string_data)
+                        flat_list += f'{string_data}\n'
                     else:
-                        print(f'"{string_data}"')
+                        flat_list += f'"{string_data}"\n'
 
                 else:
                     # don't pretty print JSON Lines
-                    print(json.dumps(line))
-            exit()
+                    flat_list += json.dumps(line) + '\n'
+
+            return flat_list
 
     elif data is None:
         if nulls:
-            print('null')
-            exit()
+            return 'null'
         else:
-            print('')
-            exit()
+            return ''
 
     elif data is True:
-        print('true')
-        exit()
+        return 'true'
 
     elif data is False:
-        print('false')
-        exit()
+        return 'false'
 
     elif isinstance(data, str):
         string_data = data.replace('\u2063', r'\n')
         if raw:
-            print(string_data)
-            exit()
+            return string_data
         else:
-            print(f'"{string_data}"')
-            exit()
+            return f'"{string_data}"'
 
 
 def normalize(data, nulls=None, raw=None):
@@ -312,7 +304,8 @@ def main():
     list_dict_data = load_json(stdin)
     raw_response = pyquery(list_dict_data, query)
     normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
-    print_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
+    output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
+    print(output.rstrip())
 
 
 if __name__ == '__main__':
