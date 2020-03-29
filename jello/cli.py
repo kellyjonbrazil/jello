@@ -53,6 +53,11 @@ def print_error(message):
     sys.exit(1)
 
 
+def lines(data):
+    """This function is deprecated. Instead, use the -l option"""
+    return data
+
+
 def create_json(data, compact=False, nulls=None, lines=None, raw=None):
     # check if this list includes lists
     check_type = data
@@ -301,11 +306,20 @@ def main():
     if stdin is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
 
+    # lines() function is deprecated. If lines() is found, then call the -l lines option instead.
+    lines_warning = False
+    if query.find('lines(') != -1:
+        lines = True
+        lines_warning = True
+
     list_dict_data = load_json(stdin)
     raw_response = pyquery(list_dict_data, query)
     normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
     output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
     print(output.rstrip())
+
+    if lines_warning:
+        print('\njello:  Warning: lines() function is deprecated. Please use the -l option instead.\n', file=sys.stderr)
 
 
 if __name__ == '__main__':
