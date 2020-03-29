@@ -20,13 +20,11 @@ pip3 install --upgrade jello
 ```
 $ cat data.json | jello 'r = _["key"]'
 ```
-A convenience function called `lines()` outputs each element on its own line for output suitable to be assigned to a bash array:
-```
-$ cat data.json | jello 'r = lines(_["key"])'
-```
 
 **Options**
 - `-c` compact print JSON output instead of pretty printing
+- `-i` initialize python environment with a custom module
+- `-l` lines output (suitable for bash array assignment)
 - `-r` raw output of selected keys (no quotes)
 - `-n` print selected null values
 - `-h` help
@@ -74,12 +72,11 @@ for entry in _["parsers"]:
 ```
 Output as bash array
 ```
-jc -a | jello -r '\
+jc -a | jello -rl '\
 r = []
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
-    r.append(entry["name"])
-r = lines(r)'
+    r.append(entry["name"])'
 
 airport
 airport_s
@@ -104,7 +101,7 @@ $ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in ent
 ```
 Output as bash array
 ```
-$ jc -a | jello -r 'r = lines([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+$ jc -a | jello -rl 'r = [entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
 
 airport
 airport_s
@@ -131,7 +128,7 @@ https://programminghistorian.org/en/lessons/json-and-jq
 
 Here is a simple solution using `jello`:
 ```
-$ cat jq_twitter.json | jello '\
+$ cat jq_twitter.json | jello -l '\
 user_ids = set()
 r = []
 for tweet in _:
@@ -147,8 +144,7 @@ for user in user_ids:
                 "user_followers": tweet["user"]["followers_count"]})
             tweet_ids.append(str(tweet["id"]))
     user_profile["tweet_ids"] = ";".join(tweet_ids)
-    r.append(user_profile)
-r = lines(r)'
+    r.append(user_profile)'
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}
