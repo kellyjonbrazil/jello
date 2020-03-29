@@ -186,7 +186,8 @@ def normalize(data, nulls=None, raw=None):
 
     except IndexError as e:
         print(textwrap.dedent(f'''\
-            jello:  {e}
+            jello:  Normalize Exception: {e}
+                    Cannot parse input (Not JSON or JSON Lines)
         '''), file=sys.stderr)
         sys.exit(1)
 
