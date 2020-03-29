@@ -43,7 +43,7 @@ def helptext():
 
         Example:
                 <JSON Data> | jello 'r = _["foo"]'
-                variable=($(cat data.json | jello -l 'r = _["foo"]))
+                variable=($(cat data.json | jello -l 'r = _["foo"]'))
     '''))
 
 
