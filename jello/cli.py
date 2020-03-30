@@ -75,11 +75,12 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
         if not lines and not list_includes_list:
             new_list = []
-            for line in data:
-                if isinstance(line, str):
-                    new_list.append(line.replace('\u2063', '\n'))
+
+            for entry in data:
+                if isinstance(entry, str):
+                    new_list.append(entry.replace('\u2063', '\n'))
                 else:
-                    new_list.append(line)
+                    new_list.append(entry)
 
             if compact:
                 return json.dumps(new_list)
@@ -99,21 +100,21 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         # print lines for a flat list
         else:
             flat_list = ''
-            for line in data:
-                if line is None:
+            for entry in data:
+                if entry is None:
                     if nulls:
                         flat_list += 'null\n'
                     else:
                         flat_list += '\n'
 
-                elif line is True:
+                elif entry is True:
                     flat_list += 'true\n'
 
-                elif line is False:
+                elif entry is False:
                     flat_list += 'false\n'
 
-                elif isinstance(line, str):
-                    string_data = line.replace('\u2063', r'\n')
+                elif isinstance(entry, str):
+                    string_data = entry.replace('\u2063', r'\n')
                     if raw:
                         flat_list += f'{string_data}\n'
                     else:
@@ -121,7 +122,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
                 else:
                     # don't pretty print JSON Lines
-                    flat_list += json.dumps(line) + '\n'
+                    flat_list += json.dumps(entry) + '\n'
 
             return flat_list.rstrip()
 
@@ -173,7 +174,7 @@ def normalize(data, nulls=None, raw=None):
                             break
 
                 if list_includes_obj:
-                    # this is a higher-level list of dicts. We can safely replace
+                    # this is a higher-level list of dicts or lists. We can safely replace
                     # \u2063 with newlines here.
                     result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
                 else:
