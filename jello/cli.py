@@ -65,7 +65,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         else:
             return json.dumps(data, indent=2)
 
-    if isinstance(data, (list)):
+    if isinstance(data, list):
         # check if this list includes lists
         list_includes_list = False
         for item in data:
@@ -137,6 +137,9 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
     elif data is False:
         return 'false'
+
+    elif isinstance(data, (int, float)):
+        return data
 
     elif isinstance(data, str):
         string_data = data.replace('\u2063', r'\n')
