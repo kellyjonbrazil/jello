@@ -96,7 +96,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         elif lines and list_includes_list:
             print_error('jello:  Cannot print list of lists as lines. Try normal JSON output.\n')
 
-        # only print lines for a flat list
+        # print lines for a flat list
         else:
             flat_list = ''
             for line in data:
@@ -125,6 +125,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
             return flat_list
 
+    # single item return case
     elif data is None:
         if nulls:
             return 'null'
