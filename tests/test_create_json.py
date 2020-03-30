@@ -1,5 +1,11 @@
+#!/usr/bin/env python3
+
 import unittest
 import jello.cli
+
+
+def setUp(self):
+    return
 
 
 class MyTests(unittest.TestCase):
@@ -137,7 +143,7 @@ class MyTests(unittest.TestCase):
         Test [integer] -l
         """
         self.data_in = [42]
-        self.expected = '42\n'
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_list_int_r(self):
@@ -153,7 +159,7 @@ class MyTests(unittest.TestCase):
         Test [integer] -rl
         """
         self.data_in = [42]
-        self.expected = '42\n'
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
 
     #
@@ -173,7 +179,7 @@ class MyTests(unittest.TestCase):
         Test [float] -l
         """
         self.data_in = [3.14]
-        self.expected = '3.14\n'
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_list_float_r(self):
@@ -189,7 +195,7 @@ class MyTests(unittest.TestCase):
         Test [float] -rl
         """
         self.data_in = [3.14]
-        self.expected = '3.14\n'
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
 
     #
@@ -209,7 +215,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters'] -l
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = '"string with spaces\nand newline\ncharacters"\n'
+        self.expected = '"string with spaces\nand newline\ncharacters"'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_list_str_r(self):
@@ -225,7 +231,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters'] -rl
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = 'string with spaces\nand newline\ncharacters\n'
+        self.expected = 'string with spaces\nand newline\ncharacters'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
 
     #
