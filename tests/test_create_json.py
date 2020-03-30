@@ -185,7 +185,7 @@ class MyTests(unittest.TestCase):
         Test {'key1': 'value1'}
         """
         self.data_in = {'key1': 'value1'}
-        self.expected = '[\n  "key1"\n]'
+        self.expected = '{\n  "key1": "value1"\n}'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
     def test_list_dict_multiple_key_value(self):
