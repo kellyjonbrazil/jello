@@ -4,11 +4,89 @@ import unittest
 import jello.cli
 
 
-def setUp(self):
-    return
-
-
 class MyTests(unittest.TestCase):
+    def setUp(self):
+        self.dict_sample = {
+            'string': 'string\nwith newline\ncharacters in it',
+            'true': True,
+            'false': False,
+            'null': None,
+            'int': 42,
+            'float': 3.14,
+            'array': [
+                'string\nwith newline\ncharacters in it',
+                True,
+                False,
+                None,
+                42,
+                3.14
+            ]
+        }
+
+        self.list_sample = [
+            'string\nwith newline\ncharacters in it',
+            True,
+            False,
+            None,
+            42,
+            3.14
+        ]
+
+        self.list_of_dicts_sample = [
+            {
+                'string': 'string\nwith newline\ncharacters in it',
+                'true': True,
+                'false': False,
+                'null': None,
+                'int': 42,
+                'float': 3.14,
+                'array': [
+                    'string\nwith newline\ncharacters in it',
+                    True,
+                    False,
+                    None,
+                    42,
+                    3.14
+                ]
+            },
+            {
+                'string': 'another string\nwith newline\ncharacters in it',
+                'true': True,
+                'false': False,
+                'null': None,
+                'int': 10001,
+                'float': -400.45,
+                'array': [
+                    'string\nwith newline\ncharacters in it',
+                    True,
+                    False,
+                    None,
+                    -6000034,
+                    999999.854321
+                ]
+            }
+        ]
+
+        self.list_of_lists_sample = [
+            [
+                'string\nwith newline\ncharacters in it',
+                True,
+                False,
+                None,
+                42,
+                3.14
+            ],
+            [
+                'another string\nwith newline\ncharacters in it',
+                True,
+                False,
+                None,
+                42001,
+                -3.14
+            ]
+        ]
+
+    # ------------ Tests ------------
 
     #
     # Naked True
@@ -238,13 +316,69 @@ class MyTests(unittest.TestCase):
     # Naked Dict
     #
 
-    def test_dict_single_key_value(self):
+    def test_dict(self):
         """
-        Test {'key1': 'value1'}
+        Test self.dict_sample
         """
-        self.data_in = {'key1': 'value1'}
-        self.expected = '{\n  "key1": "value1"\n}'
+        self.data_in = self.dict_sample
+        self.expected = '{\n  "string": "string\\nwith newline\\ncharacters in it",\n  "true": true,\n  "false": false,\n  "null": null,\n  "int": 42,\n  "float": 3.14,\n  "array": [\n    "string\\nwith newline\\ncharacters in it",\n    true,\n    false,\n    null,\n    42,\n    3.14\n  ]\n}'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_dict_r(self):
+        """
+        Test self.dict_sample -r
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{\n  "string": "string\\nwith newline\\ncharacters in it",\n  "true": true,\n  "false": false,\n  "null": null,\n  "int": 42,\n  "float": 3.14,\n  "array": [\n    "string\\nwith newline\\ncharacters in it",\n    true,\n    false,\n    null,\n    42,\n    3.14\n  ]\n}'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_dict_l(self):
+        """
+        Test self.dict_sample -l
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_dict_c(self):
+        """
+        Test self.dict_sample -c
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_dict_rl(self):
+        """
+        Test self.dict_sample -rl
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    def test_dict_cl(self):
+        """
+        Test self.dict_sample -cl
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_dict_cr(self):
+        """
+        Test self.dict_sample -cr
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True), self.expected)
+
+    def test_dict_crl(self):
+        """
+        Test self.dict_sample -crl
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
 
     #
     # true in a list
