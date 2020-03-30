@@ -127,6 +127,114 @@ class MyTests(unittest.TestCase):
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True, nulls=True), self.expected)
 
     #
+    # naked int
+    #
+
+    def test_int(self):
+        """
+        Test int
+        """
+        self.data_in = 42
+        self.expected = 42
+        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_int_r(self):
+        """
+        Test int -r
+        """
+        self.data_in = 42
+        self.expected = 42
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_int_l(self):
+        """
+        Test int -l
+        """
+        self.data_in = 42
+        self.expected = 42
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_int_rl(self):
+        """
+        Test int -rl
+        """
+        self.data_in = 42
+        self.expected = 42
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    #
+    # naked float
+    #
+
+    def test_float(self):
+        """
+        Test float
+        """
+        self.data_in = 3.14
+        self.expected = 3.14
+        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_float_r(self):
+        """
+        Test float -r
+        """
+        self.data_in = 3.14
+        self.expected = 3.14
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_float_l(self):
+        """
+        Test float -l
+        """
+        self.data_in = 3.14
+        self.expected = 3.14
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_float_rl(self):
+        """
+        Test float -rl
+        """
+        self.data_in = 3.14
+        self.expected = 3.14
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    #
+    # naked string
+    #
+
+    def test_string(self):
+        """
+        Test string
+        """
+        self.data_in = '"string with\nnewline char"'
+        self.expected = '""string with\nnewline char""'
+        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_string_r(self):
+        """
+        Test string -r
+        """
+        self.data_in = '"string with\nnewline char"'
+        self.expected = '"string with\nnewline char"'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_string_l(self):
+        """
+        Test string -l
+        """
+        self.data_in = '"string with\nnewline char"'
+        self.expected = '""string with\nnewline char""'
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_string_rl(self):
+        """
+        Test string -rl
+        """
+        self.data_in = '"string with\nnewline char"'
+        self.expected = '"string with\nnewline char"'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    #
     # Int in a list
     #
 
