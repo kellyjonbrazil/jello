@@ -158,8 +158,9 @@ def normalize(data, nulls=None, raw=None):
             # check if the result is a single list with no dicts or other lists inside
             try:
                 list_includes_obj = False
-                if isinstance(ast.literal_eval(entry), list):
-                    for item in ast.literal_eval(entry):
+                check_list = ast.literal_eval(entry)
+                if isinstance(check_list, list):
+                    for item in check_list:
                         if isinstance(item, (list, dict)):
                             list_includes_obj = True
                             break
@@ -167,11 +168,11 @@ def normalize(data, nulls=None, raw=None):
                 if list_includes_obj:
                     # this is a higher-level list of dicts. We can safely replace
                     # \u2063 with newlines here.
-                    result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+                    result_list.append(check_list.replace(r'\u2063', r'\n'))
                 else:
                     # this is the last node. Don't replace \u2063 with newline yet...
                     # do this in print_json()
-                    result_list.append(ast.literal_eval(entry))
+                    result_list.append(check_list)
 
             except (ValueError, SyntaxError):
                 # if ValueError or SyntaxError exception then it was not a
