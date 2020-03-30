@@ -10,7 +10,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.3.1'
+__version__ = '0.4.0'
 
 
 def ctrlc(signum, frame):
@@ -59,6 +59,12 @@ def lines(data):
 
 
 def create_json(data, compact=False, nulls=None, lines=None, raw=None):
+    if isinstance(data, dict):
+        if compact or lines:
+            return json.dumps(data)
+        else:
+            return json.dumps(data, indent=2)
+
     # check if this list includes lists
     check_type = data
     list_includes_list = False
@@ -66,8 +72,9 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         for item in check_type:
             if isinstance(item, list):
                 list_includes_list = True
+                break
 
-    if isinstance(data, (list, dict)):
+    if isinstance(data, (list)):
         if not lines and not list_includes_list:
             new_list = []
             for line in data:
@@ -92,8 +99,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
             return json.dumps(data)
 
         elif lines and list_includes_list:
-            print('jello:  Cannot print list of lists as lines. Try normal JSON output.\n', file=sys.stderr)
-            sys.exit(1)
+            print_error('jello:  Cannot print list of lists as lines. Try normal JSON output.\n')
 
         # only print lines for a flat list
         else:
@@ -146,50 +152,54 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
 def normalize(data, nulls=None, raw=None):
     result_list = []
-    try:
-        for entry in data.splitlines():
-            # first check if the result is a single list with no dicts or other lists inside
-            try:
-                check_type = ast.literal_eval(entry)
 
-                list_includes_obj = False
-                if isinstance(check_type, list):
-                    for item in check_type:
-                        if isinstance(item, (list, dict)):
-                            list_includes_obj = True
+    if isinstance(data, dict):
+        result_list.append(ast.literal_eval(data.replace(r'\u2063', r'\n')))
 
-                if list_includes_obj:
-                    # this is a higher-level list of dicts. We can safely replace
-                    # \u2063 with newlines here.
-                    result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
-                else:
-                    # this is the last node. Don't replace \u2063 with newline yet...
-                    # do this in print_json()
-                    result_list.append(ast.literal_eval(entry))
+    else:
+        try:
+            for entry in data.splitlines():
+                # first check if the result is a single list with no dicts or other lists inside
+                try:
+                    check_type = ast.literal_eval(entry)
 
-            except (ValueError, SyntaxError):
-                # if ValueError or SyntaxError exception then it was not a
-                # list, dict, bool, None, int, or float - must be a string
-                # we will replace \u2063 with newlines in print_json()
-                result_list.append(str(entry))
+                    list_includes_obj = False
+                    if isinstance(check_type, list):
+                        for item in check_type:
+                            if isinstance(item, (list, dict)):
+                                list_includes_obj = True
+                                break
 
-    except Exception as e:
-        print(textwrap.dedent(f'''\
-            jello:  Normalize Exception: {e}
-                    data: {data}
-                    result_list: {result_list}
-            '''), file=sys.stderr)
-        sys.exit(1)
+                    if list_includes_obj:
+                        # this is a higher-level list of dicts. We can safely replace
+                        # \u2063 with newlines here.
+                        result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+                    else:
+                        # this is the last node. Don't replace \u2063 with newline yet...
+                        # do this in print_json()
+                        result_list.append(ast.literal_eval(entry))
+
+                except (ValueError, SyntaxError):
+                    # if ValueError or SyntaxError exception then it was not a
+                    # list, dict, bool, None, int, or float - must be a string
+                    # we will replace \u2063 with newlines in print_json()
+                    result_list.append(str(entry))
+
+        except Exception as e:
+            print_error(textwrap.dedent(f'''\
+                jello:  Normalize Exception: {e}
+                        data: {data}
+                        result_list: {result_list}
+                '''))
 
     try:
         return result_list[0]
 
     except IndexError as e:
-        print(textwrap.dedent(f'''\
+        print_error(textwrap.dedent(f'''\
             jello:  Normalize Exception: {e}
                     Cannot parse input (Not JSON or JSON Lines)
-        '''), file=sys.stderr)
-        sys.exit(1)
+        '''))
 
 
 def pyquery(data, query):
@@ -204,41 +214,36 @@ def pyquery(data, query):
             output = f.getvalue()[0:-6]
 
     except KeyError as e:
-        print(textwrap.dedent(f'''\
+        print_error(textwrap.dedent(f'''\
             jello:  Key does not exist: {e}
-        '''), file=sys.stderr)
-        sys.exit(1)
+        '''))
 
     except IndexError as e:
-        print(textwrap.dedent(f'''\
+        print_error(textwrap.dedent(f'''\
             jello:  {e}
-        '''), file=sys.stderr)
-        sys.exit(1)
+        '''))
 
     except SyntaxError as e:
-        print(textwrap.dedent(f'''\
+        print_error(textwrap.dedent(f'''\
             jello:  {e}
                     {e.text}
-        '''), file=sys.stderr)
-        sys.exit(1)
+        '''))
 
     except TypeError as e:
         if output is None:
             output = ''
         else:
-            print(textwrap.dedent(f'''\
+            print_error(textwrap.dedent(f'''\
                 jello:  TypeError: {e}
-            '''), file=sys.stderr)
-            sys.exit(1)
+            '''))
 
     except Exception as e:
-        print(textwrap.dedent(f'''\
+        print_error(textwrap.dedent(f'''\
             jello:  Query Exception: {e}
                     _: {_}
                     query: {query}
                     output: {output}
-        '''), file=sys.stderr)
-        sys.exit(1)
+        '''))
 
     return output
 
@@ -261,12 +266,11 @@ def load_json(data):
                 data_list.append(entry)
             except Exception as e:
                 # can't parse the data. Throw a nice message and quit
-                print(textwrap.dedent(f'''\
+                print_error(textwrap.dedent(f'''\
                     jello:  JSON Load Exception: {e}
                             Cannot parse line {i + 1} (Not JSON or JSON Lines data):
                             {str(jsonline)[:70]}
-                    '''), file=sys.stderr)
-                sys.exit(1)
+                    '''))
 
         json_dict = data_list
 
@@ -324,7 +328,18 @@ def main():
     raw_response = pyquery(list_dict_data, query)
     normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
     output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
-    print(output.rstrip())
+
+    try:
+        print(output.rstrip())
+
+    except Exception as e:
+        print_error(textwrap.dedent(f'''\
+            jello:  Output Exception:  {e}
+                    list_dict_data: {list_dict_data}
+                    raw_response: {raw_response}
+                    normalized_response: {normalized_response}
+                    output: {output}
+        '''))
 
     if lines_warning:
         print('\njello:  Warning: lines() function is deprecated. Please use the -l option instead.\n', file=sys.stderr)
