@@ -384,11 +384,137 @@ class MyTests(unittest.TestCase):
     # true in a list
     #
 
+    def test_list_true(self):
+        """
+        Test [True]
+        """
+        self.data_in = [True]
+        self.expected = '[\n  true\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_list_true_c(self):
+        """
+        Test [True] -c
+        """
+        self.data_in = [True]
+        self.expected = '[true]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
+
+    def test_list_true_r(self):
+        """
+        Test [True] -r
+        """
+        self.data_in = [True]
+        self.expected = '[\n  true\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_list_true_l(self):
+        """
+        Test [True] -l
+        """
+        self.data_in = [True]
+        self.expected = 'true'
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_list_true_cl(self):
+        """
+        Test [True] -cl
+        """
+        self.data_in = [True]
+        self.expected = 'true'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_true_rl(self):
+        """
+        Test [True] -rl
+        """
+        self.data_in = [True]
+        self.expected = 'true'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    def test_list_true_cr(self):
+        """
+        Test [True] -cr
+        """
+        self.data_in = [True]
+        self.expected = '[true]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True), self.expected)
+
+    def test_list_true_crl(self):
+        """
+        Test [True] -crl
+        """
+        self.data_in = [True]
+        self.expected = 'true'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
 
     #
     # false in a list
     #
 
+    def test_list_false(self):
+        """
+        Test [False]
+        """
+        self.data_in = [False]
+        self.expected = '[\n  false\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_list_false_c(self):
+        """
+        Test [False] -c
+        """
+        self.data_in = [False]
+        self.expected = '[false]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
+
+    def test_list_false_r(self):
+        """
+        Test [false] -r
+        """
+        self.data_in = [False]
+        self.expected = '[\n  false\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_list_false_l(self):
+        """
+        Test [False] -l
+        """
+        self.data_in = [False]
+        self.expected = 'false'
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_list_false_cl(self):
+        """
+        Test [False] -cl
+        """
+        self.data_in = [False]
+        self.expected = 'false'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_false_rl(self):
+        """
+        Test [False] -rl
+        """
+        self.data_in = [False]
+        self.expected = 'false'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    def test_list_false_cr(self):
+        """
+        Test [False] -cr
+        """
+        self.data_in = [False]
+        self.expected = '[false]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True), self.expected)
+
+    def test_list_false_crl(self):
+        """
+        Test [False] -crl
+        """
+        self.data_in = [False]
+        self.expected = 'false'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
 
     #
     # null in a list
