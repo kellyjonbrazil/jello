@@ -149,11 +149,15 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 def normalize(data, nulls=None, raw=None):
     result_list = []
 
+    # first check if it's a dict
     try:
-        # first check if it's a dict
         if isinstance(ast.literal_eval(data), dict):
             return ast.literal_eval(data.replace(r'\u2063', r'\n'))
+    except Exception:
+        # was not a dict
+        pass
 
+    try:
         for entry in data.splitlines():
             # check if the result is a single list with no dicts or other lists inside
             try:
@@ -168,7 +172,7 @@ def normalize(data, nulls=None, raw=None):
                 if list_includes_obj:
                     # this is a higher-level list of dicts. We can safely replace
                     # \u2063 with newlines here.
-                    result_list.append(check_list.replace(r'\u2063', r'\n'))
+                    result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
                 else:
                     # this is the last node. Don't replace \u2063 with newline yet...
                     # do this in print_json()
@@ -272,12 +276,14 @@ def load_json(data):
     return json_dict
 
 
-def main():
+def main(data=None, compact=False, lines=False, nulls=False, raw=False, version_info=False, helpme=False):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
-    stdin = get_stdin()
+
+    if not data:
+        data = get_stdin()
     # for debugging
-    # stdin = r'''["word", null, false, 1, 3.14, true, "multiple words", false, "words\nwith\nnewlines", 42]'''
+    # data = r'''["word", null, false, 1, 3.14, true, "multiple words", false, "words\nwith\nnewlines", 42]'''
 
     query = 'r = _'
 
@@ -297,12 +303,12 @@ def main():
         else:
             query = arg
 
-    compact = 'c' in options
-    lines = 'l' in options
-    nulls = 'n' in options
-    raw = 'r' in options
-    version_info = 'v' in options
-    helpme = 'h' in options
+    compact = 'c' in options if not compact else None
+    lines = 'l' in options if not lines else None
+    nulls = 'n' in options if not nulls else None
+    raw = 'r' in options if not raw else None
+    version_info = 'v' in options if not version_info else None
+    helpme = 'h' in options if not helpme else None
 
     if helpme:
         helptext()
@@ -310,7 +316,7 @@ def main():
     if version_info:
         print_error(f'jello:   version {__version__}\n')
 
-    if stdin is None:
+    if data is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
 
     # lines() function is deprecated. If lines() is found, then call the -l lines option instead.
@@ -319,7 +325,7 @@ def main():
         lines = True
         lines_warning = True
 
-    list_dict_data = load_json(stdin)
+    list_dict_data = load_json(data)
     raw_response = pyquery(list_dict_data, query)
     normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
     output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
