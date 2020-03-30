@@ -125,7 +125,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
             return flat_list.rstrip()
 
-    # single item return case
+    # naked single item return case
     elif data is None:
         if nulls:
             return 'null'
