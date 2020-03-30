@@ -65,16 +65,14 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         else:
             return json.dumps(data, indent=2)
 
-    # check if this list includes lists
-    check_type = data
-    list_includes_list = False
-    if isinstance(check_type, list):
-        for item in check_type:
+    if isinstance(data, (list)):
+        # check if this list includes lists
+        list_includes_list = False
+        for item in data:
             if isinstance(item, list):
                 list_includes_list = True
                 break
 
-    if isinstance(data, (list)):
         if not lines and not list_includes_list:
             new_list = []
             for line in data:
@@ -94,9 +92,6 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                 return json.dumps(data)
             else:
                 return json.dumps(data, indent=2)
-
-        elif lines and isinstance(data, dict):
-            return json.dumps(data)
 
         elif lines and list_includes_list:
             print_error('jello:  Cannot print list of lists as lines. Try normal JSON output.\n')
@@ -153,44 +148,42 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 def normalize(data, nulls=None, raw=None):
     result_list = []
 
-    if isinstance(data, dict):
-        result_list.append(ast.literal_eval(data.replace(r'\u2063', r'\n')))
+    try:
+        # first check if it's a dict
+        if isinstance(ast.literal_eval(data), dict):
+            return ast.literal_eval(data.replace(r'\u2063', r'\n'))
 
-    else:
-        try:
-            for entry in data.splitlines():
-                # first check if the result is a single list with no dicts or other lists inside
-                try:
-                    check_type = ast.literal_eval(entry)
+        for entry in data.splitlines():
+            # check if the result is a single list with no dicts or other lists inside
+            try:
+                list_includes_obj = False
+                if isinstance(ast.literal_eval(entry), list):
+                    for item in ast.literal_eval(entry):
+                        if isinstance(item, (list, dict)):
+                            list_includes_obj = True
+                            break
 
-                    list_includes_obj = False
-                    if isinstance(check_type, list):
-                        for item in check_type:
-                            if isinstance(item, (list, dict)):
-                                list_includes_obj = True
-                                break
+                if list_includes_obj:
+                    # this is a higher-level list of dicts. We can safely replace
+                    # \u2063 with newlines here.
+                    result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+                else:
+                    # this is the last node. Don't replace \u2063 with newline yet...
+                    # do this in print_json()
+                    result_list.append(ast.literal_eval(entry))
 
-                    if list_includes_obj:
-                        # this is a higher-level list of dicts. We can safely replace
-                        # \u2063 with newlines here.
-                        result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
-                    else:
-                        # this is the last node. Don't replace \u2063 with newline yet...
-                        # do this in print_json()
-                        result_list.append(ast.literal_eval(entry))
+            except (ValueError, SyntaxError):
+                # if ValueError or SyntaxError exception then it was not a
+                # list, dict, bool, None, int, or float - must be a string
+                # we will replace \u2063 with newlines in print_json()
+                result_list.append(str(entry))
 
-                except (ValueError, SyntaxError):
-                    # if ValueError or SyntaxError exception then it was not a
-                    # list, dict, bool, None, int, or float - must be a string
-                    # we will replace \u2063 with newlines in print_json()
-                    result_list.append(str(entry))
-
-        except Exception as e:
-            print_error(textwrap.dedent(f'''\
-                jello:  Normalize Exception: {e}
-                        data: {data}
-                        result_list: {result_list}
-                '''))
+    except Exception as e:
+        print_error(textwrap.dedent(f'''\
+            jello:  Normalize Exception: {e}
+                    data: {data}
+                    result_list: {result_list}
+            '''))
 
     try:
         return result_list[0]
