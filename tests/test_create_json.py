@@ -204,7 +204,7 @@ class MyTests(unittest.TestCase):
 
     def test_string(self):
         """
-        Test string
+        Test "string with\nnewline char"
         """
         self.data_in = '"string with\nnewline char"'
         self.expected = '""string with\nnewline char""'
@@ -212,7 +212,7 @@ class MyTests(unittest.TestCase):
 
     def test_string_r(self):
         """
-        Test string -r
+        Test "string with\nnewline char" -r
         """
         self.data_in = '"string with\nnewline char"'
         self.expected = '"string with\nnewline char"'
@@ -220,7 +220,7 @@ class MyTests(unittest.TestCase):
 
     def test_string_l(self):
         """
-        Test string -l
+        Test "string with\nnewline char" -l
         """
         self.data_in = '"string with\nnewline char"'
         self.expected = '""string with\nnewline char""'
@@ -228,11 +228,39 @@ class MyTests(unittest.TestCase):
 
     def test_string_rl(self):
         """
-        Test string -rl
+        Test "string with\nnewline char" -rl
         """
         self.data_in = '"string with\nnewline char"'
         self.expected = '"string with\nnewline char"'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    #
+    # Naked Dict
+    #
+
+    def test_dict_single_key_value(self):
+        """
+        Test {'key1': 'value1'}
+        """
+        self.data_in = {'key1': 'value1'}
+        self.expected = '{\n  "key1": "value1"\n}'
+        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    #
+    # true in a list
+    #
+
+
+    #
+    # false in a list
+    #
+
+
+    #
+    # null in a list
+    #
+
+
 
     #
     # Int in a list
@@ -341,18 +369,6 @@ class MyTests(unittest.TestCase):
         self.data_in = ['string with spaces\nand newline\ncharacters']
         self.expected = 'string with spaces\nand newline\ncharacters'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
-
-    #
-    # Naked Dict
-    #
-
-    def test_dict_single_key_value(self):
-        """
-        Test {'key1': 'value1'}
-        """
-        self.data_in = {'key1': 'value1'}
-        self.expected = '{\n  "key1": "value1"\n}'
-        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
     #
     # Dict in a list

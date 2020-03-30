@@ -291,9 +291,6 @@ def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=Non
     # for debugging
     # data = r'''["word", null, false, 1, 3.14, true, "multiple words", false, "words\nwith\nnewlines", 42]'''
 
-    if commandline:
-        query = 'r = _'
-
     options = []
     long_options = {}
     for arg in sys.argv[1:]:
