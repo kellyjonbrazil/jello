@@ -123,7 +123,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                     # don't pretty print JSON Lines
                     flat_list += json.dumps(line) + '\n'
 
-            return flat_list
+            return flat_list.rstrip()
 
     # single item return case
     elif data is None:
@@ -276,16 +276,19 @@ def load_json(data):
     return json_dict
 
 
-def main(data=None, compact=False, lines=False, nulls=False, raw=False, version_info=False, helpme=False):
+def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=None, version_info=None, helpme=None):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
-    if not data:
+    commandline = False
+    if data is None:
+        commandline = True
         data = get_stdin()
     # for debugging
     # data = r'''["word", null, false, 1, 3.14, true, "multiple words", false, "words\nwith\nnewlines", 42]'''
 
-    query = 'r = _'
+    if commandline:
+        query = 'r = _'
 
     options = []
     long_options = {}
@@ -301,14 +304,15 @@ def main(data=None, compact=False, lines=False, nulls=False, raw=False, version_
                 helptext()
 
         else:
-            query = arg
+            if commandline:
+                query = arg
 
-    compact = 'c' in options if not compact else None
-    lines = 'l' in options if not lines else None
-    nulls = 'n' in options if not nulls else None
-    raw = 'r' in options if not raw else None
-    version_info = 'v' in options if not version_info else None
-    helpme = 'h' in options if not helpme else None
+    compact = compact if not commandline else'c' in options
+    lines = lines if not commandline else 'l' in options
+    nulls = nulls if not commandline else 'n' in options
+    raw = raw if not commandline else 'r' in options
+    version_info = version_info if not commandline else 'v' in options
+    helpme = helpme if not commandline else 'h' in options
 
     if helpme:
         helptext()
@@ -331,7 +335,10 @@ def main(data=None, compact=False, lines=False, nulls=False, raw=False, version_
     output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
     try:
-        print(output.rstrip())
+        if commandline:
+            print(output)
+        else:
+            return output
 
     except Exception as e:
         print_error(textwrap.dedent(f'''\
