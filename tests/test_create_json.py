@@ -904,16 +904,6 @@ class MyTests(unittest.TestCase):
         self.expected = 'string\nwith newline\ncharacters in it\ntrue\nfalse\n\n42\n3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
 
-
-
-
-
-
-
-
-
-
-
     #
     # Dicts in a list
     #
