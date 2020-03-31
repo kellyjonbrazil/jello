@@ -23,12 +23,38 @@ $ cat data.json | jello 'r = _["key"]'
 
 **Options**
 - `-c` compact print JSON output instead of pretty printing
-- `-i` initialize python environment with a custom module
+- `-i` initialize python environment with a custom config file
 - `-l` lines output (suitable for bash array assignment)
 - `-r` raw output of selected keys (no quotes)
 - `-n` print selected null values
 - `-h` help
 - `-v` version info
+
+**Custom Configuration File**
+You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code. The filename must be `.jelloconf.py` and must be located in the proper directory based on the OS platform:
+- Linux: `~/`
+- Windows: `%appdata%/`
+
+For example, if you wanted to initialize your `jello` environment to substitute `glom` syntax for `_` your `.jelloconf.py` file could look like this:
+```
+def _(q, data=_):
+    import glom
+    return glom.glom(data, q)
+```
+Then you could use the following syntax to filter the JSON data:
+```
+$ jc -a | jello -i 'r = _("parsers.6.compatible")'
+
+[
+  "linux",
+  "darwin",
+  "cygwin",
+  "win32",
+  "aix",
+  "freebsd"
+]
+
+```
 
 ## Examples:
 ### lambda functions and math
