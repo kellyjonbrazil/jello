@@ -3,6 +3,7 @@
 
 import os
 import sys
+import platform
 import textwrap
 import json
 import signal
@@ -33,6 +34,7 @@ def helptext():
         Usage:  <JSON Data> | jello [OPTIONS] QUERY
 
                 -c    compact JSON output
+                -i    initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
                 -l    output as lines suitable for assignment to a bash array
                 -n    print selected null values
                 -r    raw string output (no quotes)
@@ -205,9 +207,25 @@ def normalize(data, nulls=None, raw=None):
         '''))
 
 
-def pyquery(data, query):
+def pyquery(data, query, initialize=None):
     _ = data
-    query = 'r = None\n' + query + '\nprint(r)'
+    jelloconf = ''
+
+    if initialize:
+        if platform.system() == 'Windows':
+            conf_file = os.path.join(os.environ['APPDATA'], '.jelloconf.py')
+        else:
+            conf_file = os.path.join(os.environ["HOME"], '.jelloconf.py')
+
+        try:
+            with open(conf_file, 'r') as f: 
+                jelloconf = f.read()
+        except FileNotFoundError:
+            print_error(textwrap.dedent(f'''\
+                jello:  Initialization file not found: {conf_file}
+            '''))
+
+    query = jelloconf + 'r = None\n' + query + '\nprint(r)'
     output = None
 
     f = io.StringIO()
@@ -280,7 +298,7 @@ def load_json(data):
     return json_dict
 
 
-def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=None, version_info=None, helpme=None):
+def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=None, version_info=None, helpme=None, initialize=None):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
@@ -309,6 +327,7 @@ def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=Non
                 query = arg
 
     compact = compact if not commandline else'c' in options
+    initialize = initialize if not commandline else 'i' in options
     lines = lines if not commandline else 'l' in options
     nulls = nulls if not commandline else 'n' in options
     raw = raw if not commandline else 'r' in options
@@ -331,7 +350,7 @@ def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=Non
         lines_warning = True
 
     list_dict_data = load_json(data)
-    raw_response = pyquery(list_dict_data, query)
+    raw_response = pyquery(list_dict_data, query, initialize=initialize)
     normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
     output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
