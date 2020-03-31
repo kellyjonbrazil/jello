@@ -20,17 +20,56 @@ pip3 install --upgrade jello
 ```
 $ cat data.json | jello 'r = _["key"]'
 ```
-A convenience function called `lines()` outputs each element on its own line for output suitable to be assigned to a bash array:
-```
-$ cat data.json | jello 'r = lines(_["key"])'
-```
 
 **Options**
 - `-c` compact print JSON output instead of pretty printing
+- `-i` initialize environment with a custom config file
+- `-l` lines output (suitable for bash array assignment)
 - `-r` raw output of selected keys (no quotes)
 - `-n` print selected null values
 - `-h` help
 - `-v` version info
+
+> Note: The `lines()` convenience function has been deprecated and will be removed in a future version. Use the `-l` option instead to generate output suitable for assignment to a bash variable or array. Use of the `lines()` function will generate a warning message to `STDERR`.
+
+**Custom Configuration File**
+
+You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as adding `import` statements for your favorite libraries.
+
+The filename must be `.jelloconf.py` and must be located in the proper directory based on the OS platform:
+- Linux: `~/`
+- Windows: `%appdata%/`
+
+To simply import a module (e.g. `glom`) your `.jelloconf.py` file would look like this:
+```
+from glom import *
+```
+Then you could use `glom` in your `jello` filters:
+```
+$ jc -a | jello -i 'r = glom(_, "parsers.25.name")'
+
+"lsblk"
+```
+
+Alternatively, if you wanted to initialize your `jello` environment to substitute `glom` syntax for `_` your `.jelloconf.py` file could look like this:
+```
+def _(q, data=_):
+    import glom
+    return glom.glom(data, q)
+```
+Then you could use the following syntax to filter the JSON data:
+```
+$ jc -a | jello -i 'r = _("parsers.6.compatible")'
+
+[
+  "linux",
+  "darwin",
+  "cygwin",
+  "win32",
+  "aix",
+  "freebsd"
+]
+```
 
 ## Examples:
 ### lambda functions and math
@@ -74,12 +113,11 @@ for entry in _["parsers"]:
 ```
 Output as bash array
 ```
-jc -a | jello -r '\
+jc -a | jello -rl '\
 r = []
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
-    r.append(entry["name"])
-r = lines(r)'
+    r.append(entry["name"])'
 
 airport
 airport_s
@@ -104,7 +142,7 @@ $ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in ent
 ```
 Output as bash array
 ```
-$ jc -a | jello -r 'r = lines([entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+$ jc -a | jello -rl 'r = [entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
 
 airport
 airport_s
@@ -120,6 +158,24 @@ r = True if os.getenv("LOGNAME") == _["login_name"] else False'
 
 true
 ```
+### Using 3rd Party Libraries
+You can import and use your favorite libraries to manipulate the data.  For example, using `glom`:
+```
+$ jc -a | jello '\
+from glom import *
+r = glom(_, ("parsers", ["name"]))'
+
+[
+  "airport",
+  "airport_s",
+  "arp",
+  "blkid",
+  "crontab",
+  "crontab_u",
+  "csv",
+  ...
+]
+```
 ### Complex JSON Manipulation
 The data from this example comes from https://programminghistorian.org/assets/jq_twitter.json
 
@@ -131,7 +187,7 @@ https://programminghistorian.org/en/lessons/json-and-jq
 
 Here is a simple solution using `jello`:
 ```
-$ cat jq_twitter.json | jello '\
+$ cat jq_twitter.json | jello -l '\
 user_ids = set()
 r = []
 for tweet in _:
@@ -147,8 +203,7 @@ for user in user_ids:
                 "user_followers": tweet["user"]["followers_count"]})
             tweet_ids.append(str(tweet["id"]))
     user_profile["tweet_ids"] = ";".join(tweet_ids)
-    r.append(user_profile)
-r = lines(r)'
+    r.append(user_profile)'
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}
