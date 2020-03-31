@@ -23,7 +23,7 @@ $ cat data.json | jello 'r = _["key"]'
 
 **Options**
 - `-c` compact print JSON output instead of pretty printing
-- `-i` initialize python environment with a custom config file
+- `-i` initialize environment with a custom config file
 - `-l` lines output (suitable for bash array assignment)
 - `-r` raw output of selected keys (no quotes)
 - `-n` print selected null values
@@ -31,6 +31,7 @@ $ cat data.json | jello 'r = _["key"]'
 - `-v` version info
 
 **Custom Configuration File**
+
 You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code. The filename must be `.jelloconf.py` and must be located in the proper directory based on the OS platform:
 - Linux: `~/`
 - Windows: `%appdata%/`
@@ -53,7 +54,6 @@ $ jc -a | jello -i 'r = _("parsers.6.compatible")'
   "aix",
   "freebsd"
 ]
-
 ```
 
 ## Examples:
