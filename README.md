@@ -26,10 +26,16 @@ $ cat data.json | jello 'r = _["key"]'
 - `-i` initialize environment with a custom config file
 - `-l` lines output (suitable for bash array assignment)
 - `-r` raw output of selected keys (no quotes)
-- `-n` print selected null values
+- `-n` print selected `null` values
 - `-h` help
 - `-v` version info
 
+**Assigning Results to a Bash Array**
+
+Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option.
+```
+variable=($(cat data.json | jello -rl 'r = _["foo"]'))
+```
 > Note: The `lines()` convenience function has been deprecated and will be removed in a future version. Use the `-l` option instead to generate output suitable for assignment to a bash variable or array. Use of the `lines()` function will generate a warning message to `STDERR`.
 
 **Custom Configuration File**
