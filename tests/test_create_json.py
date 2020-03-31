@@ -856,6 +856,56 @@ class MyTests(unittest.TestCase):
         self.expected = '"string\nwith newline\ncharacters in it"\ntrue\nfalse\n\n42\n3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
+    def test_list_sample_r(self):
+        """
+        Test self.list_sample -r
+        """
+        self.data_in = self.list_sample
+        self.expected = '[\n  "string\\nwith newline\\ncharacters in it",\n  true,\n  false,\n  null,\n  42,\n  3.14\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_list_sample_c(self):
+        """
+        Test self.list_sample -c
+        """
+        self.data_in = self.list_sample
+        self.expected = '["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
+
+    def test_list_sample_rl(self):
+        """
+        Test self.list_sample -rl
+        """
+        self.data_in = self.list_sample
+        self.expected = 'string\nwith newline\ncharacters in it\ntrue\nfalse\n\n42\n3.14'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    def test_list_sample_rc(self):
+        """
+        Test self.list_sample -rc
+        """
+        self.data_in = self.list_sample
+        self.expected = '["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, compact=True), self.expected)
+
+    def test_list_sample_cl(self):
+        """
+        Test self.list_sample -cl
+        """
+        self.data_in = self.list_sample
+        self.expected = '"string\nwith newline\ncharacters in it"\ntrue\nfalse\n\n42\n3.14'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_sample_crl(self):
+        """
+        Test self.list_sample -crl
+        """
+        self.data_in = self.list_sample
+        self.expected = 'string\nwith newline\ncharacters in it\ntrue\nfalse\n\n42\n3.14'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
+
+
+
 
 
 
