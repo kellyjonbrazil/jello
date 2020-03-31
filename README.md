@@ -30,6 +30,8 @@ $ cat data.json | jello 'r = _["key"]'
 - `-h` help
 - `-v` version info
 
+> Note: The `lines()` convenience function has been deprecated and will be removed in a future version. Use the `-l` option instead to generate output suitable for assignment to a bash variable or array. Use of the `lines()` function will generate a warning message to `STDERR`.
+
 **Custom Configuration File**
 
 You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as adding `import` statements for your favorite libraries.
