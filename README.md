@@ -117,6 +117,24 @@ r = True if os.getenv("LOGNAME") == _["login_name"] else False'
 
 true
 ```
+### Using 3rd Party Libraries
+You can import and use your favorite libraries to manipulate the data.  For example, using `glom`:
+```
+$ jc -a | jello '\
+from glom import *
+r = glom(_, ("parsers", ["name"]))'
+
+[
+  "airport",
+  "airport_s",
+  "arp",
+  "blkid",
+  "crontab",
+  "crontab_u",
+  "csv",
+  ...
+]
+```
 ### Complex JSON Manipulation
 The data from this example comes from https://programminghistorian.org/assets/jq_twitter.json
 
