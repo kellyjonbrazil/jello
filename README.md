@@ -32,11 +32,24 @@ $ cat data.json | jello 'r = _["key"]'
 
 **Custom Configuration File**
 
-You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code. The filename must be `.jelloconf.py` and must be located in the proper directory based on the OS platform:
+You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as adding `import` statements for your favorite libraries.
+
+The filename must be `.jelloconf.py` and must be located in the proper directory based on the OS platform:
 - Linux: `~/`
 - Windows: `%appdata%/`
 
-For example, if you wanted to initialize your `jello` environment to substitute `glom` syntax for `_` your `.jelloconf.py` file could look like this:
+To simply import a module (e.g. `glom`) your `.jelloconf.py` file would look like this:
+```
+from glom import *
+```
+Then you could use `glom` in your `jello` filters:
+```
+$ jc -a | jello -i 'r = glom(_, "parsers.25.name")'
+
+"lsblk"
+```
+
+Alternatively, if you wanted to initialize your `jello` environment to substitute `glom` syntax for `_` your `.jelloconf.py` file could look like this:
 ```
 def _(q, data=_):
     import glom
