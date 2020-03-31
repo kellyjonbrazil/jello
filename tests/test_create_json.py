@@ -470,7 +470,7 @@ class MyTests(unittest.TestCase):
 
     def test_list_false_r(self):
         """
-        Test [false] -r
+        Test [False] -r
         """
         self.data_in = [False]
         self.expected = '[\n  false\n]'
@@ -520,7 +520,133 @@ class MyTests(unittest.TestCase):
     # null in a list
     #
 
+    def test_list_null(self):
+        """
+        Test [None]
+        """
+        self.data_in = [None]
+        self.expected = '[\n  null\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
+    def test_list_null_c(self):
+        """
+        Test [None] -c
+        """
+        self.data_in = [None]
+        self.expected = '[null]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
+
+    def test_list_null_r(self):
+        """
+        Test [None] -r
+        """
+        self.data_in = [None]
+        self.expected = '[\n  null\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_list_null_l(self):
+        """
+        Test [None] -l
+        """
+        self.data_in = [None]
+        self.expected = ''
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_list_null_cl(self):
+        """
+        Test [None] -cl
+        """
+        self.data_in = [None]
+        self.expected = ''
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_null_rl(self):
+        """
+        Test [None] -rl
+        """
+        self.data_in = [None]
+        self.expected = ''
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    def test_list_null_cr(self):
+        """
+        Test [None] -cr
+        """
+        self.data_in = [None]
+        self.expected = '[null]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True), self.expected)
+
+    def test_list_null_crl(self):
+        """
+        Test [False] -crl
+        """
+        self.data_in = [None]
+        self.expected = ''
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_null_n(self):
+        """
+        Test [None] -n
+        """
+        self.data_in = [None]
+        self.expected = '[\n  null\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True), self.expected)
+
+    def test_list_null_nc(self):
+        """
+        Test [None] -nc
+        """
+        self.data_in = [None]
+        self.expected = '[null]'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True, compact=True), self.expected)
+
+    def test_list_null_nl(self):
+        """
+        Test [None] -nl
+        """
+        self.data_in = [None]
+        self.expected = 'null'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True, lines=True), self.expected)
+
+    def test_list_null_nr(self):
+        """
+        Test [None] -nr
+        """
+        self.data_in = [None]
+        self.expected = '[\n  null\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True, raw=True), self.expected)
+
+    def test_list_null_ncr(self):
+        """
+        Test [None] -ncr
+        """
+        self.data_in = [None]
+        self.expected = '[null]'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True, compact=True, raw=True), self.expected)
+
+    def test_list_null_ncl(self):
+        """
+        Test [None] -ncl
+        """
+        self.data_in = [None]
+        self.expected = 'null'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True, compact=True, lines=True), self.expected)
+
+    def test_list_null_nlr(self):
+        """
+        Test [None] -nlr
+        """
+        self.data_in = [None]
+        self.expected = 'null'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True, lines=True, raw=True), self.expected)
+
+    def test_list_null_nlrc(self):
+        """
+        Test [None] -nlrc
+        """
+        self.data_in = [None]
+        self.expected = 'null'
+        self.assertEqual(jello.cli.create_json(self.data_in, nulls=True, lines=True, raw=True, compact=True), self.expected)
 
     #
     # Int in a list
@@ -533,6 +659,14 @@ class MyTests(unittest.TestCase):
         self.data_in = [42]
         self.expected = '[\n  42\n]'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_list_int_c(self):
+        """
+        Test [integer] -c
+        """
+        self.data_in = [42]
+        self.expected = '[42]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
 
     def test_list_int_l(self):
         """
@@ -558,6 +692,22 @@ class MyTests(unittest.TestCase):
         self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
 
+    def test_list_int_cl(self):
+        """
+        Test [integer] -cl
+        """
+        self.data_in = [42]
+        self.expected = '42'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_int_crl(self):
+        """
+        Test [integer] -crl
+        """
+        self.data_in = [42]
+        self.expected = '42'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
+
     #
     # Float in a list
     #
@@ -569,6 +719,14 @@ class MyTests(unittest.TestCase):
         self.data_in = [3.14]
         self.expected = '[\n  3.14\n]'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_list_float_c(self):
+        """
+        Test [float] -c
+        """
+        self.data_in = [3.14]
+        self.expected = '[3.14]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
 
     def test_list_float_l(self):
         """
@@ -593,6 +751,22 @@ class MyTests(unittest.TestCase):
         self.data_in = [3.14]
         self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
+
+    def test_list_float_rc(self):
+        """
+        Test [float] -rc
+        """
+        self.data_in = [3.14]
+        self.expected = '[3.14]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, compact=True), self.expected)
+
+    def test_list_float_rcl(self):
+        """
+        Test [float] -rcl
+        """
+        self.data_in = [3.14]
+        self.expected = '3.14'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, compact=True, lines=True), self.expected)
 
     #
     # String in a list
@@ -622,6 +796,14 @@ class MyTests(unittest.TestCase):
         self.expected = '[\n  "string with spaces\\nand newline\\ncharacters"\n]'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
 
+    def test_list_str_c(self):
+        """
+        Test ['string with spaces\nand newline\ncharacters'] -c
+        """
+        self.data_in = ['string with spaces\nand newline\ncharacters']
+        self.expected = '["string with spaces\\nand newline\\ncharacters"]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
+
     def test_list_str_rl(self):
         """
         Test ['string with spaces\nand newline\ncharacters'] -rl
@@ -630,37 +812,189 @@ class MyTests(unittest.TestCase):
         self.expected = 'string with spaces\nand newline\ncharacters'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
 
+    def test_list_str_rc(self):
+        """
+        Test ['string with spaces\nand newline\ncharacters'] -rc
+        """
+        self.data_in = ['string with spaces\nand newline\ncharacters']
+        self.expected = '["string with spaces\\nand newline\\ncharacters"]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, compact=True), self.expected)
+
+    def test_list_str_cl(self):
+        """
+        Test ['string with spaces\nand newline\ncharacters'] -cl
+        """
+        self.data_in = ['string with spaces\nand newline\ncharacters']
+        self.expected = '"string with spaces\nand newline\ncharacters"'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_str_crl(self):
+        """
+        Test ['string with spaces\nand newline\ncharacters'] -crl
+        """
+        self.data_in = ['string with spaces\nand newline\ncharacters']
+        self.expected = 'string with spaces\nand newline\ncharacters'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
+
     #
-    # Dict in a list
+    # List with different types of elements
     #
 
-    def test_list_dict_single_key_value(self):
+    def test_list_sample(self):
         """
-        Test [{'key1': 'value1'}]
+        Test self.list_sample
         """
-        self.data_in = [{'key1': 'value1'}]
-        self.expected = '[\n  {\n    "key1": "value1"\n  }\n]'
+        self.data_in = self.list_sample
+        self.expected = '[\n  "string\\nwith newline\\ncharacters in it",\n  true,\n  false,\n  null,\n  42,\n  3.14\n]'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
+    def test_list_sample_l(self):
+        """
+        Test self.list_sample -l
+        """
+        self.data_in = self.list_sample
+        self.expected = '"string\nwith newline\ncharacters in it"\ntrue\nfalse\n\n42\n3.14'
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+
+
+
+
+
+
+
+
     #
-    # Multiple Dicts in list
+    # Dicts in a list
     #
 
-    def test_list_dict_multiple_key_value(self):
+    def test_list_dict(self):
         """
-        Test [{'key1': 'value1'}, {'key2': 'value1'}]
+        Test self.list_of_dicts_sample
         """
-        self.data_in = [{'key1': 'value1'}, {'key2': 'value1'}]
-        self.expected = '[\n  {\n    "key1": "value1"\n  },\n  {\n    "key2": "value1"\n  }\n]'
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '[\n  {\n    "string": "string\\nwith newline\\ncharacters in it",\n    "true": true,\n    "false": false,\n    "null": null,\n    "int": 42,\n    "float": 3.14,\n    "array": [\n      "string\\nwith newline\\ncharacters in it",\n      true,\n      false,\n      null,\n      42,\n      3.14\n    ]\n  },\n  {\n    "string": "another string\\nwith newline\\ncharacters in it",\n    "true": true,\n    "false": false,\n    "null": null,\n    "int": 10001,\n    "float": -400.45,\n    "array": [\n      "string\\nwith newline\\ncharacters in it",\n      true,\n      false,\n      null,\n      -6000034,\n      999999.854321\n    ]\n  }\n]'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
-    def test_list_dict_list_values(self):
+    def test_list_dict_c(self):
         """
-        Test [{'key1': ['value1', 0, True, 3.14]}, {'key1': ['value2', 5, False, 8.88]}]
+        Test self.list_of_dicts_sample -c
         """
-        self.data_in = [{'key1': ['value1', 0, True, 3.14]}, {'key1': ['value2', 5, False, 8.88]}]
-        self.expected = '[\n  {\n    "key1": [\n      "value1",\n      0,\n      true,\n      3.14\n    ]\n  },\n  {\n    "key1": [\n      "value2",\n      5,\n      false,\n      8.88\n    ]\n  }\n]'
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '[{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}, {"string": "another string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 10001, "float": -400.45, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, -6000034, 999999.854321]}]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
+
+    def test_list_dict_r(self):
+        """
+        Test self.list_of_dicts_sample -r
+        """
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '[\n  {\n    "string": "string\\nwith newline\\ncharacters in it",\n    "true": true,\n    "false": false,\n    "null": null,\n    "int": 42,\n    "float": 3.14,\n    "array": [\n      "string\\nwith newline\\ncharacters in it",\n      true,\n      false,\n      null,\n      42,\n      3.14\n    ]\n  },\n  {\n    "string": "another string\\nwith newline\\ncharacters in it",\n    "true": true,\n    "false": false,\n    "null": null,\n    "int": 10001,\n    "float": -400.45,\n    "array": [\n      "string\\nwith newline\\ncharacters in it",\n      true,\n      false,\n      null,\n      -6000034,\n      999999.854321\n    ]\n  }\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_list_dict_l(self):
+        """
+        Test self.list_of_dicts_sample -l
+        """
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}\n{"string": "another string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 10001, "float": -400.45, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, -6000034, 999999.854321]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
+
+    def test_list_dict_cr(self):
+        """
+        Test self.list_of_dicts_sample -cr
+        """
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '[{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}, {"string": "another string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 10001, "float": -400.45, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, -6000034, 999999.854321]}]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True), self.expected)
+
+    def test_list_dict_cl(self):
+        """
+        Test self.list_of_dicts_sample -cl
+        """
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}\n{"string": "another string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 10001, "float": -400.45, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, -6000034, 999999.854321]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
+
+    def test_list_dict_rl(self):
+        """
+        Test self.list_of_dicts_sample -rl
+        """
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}\n{"string": "another string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 10001, "float": -400.45, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, -6000034, 999999.854321]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
+
+    def test_list_dict_crl(self):
+        """
+        Test self.list_of_dicts_sample -crl
+        """
+        self.data_in = self.list_of_dicts_sample
+        self.expected = '{"string": "string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 42, "float": 3.14, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14]}\n{"string": "another string\\nwith newline\\ncharacters in it", "true": true, "false": false, "null": null, "int": 10001, "float": -400.45, "array": ["string\\nwith newline\\ncharacters in it", true, false, null, -6000034, 999999.854321]}'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
+
+    #
+    # lists in list
+    #
+
+    def test_list_list(self):
+        """
+        Test self.list_of_lists_sample
+        """
+        self.data_in = self.list_of_lists_sample
+        self.expected = '[\n  [\n    "string\\nwith newline\\ncharacters in it",\n    true,\n    false,\n    null,\n    42,\n    3.14\n  ],\n  [\n    "another string\\nwith newline\\ncharacters in it",\n    true,\n    false,\n    null,\n    42001,\n    -3.14\n  ]\n]'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
+
+    def test_list_list_c(self):
+        """
+        Test self.list_of_lists_sample -c
+        """
+        self.data_in = self.list_of_lists_sample
+        self.expected = '[["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14], ["another string\\nwith newline\\ncharacters in it", true, false, null, 42001, -3.14]]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True), self.expected)
+
+    def test_list_list_r(self):
+        """
+        Test self.list_of_lists_sample -r
+        """
+        self.data_in = self.list_of_lists_sample
+        self.expected = '[\n  [\n    "string\\nwith newline\\ncharacters in it",\n    true,\n    false,\n    null,\n    42,\n    3.14\n  ],\n  [\n    "another string\\nwith newline\\ncharacters in it",\n    true,\n    false,\n    null,\n    42001,\n    -3.14\n  ]\n]'
+        self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
+
+    def test_list_list_l(self):
+        """
+        Test self.list_of_lists_sample -l
+        """
+        self.data_in = self.list_of_lists_sample
+        self.assertRaises(SystemExit, jello.cli.create_json, self.data_in, lines=True)
+
+    def test_list_list_cr(self):
+        """
+        Test self.list_of_lists_sample -cr
+        """
+        self.data_in = self.list_of_lists_sample
+        self.expected = '[["string\\nwith newline\\ncharacters in it", true, false, null, 42, 3.14], ["another string\\nwith newline\\ncharacters in it", true, false, null, 42001, -3.14]]'
+        self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True), self.expected)
+
+    def test_list_list_cl(self):
+        """
+        Test self.list_of_lists_sample -cl
+        """
+        self.data_in = self.list_of_lists_sample
+        self.assertRaises(SystemExit, jello.cli.create_json, self.data_in, compact=True, lines=True)
+
+    def test_list_list_rl(self):
+        """
+        Test self.list_of_lists_sample -rl
+        """
+        self.data_in = self.list_of_lists_sample
+        self.assertRaises(SystemExit, jello.cli.create_json, self.data_in, raw=True, lines=True)
+
+    def test_list_list_crl(self):
+        """
+        Test self.list_of_lists_sample -crl
+        """
+        self.data_in = self.list_of_lists_sample
+        self.assertRaises(SystemExit, jello.cli.create_json, self.data_in, compact=True, raw=True, lines=True)
 
 
 if __name__ == '__main__':
