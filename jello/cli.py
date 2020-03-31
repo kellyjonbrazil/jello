@@ -11,7 +11,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 
 def ctrlc(signum, frame):

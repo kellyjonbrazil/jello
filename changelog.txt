@@ -1,11 +1,10 @@
 jello changelog
 
-2020xxxx v0.4.0
+20200331 v0.5.0
 - Add -l option for lines output (deprecated lines() function)
-- Add -i option to import a custom module to initialize the python environment
+- Add -i option to import a custom configuration to initialize the environment
 - Fixed handling of strings with newlines for lines output
-- TRY: wrap query in function and print function to get output?
-- Add unit tests
+- Add over 100 tests
 
 20200325 v0.3.1
 - Enhanced exception handling
