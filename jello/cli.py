@@ -7,11 +7,9 @@ import platform
 import textwrap
 import json
 import signal
-from contextlib import redirect_stdout
-import io
 import ast
 
-__version__ = '0.8.0'
+__version__ = '1.0.0'
 
 
 def ctrlc(signum, frame):
@@ -41,11 +39,11 @@ def helptext():
                 -v    version info
                 -h    help
 
-        Use '_' as the input data and assign the result to 'r'. Use python dict syntax.
+        Use '_' as the input data and use python dict and list syntax.
 
         Example:
-                <JSON Data> | jello 'r = _["foo"]'
-                variable=($(cat data.json | jello -l 'r = _["foo"]'))
+                <JSON Data> | jello '_["foo"]'
+                variable=($(cat data.json | jello -l '_["foo"]'))
     '''))
 
 
@@ -118,22 +116,12 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         return json.dumps(data)
 
     elif isinstance(data, str):
+        # replace \n with \\n here so lines with newlines literally print the \n char
+        data = data.replace('\n', '\\n')
         if raw:
             return f'{data}'
         else:
             return f'"{data}"'
-
-
-def normalize(data):
-    """
-    Change literal or encoded \u2063 characters to literal \n
-    """
-    try:
-        return ast.literal_eval(data.replace('\u2063', r'\n').replace(r'\u2063', r'\n'))
-
-    except Exception:
-        # if Exception, then this was a string
-        return data.replace('\u2063', r'\n').replace(r'\u2063', r'\n')
 
 
 def pyquery(data, query, initialize=None):
@@ -154,14 +142,23 @@ def pyquery(data, query, initialize=None):
                 jello:  Initialization file not found: {conf_file}
             '''))
 
-    query = jelloconf + 'r = None\n' + query + '\nprint(r)'
+    query = jelloconf + query
     output = None
 
-    f = io.StringIO()
+    # f = io.StringIO()
+    # try:
+    #     with redirect_stdout(f):
+    #         print(exec(compile(query, '<string>', 'exec')))
+    #         output = f.getvalue()[0:-6]
+
     try:
-        with redirect_stdout(f):
-            print(exec(compile(query, '<string>', 'exec')))
-            output = f.getvalue()[0:-6]
+        block = ast.parse(query, mode='exec')
+
+        # assumes last node is an expression
+        last = ast.Expression(block.body.pop().value)
+
+        exec(compile(block, '<string>', mode='exec'))
+        output = eval(compile(last, '<string>', mode='eval'))
 
     except KeyError as e:
         print_error(textwrap.dedent(f'''\
@@ -187,6 +184,16 @@ def pyquery(data, query, initialize=None):
                 jello:  TypeError: {e}
             '''))
 
+    except AttributeError as e:
+        print_error(textwrap.dedent(f'''\
+            jello:  AttributeError: {e}
+        '''))
+
+    except NameError as e:
+        print_error(textwrap.dedent(f'''\
+            jello:  NameError: {e}
+        '''))
+
     except Exception as e:
         print_error(textwrap.dedent(f'''\
             jello:  Query Exception: {e}
@@ -199,10 +206,6 @@ def pyquery(data, query, initialize=None):
 
 
 def load_json(data):
-    # replace newline characters in the input text with unicode separator \u2063
-    data = data.strip().replace(r'\n', '\u2063')
-
-    # load the JSON or JSON Lines data
     try:
         json_dict = json.loads(data)
 
@@ -227,7 +230,7 @@ def load_json(data):
     return json_dict
 
 
-def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=None, version_info=None, helpme=None, initialize=None):
+def main(data=None, query='_', compact=None, lines=None, nulls=None, raw=None, version_info=None, helpme=None, initialize=None):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
@@ -279,9 +282,8 @@ def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=Non
         lines_warning = True
 
     list_dict_data = load_json(data)
-    raw_response = pyquery(list_dict_data, query, initialize=initialize)
-    normalized_response = normalize(raw_response)
-    output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
+    response = pyquery(list_dict_data, query, initialize=initialize)
+    output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
     try:
         if commandline:
@@ -293,8 +295,7 @@ def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=Non
         print_error(textwrap.dedent(f'''\
             jello:  Output Exception:  {e}
                     list_dict_data: {list_dict_data}
-                    raw_response: {raw_response}
-                    normalized_response: {normalized_response}
+                    response: {response}
                     output: {output}
         '''))
 

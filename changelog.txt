@@ -1,5 +1,8 @@
 jello changelog
 
+20200401 v1.0.0
+- Remove requirement to assign the result to 'r'
+
 20200401 v0.8.0
 - Github Actions CI unit tests
 - Code cleanup

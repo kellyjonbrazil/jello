@@ -285,7 +285,7 @@ class MyTests(unittest.TestCase):
         Test "string with\nnewline char"
         """
         self.data_in = '"string with\nnewline char"'
-        self.expected = '""string with\nnewline char""'
+        self.expected = '""string with\\nnewline char""'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
     def test_string_r(self):
@@ -293,7 +293,7 @@ class MyTests(unittest.TestCase):
         Test "string with\nnewline char" -r
         """
         self.data_in = '"string with\nnewline char"'
-        self.expected = '"string with\nnewline char"'
+        self.expected = '"string with\\nnewline char"'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
 
     def test_string_l(self):
@@ -301,7 +301,7 @@ class MyTests(unittest.TestCase):
         Test "string with\nnewline char" -l
         """
         self.data_in = '"string with\nnewline char"'
-        self.expected = '""string with\nnewline char""'
+        self.expected = '""string with\\nnewline char""'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_string_rl(self):
@@ -309,7 +309,7 @@ class MyTests(unittest.TestCase):
         Test "string with\nnewline char" -rl
         """
         self.data_in = '"string with\nnewline char"'
-        self.expected = '"string with\nnewline char"'
+        self.expected = '"string with\\nnewline char"'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
 
     #

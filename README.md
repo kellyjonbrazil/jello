@@ -3,7 +3,7 @@ Filter JSON and JSON Lines data with Python syntax
 
 `jello` is similar to `jq` in that it processes JSON and JSON Lines data except `jello` uses standard python dict and list syntax.
 
-JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurped into a list of dictionaries) and are available as the variable `_`. Assign the output the the variable `r` to print as JSON or simple lines.
+JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurped into a list of dictionaries) and are available as the variable `_`. Processed data can be output as JSON, JSON Lines, or bash array lines.
 
 For more information on the motivations for this project, see my [blog post](https://blog.kellybrazil.com/2020/03/25/jello-the-jq-alternative-for-pythonistas/).
 
@@ -16,9 +16,9 @@ pip3 install --upgrade jello
 ```
 <JSON Data> | jello [OPTIONS] query
 ``` 
-`query` can be most any valid python code as long as the result is assigned to `r`. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. For example:
+`query` can be most any valid python code. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. For example:
 ```
-$ cat data.json | jello 'r = _["key"]'
+$ cat data.json | jello '_["key"]'
 ```
 
 **Options**
@@ -34,7 +34,7 @@ $ cat data.json | jello 'r = _["key"]'
 
 Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option.
 ```
-variable=($(cat data.json | jello -rl 'r = _["foo"]'))
+variable=($(cat data.json | jello -rl '_["foo"]'))
 ```
 > Note: The `lines()` convenience function has been deprecated and will be removed in a future version. Use the `-l` option instead to generate output suitable for assignment to a bash variable or array. Use of the `lines()` function will generate a warning message to `STDERR`.
 
@@ -52,20 +52,20 @@ from glom import *
 ```
 Then you could use `glom` in your `jello` filters:
 ```
-$ jc -a | jello -i 'r = glom(_, "parsers.25.name")'
+$ jc -a | jello -i 'glom(_, "parsers.25.name")'
 
 "lsblk"
 ```
 
-Alternatively, if you wanted to initialize your `jello` environment to substitute `glom` syntax for `_` your `.jelloconf.py` file could look like this:
+Alternatively, if you wanted to initialize your `jello` environment to add `glom` syntax, your `.jelloconf.py` file could look like this:
 ```
-def _(q, data=_):
+def g(q, data=_):
     import glom
     return glom.glom(data, q)
 ```
 Then you could use the following syntax to filter the JSON data:
 ```
-$ jc -a | jello -i 'r = _("parsers.6.compatible")'
+$ jc -a | jello -i 'g("parsers.6.compatible")'
 
 [
   "linux",
@@ -84,7 +84,7 @@ $ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
 keys = _.keys()
 vals = _.values()
 cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
-r = dict(zip(keys, cel))'
+dict(zip(keys, cel))'
 
 {
   "t1": -34.44444444444444,
@@ -95,18 +95,19 @@ r = dict(zip(keys, cel))'
 
 ```
 ```
-$ jc -a | jello 'r = len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
+$ jc -a | jello 'len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
 
 32
 ```
 ### for loops
 Output as JSON array
 ```
-jc -a | jello '\
-r = []
+$ jc -a | jello '\
+result = []
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
-    r.append(entry["name"])'
+    result.append(entry["name"])
+result'
 
 [
   "airport",
@@ -119,11 +120,12 @@ for entry in _["parsers"]:
 ```
 Output as bash array
 ```
-jc -a | jello -rl '\
-r = []
+$ jc -a | jello -rl '\
+result = []
 for entry in _["parsers"]:
   if "darwin" in entry["compatible"]:
-    r.append(entry["name"])'
+    result.append(entry["name"])
+result'
 
 airport
 airport_s
@@ -135,7 +137,7 @@ crontab_u
 ### List and Dictionary Comprehension
 Output as JSON array
 ```
-$ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
+$ jc -a | jello '[entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
 
 [
   "airport",
@@ -148,7 +150,7 @@ $ jc -a | jello 'r = [entry["name"] for entry in _["parsers"] if "darwin" in ent
 ```
 Output as bash array
 ```
-$ jc -a | jello -rl 'r = [entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
+$ jc -a | jello -rl '[entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
 
 airport
 airport_s
@@ -160,7 +162,7 @@ crontab_u
 ### Environment Variables
 ```
 $ echo '{"login_name": "joeuser"}' | jello '\
-r = True if os.getenv("LOGNAME") == _["login_name"] else False'
+True if os.getenv("LOGNAME") == _["login_name"] else False'
 
 true
 ```
@@ -169,7 +171,7 @@ You can import and use your favorite libraries to manipulate the data.  For exam
 ```
 $ jc -a | jello '\
 from glom import *
-r = glom(_, ("parsers", ["name"]))'
+glom(_, ("parsers", ["name"]))'
 
 [
   "airport",
@@ -195,7 +197,7 @@ Here is a simple solution using `jello`:
 ```
 $ cat jq_twitter.json | jello -l '\
 user_ids = set()
-r = []
+result = []
 for tweet in _:
     user_ids.add(tweet["user"]["id"])
 for user in user_ids:
@@ -209,7 +211,8 @@ for user in user_ids:
                 "user_followers": tweet["user"]["followers_count"]})
             tweet_ids.append(str(tweet["id"]))
     user_profile["tweet_ids"] = ";".join(tweet_ids)
-    r.append(user_profile)'
+    result.append(user_profile)
+result'
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}
