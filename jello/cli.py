@@ -126,8 +126,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
 def normalize(data):
     """
-    Change \u2063 characters to literal \n
-
+    Change literal or encoded \u2063 characters to literal \n
     """
     try:
         return ast.literal_eval(data.replace('\u2063', r'\n').replace(r'\u2063', r'\n'))
