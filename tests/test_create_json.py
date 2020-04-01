@@ -213,7 +213,7 @@ class MyTests(unittest.TestCase):
         Test int
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
     def test_int_r(self):
@@ -221,7 +221,7 @@ class MyTests(unittest.TestCase):
         Test int -r
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
 
     def test_int_l(self):
@@ -229,7 +229,7 @@ class MyTests(unittest.TestCase):
         Test int -l
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_int_rl(self):
@@ -237,7 +237,7 @@ class MyTests(unittest.TestCase):
         Test int -rl
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
 
     #
@@ -249,7 +249,7 @@ class MyTests(unittest.TestCase):
         Test float
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
     def test_float_r(self):
@@ -257,7 +257,7 @@ class MyTests(unittest.TestCase):
         Test float -r
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
 
     def test_float_l(self):
@@ -265,7 +265,7 @@ class MyTests(unittest.TestCase):
         Test float -l
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_float_rl(self):
@@ -273,7 +273,7 @@ class MyTests(unittest.TestCase):
         Test float -rl
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
 
     #

@@ -109,11 +109,8 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                     else:
                         flat_list += '\n'
 
-                elif entry is True:
-                    flat_list += 'true\n'
-
-                elif entry is False:
-                    flat_list += 'false\n'
+                elif isinstance(entry, (dict, bool, int, float)):
+                    flat_list += json.dumps(entry) + '\n'
 
                 elif isinstance(entry, str):
                     string_data = entry.replace('\u2063', r'\n')
@@ -121,10 +118,6 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                         flat_list += f'{string_data}\n'
                     else:
                         flat_list += f'"{string_data}"\n'
-
-                else:
-                    # don't pretty print JSON Lines
-                    flat_list += json.dumps(entry) + '\n'
 
             return flat_list.rstrip()
 
@@ -135,14 +128,8 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         else:
             return ''
 
-    elif data is True:
-        return 'true'
-
-    elif data is False:
-        return 'false'
-
-    elif isinstance(data, (int, float)):
-        return data
+    elif isinstance(data, (bool, int, float)):
+        return json.dumps(data)
 
     elif isinstance(data, str):
         string_data = data.replace('\u2063', r'\n')
