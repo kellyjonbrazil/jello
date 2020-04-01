@@ -16,6 +16,9 @@ class MyTests(unittest.TestCase):
         with open(os.path.join(THIS_DIR, os.pardir, 'tests/fixtures/twitterdata.jlines'), 'r', encoding='utf-8') as f:
             self.twitterdata = f.read()
 
+        with open(os.path.join(THIS_DIR, os.pardir, 'tests/fixtures/twitterdata.json'), 'r', encoding='utf-8') as f:
+            self.twitterdata_output = f.read()
+
         with open(os.path.join(THIS_DIR, os.pardir, 'tests/fixtures/twitter-table-output.jlines'), 'r', encoding='utf-8') as f:
             self.twitter_table_output = f.read()
 
@@ -1768,6 +1771,13 @@ freebsd'''
         """
         self.expected = '["airport", "airport_s", "arp", "crontab", "crontab_u", "csv", "df", "dig", "du", "env", "file", "group", "history", "hosts", "id", "ifconfig", "ini", "jobs", "last", "ls", "mount", "passwd", "pip_list", "pip_show", "ps", "shadow", "uname", "uptime", "w", "who", "xml", "yaml"]'
         self.assertEqual(jello.cli.main(data=self.jc_a_output, query='r = [entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]', compact=True), self.expected)
+
+    def test_twitter_jlines_to_json(self):
+        """
+        Test cat twitterdata.jlines | jello
+        """
+        self.expected = self.twitterdata_output
+        self.assertEqual(jello.cli.main(data=self.twitterdata), self.expected)
 
     def test_twitter_lines(self):
         """
