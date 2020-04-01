@@ -76,19 +76,11 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                 break
 
         if not lines and not list_includes_list:
-            new_list = []
-
-            for entry in data:
-                if isinstance(entry, str):
-                    new_list.append(entry.replace('\u2063', '\n'))
-                else:
-                    new_list.append(entry)
-
             if compact:
-                return json.dumps(new_list)
+                return json.dumps(data)
 
             else:
-                return json.dumps(new_list, indent=2)
+                return json.dumps(data, indent=2)
 
         if not lines:
             if compact:
