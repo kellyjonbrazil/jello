@@ -145,12 +145,6 @@ def pyquery(data, query, initialize=None):
     query = jelloconf + query
     output = None
 
-    # f = io.StringIO()
-    # try:
-    #     with redirect_stdout(f):
-    #         print(exec(compile(query, '<string>', 'exec')))
-    #         output = f.getvalue()[0:-6]
-
     try:
         block = ast.parse(query, mode='exec')
 
