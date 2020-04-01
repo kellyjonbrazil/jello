@@ -152,7 +152,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
             return f'"{string_data}"'
 
 
-def normalize(data, nulls=None, raw=None):
+def normalize(data):
     result_list = []
 
     # first check if it's a dict
@@ -351,7 +351,7 @@ def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=Non
 
     list_dict_data = load_json(data)
     raw_response = pyquery(list_dict_data, query, initialize=initialize)
-    normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
+    normalized_response = normalize(raw_response)
     output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
     try:
