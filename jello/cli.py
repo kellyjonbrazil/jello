@@ -11,7 +11,7 @@ from contextlib import redirect_stdout
 import io
 import ast
 
-__version__ = '0.5.0'
+__version__ = '0.8.0'
 
 
 def ctrlc(signum, frame):
@@ -68,6 +68,12 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
             return json.dumps(data, indent=2)
 
     if isinstance(data, list):
+        if not lines:
+            if compact:
+                return json.dumps(data)
+            else:
+                return json.dumps(data, indent=2)
+
         # check if this list includes lists
         list_includes_list = False
         for item in data:
@@ -75,28 +81,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                 list_includes_list = True
                 break
 
-        if not lines and not list_includes_list:
-            new_list = []
-
-            for entry in data:
-                if isinstance(entry, str):
-                    new_list.append(entry.replace('\u2063', '\n'))
-                else:
-                    new_list.append(entry)
-
-            if compact:
-                return json.dumps(new_list)
-
-            else:
-                return json.dumps(new_list, indent=2)
-
-        if not lines:
-            if compact:
-                return json.dumps(data)
-            else:
-                return json.dumps(data, indent=2)
-
-        elif lines and list_includes_list:
+        if lines and list_includes_list:
             print_error('jello:  Cannot print list of lists as lines. Try normal JSON output.\n')
 
         # print lines for a flat list
@@ -109,22 +94,16 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                     else:
                         flat_list += '\n'
 
-                elif entry is True:
-                    flat_list += 'true\n'
-
-                elif entry is False:
-                    flat_list += 'false\n'
+                elif isinstance(entry, (dict, bool, int, float)):
+                    flat_list += json.dumps(entry) + '\n'
 
                 elif isinstance(entry, str):
-                    string_data = entry.replace('\u2063', r'\n')
+                    # replace \n with \\n here so lines with newlines literally print the \n char
+                    entry = entry.replace('\n', '\\n')
                     if raw:
-                        flat_list += f'{string_data}\n'
+                        flat_list += f'{entry}' + '\n'
                     else:
-                        flat_list += f'"{string_data}"\n'
-
-                else:
-                    # don't pretty print JSON Lines
-                    flat_list += json.dumps(entry) + '\n'
+                        flat_list += f'"{entry}"' + '\n'
 
             return flat_list.rstrip()
 
@@ -135,76 +114,26 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         else:
             return ''
 
-    elif data is True:
-        return 'true'
-
-    elif data is False:
-        return 'false'
-
-    elif isinstance(data, (int, float)):
-        return data
+    elif isinstance(data, (bool, int, float)):
+        return json.dumps(data)
 
     elif isinstance(data, str):
-        string_data = data.replace('\u2063', r'\n')
         if raw:
-            return string_data
+            return f'{data}'
         else:
-            return f'"{string_data}"'
+            return f'"{data}"'
 
 
-def normalize(data, nulls=None, raw=None):
-    result_list = []
-
-    # first check if it's a dict
+def normalize(data):
+    """
+    Change literal or encoded \u2063 characters to literal \n
+    """
     try:
-        if isinstance(ast.literal_eval(data), dict):
-            return ast.literal_eval(data.replace(r'\u2063', r'\n'))
+        return ast.literal_eval(data.replace('\u2063', r'\n').replace(r'\u2063', r'\n'))
+
     except Exception:
-        # was not a dict
-        pass
-
-    try:
-        for entry in data.splitlines():
-            # check if the result is a single list with no dicts or other lists inside
-            try:
-                list_includes_obj = False
-                check_list = ast.literal_eval(entry)
-                if isinstance(check_list, list):
-                    for item in check_list:
-                        if isinstance(item, (list, dict)):
-                            list_includes_obj = True
-                            break
-
-                if list_includes_obj:
-                    # this is a higher-level list of dicts or lists. We can safely replace
-                    # \u2063 with newlines here.
-                    result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
-                else:
-                    # this is the last node. Don't replace \u2063 with newline yet...
-                    # do this in print_json()
-                    result_list.append(check_list)
-
-            except (ValueError, SyntaxError):
-                # if ValueError or SyntaxError exception then it was not a
-                # list, dict, bool, None, int, or float - must be a string
-                # we will replace \u2063 with newlines in print_json()
-                result_list.append(str(entry))
-
-    except Exception as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  Normalize Exception: {e}
-                    data: {data}
-                    result_list: {result_list}
-            '''))
-
-    try:
-        return result_list[0]
-
-    except IndexError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  Normalize Exception: {e}
-                    Cannot parse input (Not JSON or JSON Lines)
-        '''))
+        # if Exception, then this was a string
+        return data.replace('\u2063', r'\n').replace(r'\u2063', r'\n')
 
 
 def pyquery(data, query, initialize=None):
@@ -218,7 +147,7 @@ def pyquery(data, query, initialize=None):
             conf_file = os.path.join(os.environ["HOME"], '.jelloconf.py')
 
         try:
-            with open(conf_file, 'r') as f: 
+            with open(conf_file, 'r') as f:
                 jelloconf = f.read()
         except FileNotFoundError:
             print_error(textwrap.dedent(f'''\
@@ -351,7 +280,7 @@ def main(data=None, query='r = _', compact=None, lines=None, nulls=None, raw=Non
 
     list_dict_data = load_json(data)
     raw_response = pyquery(list_dict_data, query, initialize=initialize)
-    normalized_response = normalize(raw_response, raw=raw, nulls=nulls)
+    normalized_response = normalize(raw_response)
     output = create_json(normalized_response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
     try:

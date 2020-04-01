@@ -213,7 +213,7 @@ class MyTests(unittest.TestCase):
         Test int
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
     def test_int_r(self):
@@ -221,7 +221,7 @@ class MyTests(unittest.TestCase):
         Test int -r
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
 
     def test_int_l(self):
@@ -229,7 +229,7 @@ class MyTests(unittest.TestCase):
         Test int -l
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_int_rl(self):
@@ -237,7 +237,7 @@ class MyTests(unittest.TestCase):
         Test int -rl
         """
         self.data_in = 42
-        self.expected = 42
+        self.expected = '42'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
 
     #
@@ -249,7 +249,7 @@ class MyTests(unittest.TestCase):
         Test float
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in), self.expected)
 
     def test_float_r(self):
@@ -257,7 +257,7 @@ class MyTests(unittest.TestCase):
         Test float -r
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True), self.expected)
 
     def test_float_l(self):
@@ -265,7 +265,7 @@ class MyTests(unittest.TestCase):
         Test float -l
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_float_rl(self):
@@ -273,7 +273,7 @@ class MyTests(unittest.TestCase):
         Test float -rl
         """
         self.data_in = 3.14
-        self.expected = 3.14
+        self.expected = '3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
 
     #
@@ -785,7 +785,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters'] -l
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = '"string with spaces\nand newline\ncharacters"'
+        self.expected = '"string with spaces\\nand newline\\ncharacters"'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_list_str_r(self):
@@ -809,7 +809,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters'] -rl
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = 'string with spaces\nand newline\ncharacters'
+        self.expected = 'string with spaces\\nand newline\\ncharacters'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True, raw=True), self.expected)
 
     def test_list_str_rc(self):
@@ -825,7 +825,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters'] -cl
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = '"string with spaces\nand newline\ncharacters"'
+        self.expected = '"string with spaces\\nand newline\\ncharacters"'
         self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
 
     def test_list_str_crl(self):
@@ -833,7 +833,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters'] -crl
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = 'string with spaces\nand newline\ncharacters'
+        self.expected = 'string with spaces\\nand newline\\ncharacters'
         self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
 
     #
@@ -853,7 +853,7 @@ class MyTests(unittest.TestCase):
         Test self.list_sample -l
         """
         self.data_in = self.list_sample
-        self.expected = '"string\nwith newline\ncharacters in it"\ntrue\nfalse\n\n42\n3.14'
+        self.expected = '"string\\nwith newline\\ncharacters in it"\ntrue\nfalse\n\n42\n3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, lines=True), self.expected)
 
     def test_list_sample_r(self):
@@ -877,7 +877,7 @@ class MyTests(unittest.TestCase):
         Test self.list_sample -rl
         """
         self.data_in = self.list_sample
-        self.expected = 'string\nwith newline\ncharacters in it\ntrue\nfalse\n\n42\n3.14'
+        self.expected = 'string\\nwith newline\\ncharacters in it\ntrue\nfalse\n\n42\n3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, raw=True, lines=True), self.expected)
 
     def test_list_sample_rc(self):
@@ -893,7 +893,7 @@ class MyTests(unittest.TestCase):
         Test self.list_sample -cl
         """
         self.data_in = self.list_sample
-        self.expected = '"string\nwith newline\ncharacters in it"\ntrue\nfalse\n\n42\n3.14'
+        self.expected = '"string\\nwith newline\\ncharacters in it"\ntrue\nfalse\n\n42\n3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, compact=True, lines=True), self.expected)
 
     def test_list_sample_crl(self):
@@ -901,7 +901,7 @@ class MyTests(unittest.TestCase):
         Test self.list_sample -crl
         """
         self.data_in = self.list_sample
-        self.expected = 'string\nwith newline\ncharacters in it\ntrue\nfalse\n\n42\n3.14'
+        self.expected = 'string\\nwith newline\\ncharacters in it\ntrue\nfalse\n\n42\n3.14'
         self.assertEqual(jello.cli.create_json(self.data_in, compact=True, raw=True, lines=True), self.expected)
 
     #
