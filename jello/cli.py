@@ -98,11 +98,12 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
                     flat_list += json.dumps(entry) + '\n'
 
                 elif isinstance(entry, str):
-                    string_data = entry.replace('\u2063', r'\n')
+                    # replace \n with \\n here so lines with newlines literally print the \n char
+                    entry = entry.replace('\n', '\\n')
                     if raw:
-                        flat_list += f'{string_data}\n'
+                        flat_list += f'{entry}' + '\n'
                     else:
-                        flat_list += f'"{string_data}"\n'
+                        flat_list += f'"{entry}"' + '\n'
 
             return flat_list.rstrip()
 
@@ -117,54 +118,23 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
         return json.dumps(data)
 
     elif isinstance(data, str):
-        string_data = data.replace('\u2063', r'\n')
         if raw:
-            return string_data
+            return f'{data}'
         else:
-            return f'"{string_data}"'
+            return f'"{data}"'
 
 
 def normalize(data):
-    # first check if it's a dict
+    """
+    Change \u2063 characters to literal \n
+
+    """
     try:
-        if isinstance(ast.literal_eval(data), dict):
-            return ast.literal_eval(data.replace(r'\u2063', r'\n'))
+        return ast.literal_eval(data.replace('\u2063', r'\n').replace(r'\u2063', r'\n'))
+
     except Exception:
-        # was not a dict
-        pass
-
-    try:
-        for entry in data.splitlines():
-            # check if the result is a single list with no dicts or other lists inside
-            try:
-                list_includes_obj = False
-                check_list = ast.literal_eval(entry)
-                if isinstance(check_list, list):
-                    for item in check_list:
-                        if isinstance(item, (list, dict)):
-                            list_includes_obj = True
-                            break
-
-                if list_includes_obj:
-                    # this is a higher-level list of dicts or lists. We can safely replace
-                    # \u2063 with newlines here.
-                    return ast.literal_eval(entry.replace(r'\u2063', r'\n'))
-                else:
-                    # this is the last node. Don't replace \u2063 with newline yet...
-                    # do this in print_json()
-                    return check_list
-
-            except (ValueError, SyntaxError):
-                # if ValueError or SyntaxError exception then it was not a
-                # list, dict, bool, None, int, or float - must be a string
-                # we will replace \u2063 with newlines in print_json()
-                return str(entry)
-
-    except Exception as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  Normalize Exception: {e}
-                    data: {data}
-            '''))
+        # if Exception, then this was a string
+        return data.replace('\u2063', r'\n').replace(r'\u2063', r'\n')
 
 
 def pyquery(data, query, initialize=None):
