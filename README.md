@@ -57,15 +57,15 @@ $ jc -a | jello -i 'glom(_, "parsers.25.name")'
 "lsblk"
 ```
 
-Alternatively, if you wanted to initialize your `jello` environment to substitute `glom` syntax for `_` your `.jelloconf.py` file could look like this:
+Alternatively, if you wanted to initialize your `jello` environment to add `glom` syntax, your `.jelloconf.py` file could look like this:
 ```
-def _(q, data=_):
+def g(q, data=_):
     import glom
     return glom.glom(data, q)
 ```
 Then you could use the following syntax to filter the JSON data:
 ```
-$ jc -a | jello -i '_("parsers.6.compatible")'
+$ jc -a | jello -i 'g("parsers.6.compatible")'
 
 [
   "linux",
