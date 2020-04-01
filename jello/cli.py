@@ -140,8 +140,6 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
 
 
 def normalize(data):
-    result_list = []
-
     # first check if it's a dict
     try:
         if isinstance(ast.literal_eval(data), dict):
@@ -165,33 +163,23 @@ def normalize(data):
                 if list_includes_obj:
                     # this is a higher-level list of dicts or lists. We can safely replace
                     # \u2063 with newlines here.
-                    result_list.append(ast.literal_eval(entry.replace(r'\u2063', r'\n')))
+                    return ast.literal_eval(entry.replace(r'\u2063', r'\n'))
                 else:
                     # this is the last node. Don't replace \u2063 with newline yet...
                     # do this in print_json()
-                    result_list.append(check_list)
+                    return check_list
 
             except (ValueError, SyntaxError):
                 # if ValueError or SyntaxError exception then it was not a
                 # list, dict, bool, None, int, or float - must be a string
                 # we will replace \u2063 with newlines in print_json()
-                result_list.append(str(entry))
+                return str(entry)
 
     except Exception as e:
         print_error(textwrap.dedent(f'''\
             jello:  Normalize Exception: {e}
                     data: {data}
-                    result_list: {result_list}
             '''))
-
-    try:
-        return result_list[0]
-
-    except IndexError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  Normalize Exception: {e}
-                    Cannot parse input (Not JSON or JSON Lines)
-        '''))
 
 
 def pyquery(data, query, initialize=None):
@@ -205,7 +193,7 @@ def pyquery(data, query, initialize=None):
             conf_file = os.path.join(os.environ["HOME"], '.jelloconf.py')
 
         try:
-            with open(conf_file, 'r') as f: 
+            with open(conf_file, 'r') as f:
                 jelloconf = f.read()
         except FileNotFoundError:
             print_error(textwrap.dedent(f'''\
