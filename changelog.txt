@@ -1,5 +1,10 @@
 jello changelog
 
+20200401 v0.8.0
+- Github Actions CI unit tests
+- Code cleanup
+- Add more tests
+
 20200331 v0.5.0
 - Add -l option for lines output (deprecated lines() function)
 - Add -i option to import a custom configuration to initialize the environment
