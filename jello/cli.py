@@ -8,6 +8,7 @@ import textwrap
 import json
 import signal
 import ast
+from pygments import highlight, lexers, formatters
 
 __version__ = '1.0.0'
 
@@ -25,6 +26,14 @@ def get_stdin():
     return sys.stdin.read()
 
 
+def stdout_is_tty():
+    """returns True if stdout is a TTY. False if output is being piped to another program"""
+    if sys.stdout.isatty():
+        return True
+    else:
+        return False
+
+
 def helptext():
     print_error(textwrap.dedent('''\
         jello:   query JSON at the command line with python syntax
@@ -34,6 +43,7 @@ def helptext():
                 -c    compact JSON output
                 -i    initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
                 -l    output as lines suitable for assignment to a bash array
+                -m    monochrome output
                 -n    print selected null values
                 -r    raw string output (no quotes)
                 -v    version info
@@ -224,7 +234,8 @@ def load_json(data):
     return json_dict
 
 
-def main(data=None, query='_', compact=None, lines=None, nulls=None, raw=None, version_info=None, helpme=None, initialize=None):
+def main(data=None, query='_', compact=None, initialize=None, lines=None, mono=None, nulls=None, raw=None,
+         version_info=None, helpme=None):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
@@ -255,6 +266,7 @@ def main(data=None, query='_', compact=None, lines=None, nulls=None, raw=None, v
     compact = compact if not commandline else'c' in options
     initialize = initialize if not commandline else 'i' in options
     lines = lines if not commandline else 'l' in options
+    mono = mono if not commandline else 'm' in options
     nulls = nulls if not commandline else 'n' in options
     raw = raw if not commandline else 'r' in options
     version_info = version_info if not commandline else 'v' in options
@@ -281,7 +293,10 @@ def main(data=None, query='_', compact=None, lines=None, nulls=None, raw=None, v
 
     try:
         if commandline:
-            print(output)
+            if not mono and stdout_is_tty():
+                print(highlight(output, lexers.JsonLexer(), formatters.Terminal256Formatter(style='emacs')))
+            else:
+                print(output)
         else:
             return output
 
