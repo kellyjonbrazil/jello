@@ -32,7 +32,7 @@ $ cat data.json | jello '_["key"]'
 
 **Assigning Results to a Bash Array**
 
-Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option.
+Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option, otherwise they are skipped.
 ```
 variable=($(cat data.json | jello -rl '_["foo"]'))
 ```
