@@ -5,11 +5,13 @@ with open('README.md', 'r') as f:
 
 setuptools.setup(
     name='jello',
-    version='1.0.0',
+    version='1.1.0',
     author='Kelly Brazil',
     author_email='kellyjonbrazil@gmail.com',
     description='Filter JSON and JSON Lines data with Python syntax.',
-    install_requires=[],
+    install_requires=[
+        'Pygments>=2.5.2'
+    ],
     license='MIT',
     long_description=long_description,
     long_description_content_type='text/markdown',
