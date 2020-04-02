@@ -1,3 +1,5 @@
+![Tests](https://github.com/kellyjonbrazil/jello/workflows/Test%20code/badge.svg?branch=master)
+
 # jello
 Filter JSON and JSON Lines data with Python syntax
 
