@@ -293,7 +293,7 @@ def main(data=None, query='_', compact=None, initialize=None, lines=None, mono=N
 
     try:
         if commandline:
-            if not mono and stdout_is_tty():
+            if not mono and not lines and stdout_is_tty():
                 print(highlight(output, lexers.JsonLexer(), formatters.Terminal256Formatter(style='emacs')))
             else:
                 print(output)
