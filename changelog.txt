@@ -2,7 +2,7 @@ jello changelog
 
 20200402 v1.1.0
 - Add color output by default when not piping data to another program
-- Add -m option for monochrome outuput
+- Add -m option for monochrome output
 
 20200401 v1.0.0
 - Remove requirement to assign the result to 'r'
