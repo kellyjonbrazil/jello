@@ -27,8 +27,9 @@ $ cat data.json | jello '_["key"]'
 - `-c` compact print JSON output instead of pretty printing
 - `-i` initialize environment with a custom config file
 - `-l` lines output (suitable for bash array assignment)
-- `-r` raw output of selected keys (no quotes)
+- `-m` monochrome output
 - `-n` print selected `null` values
+- `-r` raw output of selected keys (no quotes)
 - `-h` help
 - `-v` version info
 
