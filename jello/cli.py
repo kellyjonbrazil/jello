@@ -8,9 +8,27 @@ import textwrap
 import json
 import signal
 import ast
-from pygments import highlight, lexers, formatters
+from pygments import highlight
+from pygments.style import Style
+from pygments.token import (Name, Number, String, Keyword)
+from pygments.lexers import JsonLexer
+from pygments.formatters import Terminal256Formatter
 
 __version__ = '1.1.0'
+
+
+class JelloStyle(Style):
+    BLUE = '#2c5dcd'
+    GREY = '#4d4d4d'
+    PURPLE = '#5918bb'
+    GREEN = '#00cc00'
+
+    styles = {
+        Name.Tag: 'bold {}'.format(BLUE),    # key names
+        Keyword: GREY,                       # true, false, null
+        Number: PURPLE,                      # int, float
+        String: GREEN                        # string
+    }
 
 
 def ctrlc(signum, frame):
@@ -294,7 +312,7 @@ def main(data=None, query='_', compact=None, initialize=None, lines=None, mono=N
     try:
         if commandline:
             if not mono and not lines and stdout_is_tty():
-                print(highlight(output, lexers.JsonLexer(), formatters.Terminal256Formatter(style='emacs')))
+                print(highlight(output, JsonLexer(), Terminal256Formatter(style=JelloStyle))[0:-1])
             else:
                 print(output)
         else:
