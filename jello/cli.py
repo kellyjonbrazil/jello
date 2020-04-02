@@ -10,7 +10,7 @@ import signal
 import ast
 from pygments import highlight, lexers, formatters
 
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 
 def ctrlc(signum, frame):
