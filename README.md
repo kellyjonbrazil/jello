@@ -212,9 +212,9 @@ Here is a simple solution using `jello`:
 ```
 $ cat jq_twitter.json | jello -l '\
 user_ids = set()
-result = []
 for tweet in _:
     user_ids.add(tweet["user"]["id"])
+result = []
 for user in user_ids:
     user_profile = {}
     tweet_ids = []
@@ -228,6 +228,7 @@ for user in user_ids:
     user_profile["tweet_ids"] = ";".join(tweet_ids)
     result.append(user_profile)
 result'
+
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}
