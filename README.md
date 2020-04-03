@@ -23,17 +23,17 @@ pip3 install --upgrade jello
 $ cat data.json | jello '_["key"]'
 ```
 
-**Options**
+#### Options
 - `-c` compact print JSON output instead of pretty printing
 - `-i` initialize environment with a custom config file
 - `-l` lines output (suitable for bash array assignment)
 - `-m` monochrome output
 - `-n` print selected `null` values
-- `-r` raw output of selected keys (no quotes)
+- `-r` raw output of selected strings (no quotes)
 - `-h` help
 - `-v` version info
 
-**Assigning Results to a Bash Array**
+#### Assigning Results to a Bash Array
 
 Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option, otherwise they are skipped.
 ```
@@ -41,32 +41,44 @@ variable=($(cat data.json | jello -rl '_["foo"]'))
 ```
 > Note: The `lines()` convenience function has been deprecated and will be removed in a future version. Use the `-l` option instead to generate output suitable for assignment to a bash variable or array. Use of the `lines()` function will generate a warning message to `STDERR`.
 
-**Custom Configuration File**
+#### Custom Configuration File
 
-You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as adding `import` statements for your favorite libraries.
+You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as setting the `jello` options you would like enabled or disabled, or adding `import` statements for your favorite modules.
 
-The filename must be `.jelloconf.py` and must be located in the proper directory based on the OS platform:
-- Linux: `~/`
+The file must be named `.jelloconf.py` and must be located in the proper directory based on the OS platform:
+- Linux, unix, macOS: `~/`
 - Windows: `%appdata%/`
 
-To simply import a module (e.g. `glom`) your `.jelloconf.py` file would look like this:
+##### Setting Options
+To set `jello` options in the `.jelloconf.py` file, add any of the following and set to `True` or `False`:
+```
+mono = True          # -m option
+compact = True       # -c option
+lines = True         # -l option
+raw = True           # -r option
+nulls = True         # -n option
+```
+
+##### Importing Modules
+To import a module (e.g. `glom`) during initialization, just add the `import` statement to your `.jelloconf.py` file:
 ```
 from glom import *
 ```
-Then you could use `glom` in your `jello` filters:
+Then you can use `glom` in your `jello` filters without importing:
 ```
 $ jc -a | jello -i 'glom(_, "parsers.25.name")'
 
 "lsblk"
 ```
 
-Alternatively, if you wanted to initialize your `jello` environment to add `glom` syntax, your `.jelloconf.py` file could look like this:
+##### Adding Functions
+You can also add functions to your initialization file.  For example, you could simplify `glom` use by adding the following function to `.jelloconf.py`:
 ```
 def g(q, data=_):
     import glom
     return glom.glom(data, q)
 ```
-Then you could use the following syntax to filter the JSON data:
+Then you can use the following syntax to filter the JSON data:
 ```
 $ jc -a | jello -i 'g("parsers.6.compatible")'
 
@@ -169,8 +181,8 @@ True if os.getenv("LOGNAME") == _["login_name"] else False'
 
 true
 ```
-### Using 3rd Party Libraries
-You can import and use your favorite libraries to manipulate the data.  For example, using `glom`:
+### Using 3rd Party Modules
+You can import and use your favorite modules to manipulate the data.  For example, using `glom`:
 ```
 $ jc -a | jello '\
 from glom import *
@@ -192,7 +204,7 @@ The data from this example comes from https://programminghistorian.org/assets/jq
 
 Under **Grouping and Counting**, Matthew describes an advanced `jq` filter against a sample Twitter dataset that includes JSON Lines data. There he describes the following query:
 
-“We can now create a table of users. Let’s create a table with columns for the user id, user name, followers count, and a column of their tweet ids separated by a semicolon.”
+*“We can now create a table of users. Let’s create a table with columns for the user id, user name, followers count, and a column of their tweet ids separated by a semicolon.”*
 
 https://programminghistorian.org/en/lessons/json-and-jq
 
@@ -200,9 +212,9 @@ Here is a simple solution using `jello`:
 ```
 $ cat jq_twitter.json | jello -l '\
 user_ids = set()
-result = []
 for tweet in _:
     user_ids.add(tweet["user"]["id"])
+result = []
 for user in user_ids:
     user_profile = {}
     tweet_ids = []
@@ -216,6 +228,7 @@ for user in user_ids:
     user_profile["tweet_ids"] = ";".join(tweet_ids)
     result.append(user_profile)
 result'
+
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}
