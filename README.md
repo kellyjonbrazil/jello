@@ -50,7 +50,7 @@ The file must be named `.jelloconf.py` and must be located in the proper directo
 - Windows: `%appdata%/`
 
 ##### Setting Options
-To set `jello` options in the `.jelloconf.py` file, add any of the following:
+To set `jello` options in the `.jelloconf.py` file, add any of the following and set to `True` or `False`:
 ```
 mono = True          # -m option
 compact = True       # -c option
