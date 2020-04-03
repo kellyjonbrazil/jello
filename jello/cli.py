@@ -253,7 +253,7 @@ def load_json(data):
                 entry = json.loads(jsonline)
                 data_list.append(entry)
             except Exception as e:
-                # can't parse the data. Throw a nice message and quit
+                # can't parse the data. Throw an error and quit
                 print_error(textwrap.dedent(f'''\
                     jello:  JSON Load Exception: {e}
                             Cannot parse line {i + 1} (Not JSON or JSON Lines data):
