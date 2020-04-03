@@ -174,12 +174,7 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
     output = None
 
     try:
-        block = ast.parse(query, mode='exec')
-        # assumes last node is an expression
-        last = ast.Expression(block.body.pop().value)
-
         # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono)
-        # these must be at the top of the .jelloconf.py file
         for expr in ast.parse(jelloconf).body:
             if isinstance(expr, ast.Assign):
                 if expr.targets[0].id == 'compact':
@@ -194,9 +189,12 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                     mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
 
         # run the query
+        block = ast.parse(query, mode='exec')
+        last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
         exec(compile(block, '<string>', mode='exec'))
         output = eval(compile(last, '<string>', mode='eval'))
 
+        # need to return compact, nulls, raw, lines, mono in case they were changed in .jelloconf.py
         return (output, compact, nulls, raw, lines, mono)
 
     except KeyError as e:
