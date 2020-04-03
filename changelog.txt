@@ -1,6 +1,6 @@
 jello changelog
 
-20200402 v1.1.1
+20200403 v1.1.1
 - Add option variable support to .jelloconf.py
 
 20200402 v1.1.0
