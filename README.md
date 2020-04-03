@@ -49,7 +49,7 @@ The file must be named `.jelloconf.py` and must be located in the proper directo
 - Linux: `~/`
 - Windows: `%appdata%/`
 
-**Setting Options**
+##### Setting Options
 To set `jello` options in the `.jelloconf.py` file, add any of the following:
 ```
 mono = True          # -m option
@@ -59,7 +59,7 @@ raw = True           # -r option
 nulls = True         # -n option
 ```
 
-**Importing Modules**
+##### Importing Modules
 To import a module (e.g. `glom`) during initialization, just add the `import` statement to your `.jelloconf.py` file:
 ```
 from glom import *
@@ -71,7 +71,7 @@ $ jc -a | jello -i 'glom(_, "parsers.25.name")'
 "lsblk"
 ```
 
-**Adding Functions**
+##### Adding Functions
 You can also add functions to your initialization file.  For example, you could simplify `glom` use by adding the following function to `.jelloconf.py`:
 ```
 def g(q, data=_):
