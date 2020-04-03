@@ -14,20 +14,20 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 
 class JelloStyle(Style):
     BLUE = '#2c5dcd'
-    GREY = '#4d4d4d'
+    GRAY = '#4d4d4d'
     PURPLE = '#5918bb'
     GREEN = '#00cc00'
 
     styles = {
-        Name.Tag: 'bold {}'.format(BLUE),    # key names
-        Keyword: GREY,                       # true, false, null
-        Number: PURPLE,                      # int, float
-        String: GREEN                        # string
+        Name.Tag: f'bold {BLUE}',     # key names
+        Keyword: GRAY,                # true, false, null
+        Number: PURPLE,               # int, float
+        String: GREEN                 # string
     }
 
 
@@ -86,7 +86,7 @@ def lines(data):
     return data
 
 
-def create_json(data, compact=False, nulls=None, lines=None, raw=None):
+def create_json(data, compact=None, nulls=None, raw=None, lines=None):
     if isinstance(data, dict):
         if compact or lines:
             return json.dumps(data)
@@ -152,7 +152,7 @@ def create_json(data, compact=False, nulls=None, lines=None, raw=None):
             return f'"{data}"'
 
 
-def pyquery(data, query, initialize=None):
+def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None):
     _ = data
     jelloconf = ''
 
@@ -175,12 +175,29 @@ def pyquery(data, query, initialize=None):
 
     try:
         block = ast.parse(query, mode='exec')
-
         # assumes last node is an expression
         last = ast.Expression(block.body.pop().value)
 
+        # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono)
+        # these must be at the top of the .jelloconf.py file
+        for expr in ast.parse(jelloconf).body:
+            if isinstance(expr, ast.Assign):
+                if expr.targets[0].id == 'compact':
+                    compact = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'raw':
+                    raw = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'lines':
+                    lines = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'nulls':
+                    nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'mono':
+                    mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+
+        # run the query
         exec(compile(block, '<string>', mode='exec'))
         output = eval(compile(last, '<string>', mode='eval'))
+
+        return (output, compact, nulls, raw, lines, mono)
 
     except KeyError as e:
         print_error(textwrap.dedent(f'''\
@@ -224,8 +241,6 @@ def pyquery(data, query, initialize=None):
                     output: {output}
         '''))
 
-    return output
-
 
 def load_json(data):
     try:
@@ -252,8 +267,7 @@ def load_json(data):
     return json_dict
 
 
-def main(data=None, query='_', compact=None, initialize=None, lines=None, mono=None, nulls=None, raw=None,
-         version_info=None, helpme=None):
+def main(data=None, query='_', initialize=None, version_info=None, helpme=None, compact=None, nulls=None, raw=None, lines=None, mono=None):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
@@ -306,7 +320,11 @@ def main(data=None, query='_', compact=None, initialize=None, lines=None, mono=N
         lines_warning = True
 
     list_dict_data = load_json(data)
-    response = pyquery(list_dict_data, query, initialize=initialize)
+    # pulling variables back from pyquery since the user may have defined intialization options
+    # in their .jelloconf.py file
+    response, compact, nulls, raw, lines, mono = pyquery(list_dict_data, query, initialize=initialize,
+                                                         compact=compact, nulls=nulls, raw=raw, lines=lines,
+                                                         mono=mono)
     output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
     try:
