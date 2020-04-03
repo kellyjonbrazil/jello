@@ -43,7 +43,7 @@ variable=($(cat data.json | jello -rl '_["foo"]'))
 
 #### Custom Configuration File
 
-You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as setting the `jello` options you would like enabled, or adding `import` statements for your favorite libraries.
+You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as setting the `jello` options you would like enabled, or adding `import` statements for your favorite modules.
 
 The file must be named `.jelloconf.py` and must be located in the proper directory based on the OS platform:
 - Linux: `~/`
