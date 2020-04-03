@@ -29,7 +29,7 @@ $ cat data.json | jello '_["key"]'
 - `-l` lines output (suitable for bash array assignment)
 - `-m` monochrome output
 - `-n` print selected `null` values
-- `-r` raw output of selected keys (no quotes)
+- `-r` raw output of selected strings (no quotes)
 - `-h` help
 - `-v` version info
 
