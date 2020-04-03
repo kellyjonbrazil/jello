@@ -33,7 +33,7 @@ $ cat data.json | jello '_["key"]'
 - `-h` help
 - `-v` version info
 
-**Assigning Results to a Bash Array**
+### Assigning Results to a Bash Array
 
 Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option, otherwise they are skipped.
 ```
@@ -41,32 +41,47 @@ variable=($(cat data.json | jello -rl '_["foo"]'))
 ```
 > Note: The `lines()` convenience function has been deprecated and will be removed in a future version. Use the `-l` option instead to generate output suitable for assignment to a bash variable or array. Use of the `lines()` function will generate a warning message to `STDERR`.
 
-**Custom Configuration File**
+### Custom Configuration File
 
-You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as adding `import` statements for your favorite libraries.
+You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code and can be as simple as setting the `jello` options you would like enabled, or adding `import` statements for your favorite libraries.
 
-The filename must be `.jelloconf.py` and must be located in the proper directory based on the OS platform:
+The file must be named `.jelloconf.py` and must be located in the proper directory based on the OS platform:
 - Linux: `~/`
 - Windows: `%appdata%/`
 
-To simply import a module (e.g. `glom`) your `.jelloconf.py` file would look like this:
+**Setting Options**
+
+To set `jello` options in the `.jelloconf.py` file, add any of the following:
+```
+mono = True          # -m option
+compact = True       # -c option
+lines = True         # -l option
+raw = True           # -r option
+nulls = True         # -n option
+```
+
+**Importing Modules**
+
+To import a module (e.g. `glom`) during initialization, just add the `import` statement to your `.jelloconf.py` file:
 ```
 from glom import *
 ```
-Then you could use `glom` in your `jello` filters:
+Then you can use `glom` in your `jello` filters without importing:
 ```
 $ jc -a | jello -i 'glom(_, "parsers.25.name")'
 
 "lsblk"
 ```
 
-Alternatively, if you wanted to initialize your `jello` environment to add `glom` syntax, your `.jelloconf.py` file could look like this:
+**Adding Functions**
+
+You can also add functions to your initialization file.  For example, you could simplify `glom` use by adding the following function to `.jelloconf.py`:
 ```
 def g(q, data=_):
     import glom
     return glom.glom(data, q)
 ```
-Then you could use the following syntax to filter the JSON data:
+Then you can use the following syntax to filter the JSON data:
 ```
 $ jc -a | jello -i 'g("parsers.6.compatible")'
 
@@ -169,8 +184,8 @@ True if os.getenv("LOGNAME") == _["login_name"] else False'
 
 true
 ```
-### Using 3rd Party Libraries
-You can import and use your favorite libraries to manipulate the data.  For example, using `glom`:
+### Using 3rd Party Modules
+You can import and use your favorite modules to manipulate the data.  For example, using `glom`:
 ```
 $ jc -a | jello '\
 from glom import *
