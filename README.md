@@ -18,7 +18,7 @@ pip3 install --upgrade jello
 ```
 <JSON Data> | jello [OPTIONS] [QUERY]
 ``` 
-`QUERY` is optional and can be most any valid python code. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. If QUERY is omitted then the JSON input will be pretty printed.
+`QUERY` is optional and can be most any valid python code. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. If QUERY is omitted then the original JSON input will simply be pretty printed.
 
 A simple QUERY:
 ```
