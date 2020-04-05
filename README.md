@@ -41,7 +41,6 @@ Use the `-l` option to print JSON array output in a manner suitable to be assign
 ```
 variable=($(cat data.json | jello -rl '_["foo"]'))
 ```
-> Note: The `lines()` convenience function has been deprecated and will be removed in a future version. Use the `-l` option instead to generate output suitable for assignment to a bash variable or array. Use of the `lines()` function will generate a warning message to `STDERR`.
 
 #### Custom Configuration File
 
