@@ -56,7 +56,7 @@ def helptext():
     print_error(textwrap.dedent('''\
         jello:   query JSON at the command line with python syntax
 
-        Usage:  <JSON Data> | jello [OPTIONS] QUERY
+        Usage:  <JSON Data> | jello [OPTIONS] [QUERY]
 
                 -c    compact JSON output
                 -i    initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
