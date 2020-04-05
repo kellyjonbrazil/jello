@@ -1,5 +1,8 @@
 jello changelog
 
+20200404 v1.1.2
+- Remove lines() function and fix error message
+
 20200403 v1.1.1
 - Add option variable support to .jelloconf.py
 
