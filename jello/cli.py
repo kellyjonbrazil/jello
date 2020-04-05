@@ -14,7 +14,7 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
-__version__ = '1.1.1'
+__version__ = '1.1.2'
 
 
 class JelloStyle(Style):
@@ -79,11 +79,6 @@ def print_error(message):
     """print error messages to STDERR and quit with error code"""
     print(message, file=sys.stderr)
     sys.exit(1)
-
-
-def lines(data):
-    """This function is deprecated. Instead, use the -l option"""
-    return data
 
 
 def create_json(data, compact=None, nulls=None, raw=None, lines=None):
@@ -311,11 +306,9 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     if data is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
 
-    # lines() function is deprecated. If lines() is found, then call the -l lines option instead.
-    lines_warning = False
-    if query.find('lines(') != -1:
-        lines = True
-        lines_warning = True
+    # lines() function is deprecated. Warn and quit if detected.
+    if query and 'lines(' in query:
+        print_error('jello:  Error: lines() function is deprecated. Please use the -l option instead.\n')
 
     list_dict_data = load_json(data)
     # pulling variables back from pyquery since the user may have defined intialization options
@@ -341,9 +334,6 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                     response: {response}
                     output: {output}
         '''))
-
-    if lines_warning:
-        print('\njello:  Warning: lines() function is deprecated. Please use the -l option instead.\n', file=sys.stderr)
 
 
 if __name__ == '__main__':
