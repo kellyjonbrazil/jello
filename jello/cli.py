@@ -78,7 +78,6 @@ def helptext():
 
 def print_schema(src, path=''):
     """prints a grep-able schema representation of the JSON"""
-
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
             print_schema(item, path=f'.{i}')
