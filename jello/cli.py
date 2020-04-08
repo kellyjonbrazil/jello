@@ -340,17 +340,17 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
     list_dict_data = load_json(data)
 
-    if schema:
-        print_schema(list_dict_data)
-        exit()
-    else:
-        # pulling variables back from pyquery since the user may have defined intialization options
-        # in their .jelloconf.py file
-        response, compact, nulls, raw, lines, mono = pyquery(list_dict_data, query, initialize=initialize,
-                                                             compact=compact, nulls=nulls, raw=raw, lines=lines,
-                                                             mono=mono)
+    # pulling variables back from pyquery since the user may have defined intialization options
+    # in their .jelloconf.py file
+    response, compact, nulls, raw, lines, mono = pyquery(list_dict_data, query, initialize=initialize,
+                                                         compact=compact, nulls=nulls, raw=raw, lines=lines,
+                                                         mono=mono)
 
-    output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
+    if schema:
+            print_schema(response)
+            exit()
+    else:
+        output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
     try:
         if commandline:
