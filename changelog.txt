@@ -1,5 +1,8 @@
 jello changelog
 
+20200408 v1.2.0
+- Add -s schema option to print in a grep-able format
+
 20200404 v1.1.2
 - Remove lines() function and fix error message
 

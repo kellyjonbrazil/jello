@@ -6,7 +6,7 @@ Filter JSON and JSON Lines data with Python syntax
 
 `jello` is similar to `jq` in that it processes JSON and JSON Lines data except `jello` uses standard python dict and list syntax.
 
-JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurped into a list of dictionaries) and are available as the variable `_`. Processed data can be output as JSON, JSON Lines, or bash array lines.
+JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurped into a list of dictionaries) and are available as the variable `_`. Processed data can be output as JSON, JSON Lines, bash array lines, or a grep-able schema.
 
 For more information on the motivations for this project, see my [blog post](https://blog.kellybrazil.com/2020/03/25/jello-the-jq-alternative-for-pythonistas/).
 
@@ -33,6 +33,7 @@ $ cat data.json | jello '_["foo"]'
 - `-m` monochrome output
 - `-n` print selected `null` values
 - `-r` raw output of selected strings (no quotes)
+- `-s` print the JSON schema in grep-able format (overrides other options)
 - `-h` help
 - `-v` version info
 
@@ -95,7 +96,28 @@ $ jc -a | jello -i 'g("parsers.6.compatible")'
 ```
 
 ## Examples:
-### lambda functions and math
+### Printing the Grep-able Schema
+```
+$ jc -a | jello -s
+.name = "jc"
+.version = "1.10.1"
+.description = "jc cli output JSON conversion tool"
+.author = "Kelly Brazil"
+.author_email = "kellyjonbrazil@gmail.com"
+.parser_count = 50
+.parsers.0.name = "airport"
+.parsers.0.argument = "--airport"
+.parsers.0.version = "1.0"
+.parsers.0.description = "airport -I command parser"
+.parsers.0.author = "Kelly Brazil"
+.parsers.0.author_email = "kellyjonbrazil@gmail.com"
+.parsers.0.compatible.0 = "darwin"
+.parsers.0.magic_commands.0 = "airport -I"
+.parsers.1.name = "airport_s"
+.parsers.1.argument = "--airport-s"
+...
+```
+### Lambda Functions and Math
 ```
 $ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
 keys = _.keys()
@@ -116,7 +138,7 @@ $ jc -a | jello 'len([entry for entry in _["parsers"] if "darwin" in entry["comp
 
 32
 ```
-### for loops
+### For Loops
 Output as JSON array
 ```
 $ jc -a | jello '\
@@ -201,7 +223,7 @@ glom(_, ("parsers", ["name"]))'
   ...
 ]
 ```
-### Complex JSON Manipulation
+### Advanced JSON Manipulation
 The data from this example comes from https://programminghistorian.org/assets/jq_twitter.json
 
 Under **Grouping and Counting**, Matthew describes an advanced `jq` filter against a sample Twitter dataset that includes JSON Lines data. There he describes the following query:
