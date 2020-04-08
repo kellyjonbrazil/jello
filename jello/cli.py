@@ -175,12 +175,12 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
     def schema(src=_, delim='.', val_delim='.', path=''):
         """
         Prints a schema representation of the JSON object. For example:
-            schema(_)
-            .a.value
-            .b.value
-            .c.0.value
-            .c.1.value
-            .d.value
+            schema(_, delim="/", val_delim=" => ")
+            /a => value
+            /b => value
+            /c/0 => value
+            /c/1 => value
+            /d => value
 
         Arguments:
             delim (string):      Delimiter between keys. Default is "."
