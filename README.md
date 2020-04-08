@@ -99,6 +99,7 @@ $ jc -a | jello -i 'g("parsers.6.compatible")'
 ### Printing the Grep-able Schema
 ```
 $ jc -a | jello -s
+
 .name = "jc"
 .version = "1.10.1"
 .description = "jc cli output JSON conversion tool"
