@@ -168,53 +168,6 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
     query = jelloconf + query
     output = None
 
-    #
-    # Convenience Functions:
-    #
-
-    def schema(src=_, delim='.', val_delim='.', path=''):
-        """
-        Prints a schema representation of the JSON object. For example:
-            schema(_, delim="/", val_delim=" => ")
-            /a => value
-            /b => value
-            /c/0 => value
-            /c/1 => value
-            /d => value
-
-        Arguments:
-            delim (string):      Delimiter between keys. Default is "."
-            var_delim (string):  Delimiter between the final key and value. Default is "."
-        """
-        if isinstance(src, list) and path == '':
-            for i, item in enumerate(src):
-                schema(item, path=f'{delim}{i}', delim=delim, val_delim=val_delim)
-
-        elif isinstance(src, list):
-            for i, item in enumerate(src):
-                schema(item, path=f'{path}{delim}{src}{delim}{i}', delim=delim, val_delim=val_delim)
-
-        elif isinstance(src, dict):
-            for k, v in src.items():
-                if isinstance(v, list):
-                    for i, item in enumerate(v):
-                        schema(item, path=f'{path}{delim}{k}{delim}{i}', delim=delim, val_delim=val_delim)
-
-                elif isinstance(v, dict):
-                    schema(v, path=f'{path}{delim}{k}', delim=delim, val_delim=val_delim)
-
-                else:
-                    v = str(v).replace('\n', r'\n')
-                    print(f'{path}{delim}{k}{val_delim}{v}')
-
-        else:
-            src = str(src).replace('\n', r'\n')
-            print(f'{path}{val_delim}{src}')
-
-    #
-    # End Convenience Functions
-    #
-
     try:
         # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono)
         for expr in ast.parse(jelloconf).body:
@@ -229,6 +182,53 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                     nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'mono':
                     mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+
+        #
+        # Convenience Functions:
+        #
+
+        def schema(src=_, delim='.', val_delim='.', path=''):
+            """
+            Prints a schema representation of the JSON object. For example:
+                schema(delim="/", val_delim=" => ")
+                /a => value
+                /b => value
+                /c/0 => value
+                /c/1 => value
+                /d => value
+
+            Arguments:
+                delim (string):      Delimiter between keys. Default is "."
+                var_delim (string):  Delimiter between the final key and value. Default is "."
+            """
+            if isinstance(src, list) and path == '':
+                for i, item in enumerate(src):
+                    schema(item, path=f'{delim}{i}', delim=delim, val_delim=val_delim)
+
+            elif isinstance(src, list):
+                for i, item in enumerate(src):
+                    schema(item, path=f'{path}{delim}{src}{delim}{i}', delim=delim, val_delim=val_delim)
+
+            elif isinstance(src, dict):
+                for k, v in src.items():
+                    if isinstance(v, list):
+                        for i, item in enumerate(v):
+                            schema(item, path=f'{path}{delim}{k}{delim}{i}', delim=delim, val_delim=val_delim)
+
+                    elif isinstance(v, dict):
+                        schema(v, path=f'{path}{delim}{k}', delim=delim, val_delim=val_delim)
+
+                    else:
+                        val = json.dumps(v)
+                        print(f'{path}{delim}{k}{val_delim}{val}')
+
+            else:
+                val = json.dumps(src)
+                print(f'{path}{val_delim}{val}')
+
+        #
+        # End Convenience Functions
+        #
 
         # run the query
         block = ast.parse(query, mode='exec')
