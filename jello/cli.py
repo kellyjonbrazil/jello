@@ -14,7 +14,7 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
-__version__ = '1.1.2'
+__version__ = '1.2.0'
 
 
 class JelloStyle(Style):
@@ -58,14 +58,15 @@ def helptext():
 
         Usage:  <JSON Data> | jello [OPTIONS] [QUERY]
 
-                -c    compact JSON output
-                -i    initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
-                -l    output as lines suitable for assignment to a bash array
-                -m    monochrome output
-                -n    print selected null values
-                -r    raw string output (no quotes)
-                -v    version info
-                -h    help
+                -c   compact JSON output
+                -i   initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
+                -l   output as lines suitable for assignment to a bash array
+                -m   monochrome output
+                -n   print selected null values
+                -r   raw string output (no quotes)
+                -s   print the JSON schema in grep-able format (overrides other options)
+                -v   version info
+                -h   help
 
         Use '_' as the input data and use python dict and list syntax.
 
@@ -73,6 +74,35 @@ def helptext():
                 <JSON Data> | jello '_["foo"]'
                 variable=($(cat data.json | jello -l '_["foo"]'))
     '''))
+
+
+def print_schema(src, path=''):
+    """prints a grep-able schema representation of the JSON"""
+
+    if isinstance(src, list) and path == '':
+        for i, item in enumerate(src):
+            print_schema(item, path=f'.{i}')
+
+    elif isinstance(src, list):
+        for i, item in enumerate(src):
+            print_schema(item, path=f'{path}.{src}.{i}')
+
+    elif isinstance(src, dict):
+        for k, v in src.items():
+            if isinstance(v, list):
+                for i, item in enumerate(v):
+                    print_schema(item, path=f'{path}.{k}.{i}')
+
+            elif isinstance(v, dict):
+                print_schema(v, path=f'{path}.{k}')
+
+            else:
+                val = json.dumps(v)
+                print(f'{path}.{k} = {val}')
+
+    else:
+        val = json.dumps(src)
+        print(f'{path} = {val}')
 
 
 def print_error(message):
@@ -183,53 +213,6 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                 if expr.targets[0].id == 'mono':
                     mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
 
-        #
-        # Convenience Functions:
-        #
-
-        def schema(src=_, delim='.', val_delim=' = ', path=''):
-            """
-            Prints a schema representation of the JSON object. For example:
-                schema(delim="/", val_delim=" => ")
-                /a => value
-                /b => value
-                /c/0 => value
-                /c/1 => value
-                /d => value
-
-            Arguments:
-                delim (string):      Delimiter between keys. Default is "."
-                var_delim (string):  Delimiter between the final key and value. Default is " = "
-            """
-            if isinstance(src, list) and path == '':
-                for i, item in enumerate(src):
-                    schema(item, path=f'{delim}{i}', delim=delim, val_delim=val_delim)
-
-            elif isinstance(src, list):
-                for i, item in enumerate(src):
-                    schema(item, path=f'{path}{delim}{src}{delim}{i}', delim=delim, val_delim=val_delim)
-
-            elif isinstance(src, dict):
-                for k, v in src.items():
-                    if isinstance(v, list):
-                        for i, item in enumerate(v):
-                            schema(item, path=f'{path}{delim}{k}{delim}{i}', delim=delim, val_delim=val_delim)
-
-                    elif isinstance(v, dict):
-                        schema(v, path=f'{path}{delim}{k}', delim=delim, val_delim=val_delim)
-
-                    else:
-                        val = json.dumps(v)
-                        print(f'{path}{delim}{k}{val_delim}{val}')
-
-            else:
-                val = json.dumps(src)
-                print(f'{path}{val_delim}{val}')
-
-        #
-        # End Convenience Functions
-        #
-
         # run the query
         block = ast.parse(query, mode='exec')
         last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
@@ -304,7 +287,8 @@ def load_json(data):
     return json_dict
 
 
-def main(data=None, query='_', initialize=None, version_info=None, helpme=None, compact=None, nulls=None, raw=None, lines=None, mono=None):
+def main(data=None, query='_', initialize=None, version_info=None, helpme=None, compact=None,
+         nulls=None, raw=None, lines=None, mono=None, schema=None):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
@@ -338,6 +322,7 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     mono = mono if not commandline else 'm' in options
     nulls = nulls if not commandline else 'n' in options
     raw = raw if not commandline else 'r' in options
+    schema = schema if not commandline else 's' in options
     version_info = version_info if not commandline else 'v' in options
     helpme = helpme if not commandline else 'h' in options
 
@@ -355,11 +340,17 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
         print_error('jello:  Error: lines() function is deprecated. Please use the -l option instead.\n')
 
     list_dict_data = load_json(data)
-    # pulling variables back from pyquery since the user may have defined intialization options
-    # in their .jelloconf.py file
-    response, compact, nulls, raw, lines, mono = pyquery(list_dict_data, query, initialize=initialize,
-                                                         compact=compact, nulls=nulls, raw=raw, lines=lines,
-                                                         mono=mono)
+
+    if schema:
+        print_schema(list_dict_data)
+        exit()
+    else:
+        # pulling variables back from pyquery since the user may have defined intialization options
+        # in their .jelloconf.py file
+        response, compact, nulls, raw, lines, mono = pyquery(list_dict_data, query, initialize=initialize,
+                                                             compact=compact, nulls=nulls, raw=raw, lines=lines,
+                                                             mono=mono)
+
     output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
     try:
