@@ -33,6 +33,7 @@ $ cat data.json | jello '_["foo"]'
 - `-m` monochrome output
 - `-n` print selected `null` values
 - `-r` raw output of selected strings (no quotes)
+- `-s` print the JSON schema in grep-able format (overrides other options)
 - `-h` help
 - `-v` version info
 
@@ -95,6 +96,27 @@ $ jc -a | jello -i 'g("parsers.6.compatible")'
 ```
 
 ## Examples:
+### Printing the Grep-able Schema
+```
+$ jc -a | jello -s
+.name = "jc"
+.version = "1.10.1"
+.description = "jc cli output JSON conversion tool"
+.author = "Kelly Brazil"
+.author_email = "kellyjonbrazil@gmail.com"
+.parser_count = 50
+.parsers.0.name = "airport"
+.parsers.0.argument = "--airport"
+.parsers.0.version = "1.0"
+.parsers.0.description = "airport -I command parser"
+.parsers.0.author = "Kelly Brazil"
+.parsers.0.author_email = "kellyjonbrazil@gmail.com"
+.parsers.0.compatible.0 = "darwin"
+.parsers.0.magic_commands.0 = "airport -I"
+.parsers.1.name = "airport_s"
+.parsers.1.argument = "--airport-s"
+...
+```
 ### lambda functions and math
 ```
 $ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
