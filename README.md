@@ -117,7 +117,7 @@ $ jc -a | jello -s
 .parsers.1.argument = "--airport-s"
 ...
 ```
-### lambda functions and math
+### Lambda Functions and Math
 ```
 $ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
 keys = _.keys()
@@ -138,7 +138,7 @@ $ jc -a | jello 'len([entry for entry in _["parsers"] if "darwin" in entry["comp
 
 32
 ```
-### for loops
+### For Loops
 Output as JSON array
 ```
 $ jc -a | jello '\
@@ -223,7 +223,7 @@ glom(_, ("parsers", ["name"]))'
   ...
 ]
 ```
-### Complex JSON Manipulation
+### Advanced JSON Manipulation
 The data from this example comes from https://programminghistorian.org/assets/jq_twitter.json
 
 Under **Grouping and Counting**, Matthew describes an advanced `jq` filter against a sample Twitter dataset that includes JSON Lines data. There he describes the following query:
