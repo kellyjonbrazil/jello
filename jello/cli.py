@@ -18,16 +18,11 @@ __version__ = '1.2.0'
 
 
 class JelloStyle(Style):
-    BLUE = '#2c5dcd'
-    GRAY = '#4d4d4d'
-    PURPLE = '#5918bb'
-    GREEN = '#00cc00'
-
     styles = {
-        Name.Tag: f'bold {BLUE}',     # key names
-        Keyword: GRAY,                # true, false, null
-        Number: PURPLE,               # int, float
-        String: GREEN                 # string
+        Name.Tag: 'bold ansiblue',     # key names
+        Keyword: 'ansigray',           # true, false, null
+        Number: 'ansimagenta',         # int, float
+        String: 'ansigreen'            # string
     }
 
 
@@ -79,6 +74,7 @@ def helptext():
 def print_schema(src, path='', mono=False):
     """prints a grep-able schema representation of the JSON"""
     CEND = '\33[0m'
+    CBOLD = '\33[1m'
     CBLUE = '\33[34m'
     CGREEN = '\33[32m'
     CVIOLET = '\33[35m'
@@ -86,14 +82,14 @@ def print_schema(src, path='', mono=False):
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
             if not mono:
-                i = f'{CBLUE}{i}{CEND}'
+                i = f'{CBOLD}{CBLUE}{i}{CEND}'
             print_schema(item, path=f'.{i}', mono=mono)
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
             if not mono:
-                src = f'{CBLUE}{src}{CEND}'
-                i = f'{CBLUE}{i}{CEND}'
+                src = f'{CBOLD}{CBLUE}{src}{CEND}'
+                i = f'{CBOLD}{CBLUE}{i}{CEND}'
             print_schema(item, path=f'{path}.{src}.{i}', mono=mono)
 
     elif isinstance(src, dict):
@@ -101,18 +97,18 @@ def print_schema(src, path='', mono=False):
             if isinstance(v, list):
                 for i, item in enumerate(v):
                     if not mono:
-                        k = f'{CBLUE}{k}{CEND}'
-                        i = f'{CBLUE}{i}{CEND}'
+                        k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                        i = f'{CBOLD}{CBLUE}{i}{CEND}'
                     print_schema(item, path=f'{path}.{k}.{i}', mono=mono)
 
             elif isinstance(v, dict):
                 if not mono:
-                    k = f'{CBLUE}{k}{CEND}'
+                    k = f'{CBOLD}{CBLUE}{k}{CEND}'
                 print_schema(v, path=f'{path}.{k}', mono=mono)
 
             else:
                 if not mono:
-                    k = f'{CBLUE}{k}{CEND}'
+                    k = f'{CBOLD}{CBLUE}{k}{CEND}'
                     val = json.dumps(v)
                     if val == 'true' or val == 'false' or val == 'null':
                         val = f'{CGRAY}{val}{CEND}'
