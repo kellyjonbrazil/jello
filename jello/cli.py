@@ -14,7 +14,7 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
-__version__ = '1.2.2'
+__version__ = '1.2.3'
 
 
 class JelloStyle(Style):
@@ -330,6 +330,9 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
+    # break on pipe error
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
     commandline = False
     if data is None:
         commandline = True
@@ -385,35 +388,29 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                                                                  compact=compact, nulls=nulls, raw=raw, lines=lines,
                                                                  mono=mono, schema=schema)
 
+    if schema:
+        if not stdout_is_tty():
+            mono = True
+        print_schema(response, mono=mono)
+        exit()
+    else:
+        output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
+
     try:
-        if schema:
-            if not stdout_is_tty():
-                mono = True
-            print_schema(response, mono=mono)
-            exit()
-        else:
-            output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
-
-        try:
-            if commandline:
-                if not mono and not lines and stdout_is_tty():
-                    print(highlight(output, JsonLexer(), Terminal256Formatter(style=JelloStyle))[0:-1])
-                else:
-                    print(output)
+        if commandline:
+            if not mono and not lines and stdout_is_tty():
+                print(highlight(output, JsonLexer(), Terminal256Formatter(style=JelloStyle))[0:-1])
             else:
-                return output
+                print(output)
+        else:
+            return output
 
-        except Exception as e:
-            print_error(textwrap.dedent(f'''\
-                jello:  Output Exception:  {e}
-                        list_dict_data: {list_dict_data}
-                        response: {response}
-                        output: {output}
-            '''))
-
-    except BrokenPipeError:
+    except Exception as e:
         print_error(textwrap.dedent(f'''\
-            jello:  Broken pipe
+            jello:  Output Exception:  {e}
+                    list_dict_data: {list_dict_data}
+                    response: {response}
+                    output: {output}
         '''))
 
 
