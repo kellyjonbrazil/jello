@@ -101,22 +101,23 @@ $ jc -a | jello -i 'g("parsers.6.compatible")'
 ```
 $ jc -a | jello -s
 
-.name = "jc"
-.version = "1.10.1"
-.description = "jc cli output JSON conversion tool"
-.author = "Kelly Brazil"
-.author_email = "kellyjonbrazil@gmail.com"
-.parser_count = 50
-.parsers.0.name = "airport"
-.parsers.0.argument = "--airport"
-.parsers.0.version = "1.0"
-.parsers.0.description = "airport -I command parser"
-.parsers.0.author = "Kelly Brazil"
-.parsers.0.author_email = "kellyjonbrazil@gmail.com"
-.parsers.0.compatible.0 = "darwin"
-.parsers.0.magic_commands.0 = "airport -I"
-.parsers.1.name = "airport_s"
-.parsers.1.argument = "--airport-s"
+.name = "jc";
+.version = "1.10.2";
+.description = "jc cli output JSON conversion tool";
+.author = "Kelly Brazil";
+.author_email = "kellyjonbrazil@gmail.com";
+.parser_count = 50;
+.parsers[0].name = "airport";
+.parsers[0].argument = "--airport";
+.parsers[0].version = "1.0";
+.parsers[0].description = "airport -I command parser";
+.parsers[0].author = "Kelly Brazil";
+.parsers[0].author_email = "kellyjonbrazil@gmail.com";
+.parsers[0].compatible[0] = "darwin";
+.parsers[0].magic_commands[0] = "airport -I";
+.parsers[1].name = "airport_s";
+.parsers[1].argument = "--airport-s";
+.parsers[1].version = "1.0";
 ...
 ```
 ### Lambda Functions and Math
