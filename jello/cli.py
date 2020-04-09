@@ -20,7 +20,7 @@ __version__ = '1.2.0'
 class JelloStyle(Style):
     styles = {
         Name.Tag: 'bold ansiblue',     # key names
-        Keyword: 'ansigray',           # true, false, null
+        Keyword: 'ansibrightblack',    # true, false, null
         Number: 'ansimagenta',         # int, float
         String: 'ansigreen'            # string
     }
