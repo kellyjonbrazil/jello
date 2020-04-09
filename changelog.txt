@@ -1,5 +1,11 @@
 jello changelog
 
+20200409 v1.2.1
+- Add colors to schema view
+- Add schema option to .jelloconf.py
+- Change JSON colors to use ansi colors to match schema view
+- Fix BrokenPipeError message
+
 20200408 v1.2.0
 - Add -s schema option to print in a grep-able format
 

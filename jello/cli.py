@@ -14,20 +14,15 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 class JelloStyle(Style):
-    BLUE = '#2c5dcd'
-    GRAY = '#4d4d4d'
-    PURPLE = '#5918bb'
-    GREEN = '#00cc00'
-
     styles = {
-        Name.Tag: f'bold {BLUE}',     # key names
-        Keyword: GRAY,                # true, false, null
-        Number: PURPLE,               # int, float
-        String: GREEN                 # string
+        Name.Tag: 'bold ansiblue',     # key names
+        Keyword: 'ansibrightblack',    # true, false, null
+        Number: 'ansimagenta',         # int, float
+        String: 'ansigreen'            # string
     }
 
 
@@ -64,7 +59,7 @@ def helptext():
                 -m   monochrome output
                 -n   print selected null values
                 -r   raw string output (no quotes)
-                -s   print the JSON schema in grep-able format (overrides other options)
+                -s   print the JSON schema in grep-able format
                 -v   version info
                 -h   help
 
@@ -76,31 +71,67 @@ def helptext():
     '''))
 
 
-def print_schema(src, path=''):
+def print_schema(src, path='', mono=False):
     """prints a grep-able schema representation of the JSON"""
+    CEND = '\33[0m'
+    CBOLD = '\33[1m'
+    CBLUE = '\33[34m'
+    CGREEN = '\33[32m'
+    CVIOLET = '\33[35m'
+    CGRAY = '\33[90m'
+
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
-            print_schema(item, path=f'.{i}')
+            if not mono:
+                i = f'{CBOLD}{CBLUE}{i}{CEND}'
+            print_schema(item, path=f'.{i}', mono=mono)
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
-            print_schema(item, path=f'{path}.{src}.{i}')
+            if not mono:
+                src = f'{CBOLD}{CBLUE}{src}{CEND}'
+                i = f'{CBOLD}{CBLUE}{i}{CEND}'
+            print_schema(item, path=f'{path}.{src}.{i}', mono=mono)
 
     elif isinstance(src, dict):
         for k, v in src.items():
             if isinstance(v, list):
                 for i, item in enumerate(v):
-                    print_schema(item, path=f'{path}.{k}.{i}')
+                    if not mono:
+                        k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                        i = f'{CBOLD}{CBLUE}{i}{CEND}'
+                    print_schema(item, path=f'{path}.{k}.{i}', mono=mono)
 
             elif isinstance(v, dict):
-                print_schema(v, path=f'{path}.{k}')
+                if not mono:
+                    k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                print_schema(v, path=f'{path}.{k}', mono=mono)
 
             else:
-                val = json.dumps(v)
+                if not mono:
+                    k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                    val = json.dumps(v)
+                    if val == 'true' or val == 'false' or val == 'null':
+                        val = f'{CGRAY}{val}{CEND}'
+                    elif val.replace('.', '', 1).isdigit():
+                        val = f'{CVIOLET}{val}{CEND}'
+                    else:
+                        val = f'{CGREEN}{val}{CEND}'
+                else:
+                    val = json.dumps(v)
                 print(f'{path}.{k} = {val}')
 
     else:
-        val = json.dumps(src)
+        if not mono:
+            val = json.dumps(src)
+            if val == 'true' or val == 'false' or val == 'null':
+                val = f'{CGRAY}{val}{CEND}'
+            elif val.replace('.', '', 1).isdigit():
+                val = f'{CVIOLET}{val}{CEND}'
+            else:
+                val = f'{CGREEN}{val}{CEND}'
+        else:
+            val = json.dumps(src)
         print(f'{path} = {val}')
 
 
@@ -176,7 +207,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
             return f'"{data}"'
 
 
-def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None):
+def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None, schema=None):
     _ = data
     jelloconf = ''
 
@@ -211,6 +242,8 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                     nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'mono':
                     mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'schema':
+                    schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
 
         # run the query
         block = ast.parse(query, mode='exec')
@@ -218,8 +251,8 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
         exec(compile(block, '<string>', mode='exec'))
         output = eval(compile(last, '<string>', mode='eval'))
 
-        # need to return compact, nulls, raw, lines, mono in case they were changed in .jelloconf.py
-        return (output, compact, nulls, raw, lines, mono)
+        # need to return compact, nulls, raw, lines, mono, schema in case they were changed in .jelloconf.py
+        return (output, compact, nulls, raw, lines, mono, schema)
 
     except KeyError as e:
         print_error(textwrap.dedent(f'''\
@@ -342,31 +375,39 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
     # pulling variables back from pyquery since the user may have defined intialization options
     # in their .jelloconf.py file
-    response, compact, nulls, raw, lines, mono = pyquery(list_dict_data, query, initialize=initialize,
-                                                         compact=compact, nulls=nulls, raw=raw, lines=lines,
-                                                         mono=mono)
-
-    if schema:
-            print_schema(response)
-            exit()
-    else:
-        output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
+    response, compact, nulls, raw, lines, mono, schema = pyquery(list_dict_data, query, initialize=initialize,
+                                                                 compact=compact, nulls=nulls, raw=raw, lines=lines,
+                                                                 mono=mono, schema=schema)
 
     try:
-        if commandline:
-            if not mono and not lines and stdout_is_tty():
-                print(highlight(output, JsonLexer(), Terminal256Formatter(style=JelloStyle))[0:-1])
-            else:
-                print(output)
+        if schema:
+            if not stdout_is_tty():
+                mono = True
+            print_schema(response, mono=mono)
+            exit()
         else:
-            return output
+            output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
-    except Exception as e:
+        try:
+            if commandline:
+                if not mono and not lines and stdout_is_tty():
+                    print(highlight(output, JsonLexer(), Terminal256Formatter(style=JelloStyle))[0:-1])
+                else:
+                    print(output)
+            else:
+                return output
+
+        except Exception as e:
+            print_error(textwrap.dedent(f'''\
+                jello:  Output Exception:  {e}
+                        list_dict_data: {list_dict_data}
+                        response: {response}
+                        output: {output}
+            '''))
+
+    except BrokenPipeError:
         print_error(textwrap.dedent(f'''\
-            jello:  Output Exception:  {e}
-                    list_dict_data: {list_dict_data}
-                    response: {response}
-                    output: {output}
+            jello:  Broken pipe
         '''))
 
 

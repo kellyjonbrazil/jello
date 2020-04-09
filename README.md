@@ -33,7 +33,7 @@ $ cat data.json | jello '_["foo"]'
 - `-m` monochrome output
 - `-n` print selected `null` values
 - `-r` raw output of selected strings (no quotes)
-- `-s` print the JSON schema in grep-able format (overrides other options)
+- `-s` print the JSON schema in grep-able format
 - `-h` help
 - `-v` version info
 
@@ -60,6 +60,7 @@ compact = True       # -c option
 lines = True         # -l option
 raw = True           # -r option
 nulls = True         # -n option
+schema = True        # -s option
 ```
 
 ##### Importing Modules
