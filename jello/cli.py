@@ -76,31 +76,53 @@ def helptext():
     '''))
 
 
-def print_schema(src, path=''):
+def print_schema(src, path='', mono=False):
     """prints a grep-able schema representation of the JSON"""
+    CEND = '\33[0m'
+    CBLUE = '\33[34m'
+    CGREEN = '\33[32m'
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
-            print_schema(item, path=f'.{i}')
+            if not mono:
+                i = f'{CBLUE}{i}{CEND}'
+            print_schema(item, path=f'.{i}', mono=mono)
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
-            print_schema(item, path=f'{path}.{src}.{i}')
+            if not mono:
+                src = f'{CBLUE}{src}{CEND}'
+                i = f'{CBLUE}{i}{CEND}'
+            print_schema(item, path=f'{path}.{src}.{i}', mono=mono)
 
     elif isinstance(src, dict):
         for k, v in src.items():
             if isinstance(v, list):
                 for i, item in enumerate(v):
-                    print_schema(item, path=f'{path}.{k}.{i}')
+                    if not mono:
+                        k = f'{CBLUE}{k}{CEND}'
+                        i = f'{CBLUE}{i}{CEND}'
+                    print_schema(item, path=f'{path}.{k}.{i}', mono=mono)
 
             elif isinstance(v, dict):
-                print_schema(v, path=f'{path}.{k}')
+                if not mono:
+                    k = f'{CBLUE}{k}{CEND}'
+                print_schema(v, path=f'{path}.{k}', mono=mono)
 
             else:
-                val = json.dumps(v)
+                if not mono:
+                    k = f'{CBLUE}{k}{CEND}'
+                    val = json.dumps(v)
+                    val = f'{CGREEN}{val}{CEND}'
+                else:
+                    val = json.dumps(v)
                 print(f'{path}.{k} = {val}')
 
     else:
-        val = json.dumps(src)
+        if not mono:
+            val = json.dumps(src)
+            val = f'{CGREEN}{val}{CEND}'
+        else:
+            val = json.dumps(src)
         print(f'{path} = {val}')
 
 
@@ -176,7 +198,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
             return f'"{data}"'
 
 
-def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None):
+def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None, schema=None):
     _ = data
     jelloconf = ''
 
@@ -211,6 +233,8 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                     nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'mono':
                     mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'schema':
+                    schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
 
         # run the query
         block = ast.parse(query, mode='exec')
@@ -218,8 +242,8 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
         exec(compile(block, '<string>', mode='exec'))
         output = eval(compile(last, '<string>', mode='eval'))
 
-        # need to return compact, nulls, raw, lines, mono in case they were changed in .jelloconf.py
-        return (output, compact, nulls, raw, lines, mono)
+        # need to return compact, nulls, raw, lines, mono, schema in case they were changed in .jelloconf.py
+        return (output, compact, nulls, raw, lines, mono, schema)
 
     except KeyError as e:
         print_error(textwrap.dedent(f'''\
@@ -342,12 +366,12 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
     # pulling variables back from pyquery since the user may have defined intialization options
     # in their .jelloconf.py file
-    response, compact, nulls, raw, lines, mono = pyquery(list_dict_data, query, initialize=initialize,
-                                                         compact=compact, nulls=nulls, raw=raw, lines=lines,
-                                                         mono=mono)
+    response, compact, nulls, raw, lines, mono, schema = pyquery(list_dict_data, query, initialize=initialize,
+                                                                 compact=compact, nulls=nulls, raw=raw, lines=lines,
+                                                                 mono=mono, schema=schema)
 
     if schema:
-            print_schema(response)
+            print_schema(response, mono=mono)
             exit()
     else:
         output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
