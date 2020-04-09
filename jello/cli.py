@@ -330,8 +330,11 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
-    # break on pipe error
-    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    # break on pipe error. need try/except for windows compatibility
+    try:
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    except AttributeError:
+        pass
 
     commandline = False
     if data is None:
