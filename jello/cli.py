@@ -94,7 +94,7 @@ def print_schema(src, path='', mono=False):
         for i, item in enumerate(src):
             if not mono:
                 i = f'{CRED}{i}{CEND}'
-            print_schema(item, path=f'{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
+            print_schema(item, path=f'.{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
