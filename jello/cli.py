@@ -73,25 +73,35 @@ def helptext():
 
 def print_schema(src, path='', mono=False):
     """prints a grep-able schema representation of the JSON"""
-    CEND = '\33[0m'
-    CBOLD = '\33[1m'
-    CBLUE = '\33[34m'
-    CGREEN = '\33[32m'
-    CVIOLET = '\33[35m'
-    CGRAY = '\33[90m'
+    if not mono:
+        CEND = '\33[0m'
+        CBOLD = '\33[1m'
+        CBLUE = '\33[34m'
+        CGREEN = '\33[32m'
+        CVIOLET = '\33[35m'
+        CGRAY = '\33[90m'
+        CRED = '\33[31m'
+    else:
+        CEND = ''
+        CBOLD = ''
+        CBLUE = ''
+        CGREEN = ''
+        CVIOLET = ''
+        CGRAY = ''
+        CRED = ''
 
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
             if not mono:
-                i = f'{CBOLD}{CBLUE}{i}{CEND}'
-            print_schema(item, path=f'.{i}', mono=mono)
+                i = f'{CRED}{i}{CEND}'
+            print_schema(item, path=f'{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
             if not mono:
                 src = f'{CBOLD}{CBLUE}{src}{CEND}'
-                i = f'{CBOLD}{CBLUE}{i}{CEND}'
-            print_schema(item, path=f'{path}.{src}.{i}', mono=mono)
+                i = f'{CRED}{i}{CEND}'
+            print_schema(item, path=f'{path}.{src}{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
 
     elif isinstance(src, dict):
         for k, v in src.items():
@@ -99,8 +109,8 @@ def print_schema(src, path='', mono=False):
                 for i, item in enumerate(v):
                     if not mono:
                         k = f'{CBOLD}{CBLUE}{k}{CEND}'
-                        i = f'{CBOLD}{CBLUE}{i}{CEND}'
-                    print_schema(item, path=f'{path}.{k}.{i}', mono=mono)
+                        i = f'{CRED}{i}{CEND}'
+                    print_schema(item, path=f'{path}.{k}{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
 
             elif isinstance(v, dict):
                 if not mono:
@@ -108,31 +118,27 @@ def print_schema(src, path='', mono=False):
                 print_schema(v, path=f'{path}.{k}', mono=mono)
 
             else:
-                if not mono:
-                    k = f'{CBOLD}{CBLUE}{k}{CEND}'
-                    val = json.dumps(v)
-                    if val == 'true' or val == 'false' or val == 'null':
-                        val = f'{CGRAY}{val}{CEND}'
-                    elif val.replace('.', '', 1).isdigit():
-                        val = f'{CVIOLET}{val}{CEND}'
-                    else:
-                        val = f'{CGREEN}{val}{CEND}'
+                k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                val = json.dumps(v)
+                if val == 'true' or val == 'false' or val == 'null':
+                    val = f'{CGRAY}{val}{CEND}'
+                elif val.replace('.', '', 1).isdigit():
+                    val = f'{CVIOLET}{val}{CEND}'
                 else:
-                    val = json.dumps(v)
-                print(f'{path}.{k} = {val}')
+                    val = f'{CGREEN}{val}{CEND}'
+
+                print(f'{path}.{k} = {val};')
 
     else:
-        if not mono:
-            val = json.dumps(src)
-            if val == 'true' or val == 'false' or val == 'null':
-                val = f'{CGRAY}{val}{CEND}'
-            elif val.replace('.', '', 1).isdigit():
-                val = f'{CVIOLET}{val}{CEND}'
-            else:
-                val = f'{CGREEN}{val}{CEND}'
+        val = json.dumps(src)
+        if val == 'true' or val == 'false' or val == 'null':
+            val = f'{CGRAY}{val}{CEND}'
+        elif val.replace('.', '', 1).isdigit():
+            val = f'{CVIOLET}{val}{CEND}'
         else:
-            val = json.dumps(src)
-        print(f'{path} = {val}')
+            val = f'{CGREEN}{val}{CEND}'
+
+        print(f'{path} = {val};')
 
 
 def print_error(message):
