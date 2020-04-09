@@ -1,5 +1,8 @@
 jello changelog
 
+20200409 v1.2.4
+- Fix Windows compatibility for broken pipe handling
+
 20200409 v1.2.3
 - Simplify broken pipe handling
 
