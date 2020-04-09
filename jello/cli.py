@@ -64,7 +64,7 @@ def helptext():
                 -m   monochrome output
                 -n   print selected null values
                 -r   raw string output (no quotes)
-                -s   print the JSON schema in grep-able format (overrides other options)
+                -s   print the JSON schema in grep-able format
                 -v   version info
                 -h   help
 
@@ -81,6 +81,8 @@ def print_schema(src, path='', mono=False):
     CEND = '\33[0m'
     CBLUE = '\33[34m'
     CGREEN = '\33[32m'
+    CVIOLET = '\33[35m'
+    CGRAY = '\33[90m'
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
             if not mono:
@@ -112,7 +114,12 @@ def print_schema(src, path='', mono=False):
                 if not mono:
                     k = f'{CBLUE}{k}{CEND}'
                     val = json.dumps(v)
-                    val = f'{CGREEN}{val}{CEND}'
+                    if val == 'true' or val == 'false' or val == 'null':
+                        val = f'{CGRAY}{val}{CEND}'
+                    elif val.replace('.', '', 1).isdigit():
+                        val = f'{CVIOLET}{val}{CEND}'
+                    else:
+                        val = f'{CGREEN}{val}{CEND}'
                 else:
                     val = json.dumps(v)
                 print(f'{path}.{k} = {val}')
@@ -120,7 +127,12 @@ def print_schema(src, path='', mono=False):
     else:
         if not mono:
             val = json.dumps(src)
-            val = f'{CGREEN}{val}{CEND}'
+            if val == 'true' or val == 'false' or val == 'null':
+                val = f'{CGRAY}{val}{CEND}'
+            elif val.replace('.', '', 1).isdigit():
+                val = f'{CVIOLET}{val}{CEND}'
+            else:
+                val = f'{CGREEN}{val}{CEND}'
         else:
             val = json.dumps(src)
         print(f'{path} = {val}')
