@@ -60,6 +60,7 @@ compact = True       # -c option
 lines = True         # -l option
 raw = True           # -r option
 nulls = True         # -n option
+schema = True        # -s option
 ```
 
 ##### Importing Modules
