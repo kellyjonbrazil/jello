@@ -1,5 +1,9 @@
 jello changelog
 
+20200409 v1.2.2
+- Enhance schema format and colors for arrays
+- Simplify schema monochrome code
+
 20200409 v1.2.1
 - Add colors to schema view
 - Add schema option to .jelloconf.py

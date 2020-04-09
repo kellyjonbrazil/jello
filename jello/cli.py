@@ -14,7 +14,7 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 
 class JelloStyle(Style):
