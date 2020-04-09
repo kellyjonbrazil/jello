@@ -383,8 +383,10 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                                                                  mono=mono, schema=schema)
 
     if schema:
-            print_schema(response, mono=mono)
-            exit()
+        if not stdout_is_tty():
+            mono = True
+        print_schema(response, mono=mono)
+        exit()
     else:
         output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
