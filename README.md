@@ -55,13 +55,23 @@ The file must be named `.jelloconf.py` and must be located in the proper directo
 ##### Setting Options
 To set `jello` options in the `.jelloconf.py` file, add any of the following and set to `True` or `False`:
 ```
-mono = True          # -m option
-compact = True       # -c option
-lines = True         # -l option
-raw = True           # -r option
-nulls = True         # -n option
-schema = True        # -s option
+mono = True                # -m option
+compact = True             # -c option
+lines = True               # -l option
+raw = True                 # -r option
+nulls = True               # -n option
+schema = True              # -s option
 ```
+You can customize the colors by setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
+```
+keyname_color = 'blue'
+keyword_color = 'brightblack'
+number_color = 'magenta'
+string_color = 'green'
+arrayid_color = 'red'
+arraybracket_color = 'magenta' 
+```
+> Note: Any colors set via the `JELLO_COLORS` environment variable will take precedence over any color values set in the `.jelloconf.py` configuration file
 
 ##### Importing Modules
 To import a module (e.g. `glom`) during initialization, just add the `import` statement to your `.jelloconf.py` file:
@@ -94,6 +104,23 @@ $ jc -a | jello -i 'g("parsers.6.compatible")'
   "aix",
   "freebsd"
 ]
+```
+## Setting Custom Colors via Environment Variable
+In addition to setting custom colors in the `.jelloconf.py` intialization file, you can also set them via the `JELLO_COLORS` environment variable. Any colors set in the environment variable will take precedence over any colors set in the initialization file.
+
+The `JELLO_COLORS` environment variable takes six comma separated string values in the following format:
+```
+JELLO_COLORS=<key_name_color>,<keyword_color>,<number_color>,<string_color>,<array_id_color>,<array_bracket_color>
+```
+Where colors are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `gray`, `brightblack`, `brightred`, `brightgreen`, `brightyellow`, `brightblue`, `brightmagenta`, `brightcyan`, `white`, or  `default`
+
+For example, to set to the default colors:
+```
+JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+```
+or
+```
+JELLO_COLORS=default,default,default,default,default,default
 ```
 
 ## Examples:
