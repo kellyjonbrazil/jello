@@ -52,14 +52,16 @@ class JelloTheme:
 def set_env_colors(keyname_color, keyword_color, number_color, string_color,
                       arrayid_color, arraybracket_color):
     """
-    Grab custom colors from JELLO_COLORS environment variable or .jelloconf.py file.
+    Grab custom colors from JELLO_COLORS environment variable or .jelloconf.py file. Individual colors from JELLO_COLORS
+    take precedence over .jelloconf.py. Individual colors from JELLO_COLORS will fall back to .jelloconf.py or default
+    if the color is set to 'default'
 
     JELLO_COLORS env variable should be in the format of:
 
     JELLO_COLORS=<key_name_color>,<keyword_color>,<number_color>,<string_color>,<array_id_color>,<array_bracket_color>
 
     Where colors are: black, red, green, yellow, blue, magenta, cyan, gray, brightblack, brightred,
-                      brightgreen, brightyellow, brightblue, brightmagenta, brightcyan, white
+                      brightgreen, brightyellow, brightblue, brightmagenta, brightcyan, white, default
 
     Default colors:
 
@@ -77,28 +79,27 @@ def set_env_colors(keyname_color, keyword_color, number_color, string_color,
     if env_colors and len(color_list) != 6:
         print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
         input_error = True
-        env_colors = None
 
     if env_colors:
         for color in color_list:
             if color not in ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
-                             'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']:
+                             'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white', 'default']:
                 print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
                 input_error = True
-                env_colors = None
 
+    # if there is an issue with the env variable, just set all colors to default and move on
     if input_error:
-        color_list = ['red', 'red', 'red', 'red', 'red', 'red']
+        color_list = ['default', 'default', 'default', 'default', 'default', 'default']
 
-    print(color_list, keyname_color)
-
+    # Try the color set in the JELLO_COLORS env variable first. If it is set to default, then fall back to .jelloconf.py
+    # configuration. If nothing is set in jelloconf.py, then use the default colors.
     JelloTheme.colors = {
-        'key_name': color_map[color_list[0]] if env_colors else color_map[keyname_color] if keyname_color else color_map['blue'],
-        'keyword': color_map[color_list[1]] if env_colors else color_map[keyword_color] if keyword_color else color_map['brightblack'],
-        'number': color_map[color_list[2]] if env_colors else color_map[number_color] if number_color else color_map['magenta'],
-        'string': color_map[color_list[3]] if env_colors else color_map[string_color] if string_color else color_map['green'],
-        'array_id': color_map[color_list[4]] if env_colors else color_map[arrayid_color] if arrayid_color else color_map['red'],
-        'array_bracket': color_map[color_list[5]] if env_colors else color_map[arraybracket_color] if arraybracket_color else color_map['magenta']
+        'key_name': color_map[color_list[0]] if not color_list[0] == 'default' else color_map[keyname_color] if keyname_color else color_map['blue'],
+        'keyword': color_map[color_list[1]] if not color_list[1] == 'default' else color_map[keyword_color] if keyword_color else color_map['brightblack'],
+        'number': color_map[color_list[2]] if not color_list[2] == 'default' else color_map[number_color] if number_color else color_map['magenta'],
+        'string': color_map[color_list[3]] if not color_list[3] == 'default' else color_map[string_color] if string_color else color_map['green'],
+        'array_id': color_map[color_list[4]] if not color_list[4] == 'default' else color_map[arrayid_color] if arrayid_color else color_map['red'],
+        'array_bracket': color_map[color_list[5]] if not color_list[5] == 'default' else color_map[arraybracket_color] if arraybracket_color else color_map['magenta']
     }
 
 
