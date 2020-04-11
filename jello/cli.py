@@ -50,7 +50,7 @@ class JelloTheme:
 
 
 def set_env_colors(keyname_color, keyword_color, number_color, string_color,
-                      arrayid_color, arraybracket_color):
+                   arrayid_color, arraybracket_color):
     """
     Grab custom colors from JELLO_COLORS environment variable or .jelloconf.py file. Individual colors from JELLO_COLORS
     take precedence over .jelloconf.py. Individual colors from JELLO_COLORS will fall back to .jelloconf.py or default
@@ -66,6 +66,8 @@ def set_env_colors(keyname_color, keyword_color, number_color, string_color,
     Default colors:
 
     JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+
+    This function does not return anything. It just updates the JelloTheme.colors dictionary
 
     """
     env_colors = os.getenv('JELLO_COLORS')
