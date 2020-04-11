@@ -55,21 +55,21 @@ The file must be named `.jelloconf.py` and must be located in the proper directo
 ##### Setting Options
 To set `jello` options in the `.jelloconf.py` file, add any of the following and set to `True` or `False`:
 ```
-mono = True                # -m option
-compact = True             # -c option
-lines = True               # -l option
-raw = True                 # -r option
-nulls = True               # -n option
-schema = True              # -s option
+mono = True            # -m option
+compact = True         # -c option
+lines = True           # -l option
+raw = True             # -r option
+nulls = True           # -n option
+schema = True          # -s option
 ```
 You can customize the colors by setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
 ```
-keyname_color = 'blue'
-keyword_color = 'brightblack'
-number_color = 'magenta'
-string_color = 'green'
-arrayid_color = 'red'
-arraybracket_color = 'magenta' 
+keyname_color = 'blue'            # Key names
+keyword_color = 'brightblack'     # true, false, null
+number_color = 'magenta'          # integers, floats
+string_color = 'green'            # strings
+arrayid_color = 'red'             # array IDs in Schema view
+arraybracket_color = 'magenta'    # array brackets in Schema view
 ```
 > Note: Any colors set via the `JELLO_COLORS` environment variable will take precedence over any color values set in the `.jelloconf.py` configuration file
 
