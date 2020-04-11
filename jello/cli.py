@@ -16,13 +16,84 @@ from pygments.formatters import Terminal256Formatter
 
 __version__ = '1.2.4'
 
+color_map = {
+    'black': ('ansiblack', '\33[30m'),
+    'red': ('ansired', '\33[31m'),
+    'green': ('ansigreen', '\33[32m'),
+    'yellow': ('ansiyellow', '\33[33m'),
+    'blue': ('ansiblue', '\33[34m'),
+    'magenta': ('ansimagenta', '\33[35m'),
+    'cyan': ('ansicyan', '\33[36m'),
+    'gray': ('ansigray', '\33[37m'),
+    'brightblack': ('ansibrightblack', '\33[90m'),
+    'brightred': ('ansibrightred', '\33[91m'),
+    'brightgreen': ('ansibrightgreen', '\33[92m'),
+    'brightyellow': ('ansibrightyellow', '\33[93m'),
+    'brightblue': ('ansibrightblue', '\33[94m'),
+    'brightmagenta': ('ansibrightmagenta', '\33[95m'),
+    'brightcyan': ('ansibrightcyan', '\33[96m'),
+    'white': ('ansiwhite', '\33[97m'),
+}
 
-class JelloStyle(Style):
-    styles = {
-        Name.Tag: 'bold ansiblue',     # key names
-        Keyword: 'ansibrightblack',    # true, false, null
-        Number: 'ansimagenta',         # int, float
-        String: 'ansigreen'            # string
+
+class JelloTheme:
+    # default colors
+    colors = {
+        'key_name': color_map['blue'],
+        'keyword': color_map['brightblack'],
+        'number': color_map['magenta'],
+        'string': color_map['green'],
+        'array_id': color_map['red'],
+        'array_bracket': color_map['magenta']
+    }
+    
+    # styles = {
+    #     Name.Tag: f'bold {JelloStyle.jello_style_color["key_name"][0]}',   # key names
+    #     Keyword: f'{JelloStyle.jello_style_color["keyword"][0]}',          # true, false, null
+    #     Number: f'{JelloStyle.jello_style_color["number"][0]}',            # int, float
+    #     String: f'{JelloStyle.jello_style_color["string"][0]}'             # string
+    # }
+    
+
+
+def set_custom_colors():
+    """
+    Grab custom colors from JELLO_COLORS environment variable. Should be in the format of:
+
+    JELLO_COLORS=<key_name_color>,<keyword_color>,<number_color>,<string_color>,<array_id_color>,<array_bracket_color>
+
+    Where colors are: black, red, green, yellow, blue, magenta, cyan, gray, brightblack, brightred,
+                      brightgreen, brightyellow, brightblue, brightmagenta, brightcyan, white
+
+    Default colors:
+
+    JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+
+    """
+    custom_colors = os.getenv('JELLO_COLORS')
+
+    if isinstance(custom_colors, str):
+        color_list = custom_colors.split(',')
+    else:
+        return
+
+    if len(color_list) != 6:
+        print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
+        return
+
+    for color in color_list:
+        if color not in ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
+                         'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']:
+            print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
+            return
+
+    JelloTheme.colors = {
+        'key_name': color_map[color_list[0]],
+        'keyword': color_map[color_list[1]],
+        'number': color_map[color_list[2]],
+        'string': color_map[color_list[3]],
+        'array_id': color_map[color_list[4]],
+        'array_bracket': color_map[color_list[5]]
     }
 
 
@@ -76,67 +147,62 @@ def print_schema(src, path='', mono=False):
     if not mono:
         CEND = '\33[0m'
         CBOLD = '\33[1m'
-        CBLUE = '\33[34m'
-        CGREEN = '\33[32m'
-        CVIOLET = '\33[35m'
-        CGRAY = '\33[90m'
-        CRED = '\33[31m'
+        CKEYNAME = f'{JelloTheme.colors["key_name"][1]}'
+        CKEYWORD = f'{JelloTheme.colors["keyword"][1]}'
+        CNUMBER = f'{JelloTheme.colors["number"][1]}'
+        CSTRING = f'{JelloTheme.colors["string"][1]}'
+        CARRAYID = f'{JelloTheme.colors["array_id"][1]}'
+        CARRAYBRACKET =  f'{JelloTheme.colors["array_bracket"][1]}'
+
     else:
         CEND = ''
         CBOLD = ''
-        CBLUE = ''
-        CGREEN = ''
-        CVIOLET = ''
-        CGRAY = ''
-        CRED = ''
+        CKEYNAME = ''
+        CKEYWORD = ''
+        CNUMBER = ''
+        CSTRING = ''
+        CARRAYID = ''
+        CARRAYBRACKET =  ''
 
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
-            if not mono:
-                i = f'{CRED}{i}{CEND}'
-            print_schema(item, path=f'.{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
+            print_schema(item, path=f'.{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
-            if not mono:
-                src = f'{CBOLD}{CBLUE}{src}{CEND}'
-                i = f'{CRED}{i}{CEND}'
-            print_schema(item, path=f'{path}.{src}{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
+            print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{src}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
 
     elif isinstance(src, dict):
         for k, v in src.items():
             if isinstance(v, list):
                 for i, item in enumerate(v):
-                    if not mono:
-                        k = f'{CBOLD}{CBLUE}{k}{CEND}'
-                        i = f'{CRED}{i}{CEND}'
-                    print_schema(item, path=f'{path}.{k}{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
+                    print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{k}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
 
             elif isinstance(v, dict):
                 if not mono:
-                    k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                    k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
                 print_schema(v, path=f'{path}.{k}', mono=mono)
 
             else:
-                k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
                 val = json.dumps(v)
                 if val == 'true' or val == 'false' or val == 'null':
-                    val = f'{CGRAY}{val}{CEND}'
+                    val = f'{CKEYWORD}{val}{CEND}'
                 elif val.replace('.', '', 1).isdigit():
-                    val = f'{CVIOLET}{val}{CEND}'
+                    val = f'{CNUMBER}{val}{CEND}'
                 else:
-                    val = f'{CGREEN}{val}{CEND}'
+                    val = f'{CSTRING}{val}{CEND}'
 
                 print(f'{path}.{k} = {val};')
 
     else:
         val = json.dumps(src)
         if val == 'true' or val == 'false' or val == 'null':
-            val = f'{CGRAY}{val}{CEND}'
+            val = f'{CKEYWORD}{val}{CEND}'
         elif val.replace('.', '', 1).isdigit():
-            val = f'{CVIOLET}{val}{CEND}'
+            val = f'{CNUMBER}{val}{CEND}'
         else:
-            val = f'{CGREEN}{val}{CEND}'
+            val = f'{CSTRING}{val}{CEND}'
 
         print(f'{path} = {val};')
 
@@ -383,6 +449,19 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     if query and 'lines(' in query:
         print_error('jello:  Error: lines() function is deprecated. Please use the -l option instead.\n')
 
+    set_custom_colors()
+    # dynamically create JelloStyle class with user values or default
+    global JelloStyle
+    JelloStyle = type('JelloStyle', (Style,), {
+            'styles': {
+                Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
+                Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
+                Number: f'{JelloTheme.colors["number"][0]}',            # int, float
+                String: f'{JelloTheme.colors["string"][0]}'             # string
+            }
+        }
+    )
+
     list_dict_data = load_json(data)
 
     # pulling variables back from pyquery since the user may have defined intialization options
@@ -402,7 +481,10 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     try:
         if commandline:
             if not mono and not lines and stdout_is_tty():
-                print(highlight(output, JsonLexer(), Terminal256Formatter(style=JelloStyle))[0:-1])
+                lexer = JsonLexer()
+                formatter = Terminal256Formatter(style=JelloStyle)
+                highlighted_json = highlight(output, lexer, formatter)
+                print(highlighted_json[0:-1])
             else:
                 print(output)
         else:
