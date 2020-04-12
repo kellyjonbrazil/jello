@@ -516,17 +516,16 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     set_env_colors(keyname_color, keyword_color, number_color,
                    string_color, arrayid_color, arraybracket_color)
 
-    # dynamically create JelloStyle class with user values from set_env_colors or default values
-    global JelloStyle
-    JelloStyle = type('JelloStyle', (Style,), {
-            'styles': {
-                Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
-                Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
-                Number: f'{JelloTheme.colors["number"][0]}',            # int, float
-                String: f'{JelloTheme.colors["string"][0]}'             # string
-            }
+    # create JelloStyle class with user values from set_env_colors() or default values
+    # need to do this here (not at global level), otherwise default values will not be updated
+    class JelloStyle(Style):
+        styles = {
+            Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
+            Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
+            Number: f'{JelloTheme.colors["number"][0]}',            # int, float
+            String: f'{JelloTheme.colors["string"][0]}'             # string
         }
-    )
+ 
 
     if schema:
         if not stdout_is_tty():
