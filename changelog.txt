@@ -1,5 +1,8 @@
 jello changelog
 
+20200412 v1.2.5
+- Add custom colors to JELLO_COLORS env variable and .jelloconf.py
+
 20200409 v1.2.4
 - Fix Windows compatibility for broken pipe handling
 

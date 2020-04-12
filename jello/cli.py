@@ -14,15 +14,89 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
-__version__ = '1.2.4'
+
+__version__ = '1.2.5'
+
+color_map = {
+    'black': ('ansiblack', '\33[30m'),
+    'red': ('ansired', '\33[31m'),
+    'green': ('ansigreen', '\33[32m'),
+    'yellow': ('ansiyellow', '\33[33m'),
+    'blue': ('ansiblue', '\33[34m'),
+    'magenta': ('ansimagenta', '\33[35m'),
+    'cyan': ('ansicyan', '\33[36m'),
+    'gray': ('ansigray', '\33[37m'),
+    'brightblack': ('ansibrightblack', '\33[90m'),
+    'brightred': ('ansibrightred', '\33[91m'),
+    'brightgreen': ('ansibrightgreen', '\33[92m'),
+    'brightyellow': ('ansibrightyellow', '\33[93m'),
+    'brightblue': ('ansibrightblue', '\33[94m'),
+    'brightmagenta': ('ansibrightmagenta', '\33[95m'),
+    'brightcyan': ('ansibrightcyan', '\33[96m'),
+    'white': ('ansiwhite', '\33[97m'),
+}
 
 
-class JelloStyle(Style):
-    styles = {
-        Name.Tag: 'bold ansiblue',     # key names
-        Keyword: 'ansibrightblack',    # true, false, null
-        Number: 'ansimagenta',         # int, float
-        String: 'ansigreen'            # string
+class JelloTheme:
+    """this class will contain the colors dictionary generated from set_env_colors()"""
+    pass
+
+
+def set_env_colors(keyname_color, keyword_color, number_color, string_color,
+                   arrayid_color, arraybracket_color):
+    """
+    This function does not return a value. It just updates the JelloTheme.colors dictionary.
+
+    Grab custom colors from JELLO_COLORS environment variable and .jelloconf.py file. Individual colors from JELLO_COLORS
+    take precedence over .jelloconf.py. Individual colors from JELLO_COLORS will fall back to .jelloconf.py or default
+    if the env variable color is set to 'default'
+
+    JELLO_COLORS env variable takes 6 comma separated string values and should be in the format of:
+
+    JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+
+    Where colors are: black, red, green, yellow, blue, magenta, cyan, gray, brightblack, brightred,
+                      brightgreen, brightyellow, brightblue, brightmagenta, brightcyan, white, default
+
+    Default colors:
+
+    JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+    or
+    JELLO_COLORS=default,default,default,default,default,default
+
+    """
+    env_colors = os.getenv('JELLO_COLORS')
+    input_error = False
+
+    if env_colors:
+        color_list = env_colors.split(',')
+    else:
+        input_error = True
+
+    if env_colors and len(color_list) != 6:
+        print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
+        input_error = True
+
+    if env_colors:
+        for color in color_list:
+            if color not in ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
+                             'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white', 'default']:
+                print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
+                input_error = True
+
+    # if there is an issue with the env variable, just set all colors to default and move on
+    if input_error:
+        color_list = ['default', 'default', 'default', 'default', 'default', 'default']
+
+    # Try the color set in the JELLO_COLORS env variable first. If it is set to default, then fall back to .jelloconf.py
+    # configuration. If nothing is set in jelloconf.py, then use the default colors.
+    JelloTheme.colors = {
+        'key_name': color_map[color_list[0]] if not color_list[0] == 'default' else color_map[keyname_color] if keyname_color else color_map['blue'],
+        'keyword': color_map[color_list[1]] if not color_list[1] == 'default' else color_map[keyword_color] if keyword_color else color_map['brightblack'],
+        'number': color_map[color_list[2]] if not color_list[2] == 'default' else color_map[number_color] if number_color else color_map['magenta'],
+        'string': color_map[color_list[3]] if not color_list[3] == 'default' else color_map[string_color] if string_color else color_map['green'],
+        'array_id': color_map[color_list[4]] if not color_list[4] == 'default' else color_map[arrayid_color] if arrayid_color else color_map['red'],
+        'array_bracket': color_map[color_list[5]] if not color_list[5] == 'default' else color_map[arraybracket_color] if arraybracket_color else color_map['magenta']
     }
 
 
@@ -76,67 +150,62 @@ def print_schema(src, path='', mono=False):
     if not mono:
         CEND = '\33[0m'
         CBOLD = '\33[1m'
-        CBLUE = '\33[34m'
-        CGREEN = '\33[32m'
-        CVIOLET = '\33[35m'
-        CGRAY = '\33[90m'
-        CRED = '\33[31m'
+        CKEYNAME = f'{JelloTheme.colors["key_name"][1]}'
+        CKEYWORD = f'{JelloTheme.colors["keyword"][1]}'
+        CNUMBER = f'{JelloTheme.colors["number"][1]}'
+        CSTRING = f'{JelloTheme.colors["string"][1]}'
+        CARRAYID = f'{JelloTheme.colors["array_id"][1]}'
+        CARRAYBRACKET =  f'{JelloTheme.colors["array_bracket"][1]}'
+
     else:
         CEND = ''
         CBOLD = ''
-        CBLUE = ''
-        CGREEN = ''
-        CVIOLET = ''
-        CGRAY = ''
-        CRED = ''
+        CKEYNAME = ''
+        CKEYWORD = ''
+        CNUMBER = ''
+        CSTRING = ''
+        CARRAYID = ''
+        CARRAYBRACKET =  ''
 
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
-            if not mono:
-                i = f'{CRED}{i}{CEND}'
-            print_schema(item, path=f'.{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
+            print_schema(item, path=f'.{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
-            if not mono:
-                src = f'{CBOLD}{CBLUE}{src}{CEND}'
-                i = f'{CRED}{i}{CEND}'
-            print_schema(item, path=f'{path}.{src}{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
+            print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{src}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
 
     elif isinstance(src, dict):
         for k, v in src.items():
             if isinstance(v, list):
                 for i, item in enumerate(v):
-                    if not mono:
-                        k = f'{CBOLD}{CBLUE}{k}{CEND}'
-                        i = f'{CRED}{i}{CEND}'
-                    print_schema(item, path=f'{path}.{k}{CVIOLET}[{CEND}{i}{CVIOLET}]{CEND}', mono=mono)
+                    print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{k}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
 
             elif isinstance(v, dict):
                 if not mono:
-                    k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                    k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
                 print_schema(v, path=f'{path}.{k}', mono=mono)
 
             else:
-                k = f'{CBOLD}{CBLUE}{k}{CEND}'
+                k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
                 val = json.dumps(v)
                 if val == 'true' or val == 'false' or val == 'null':
-                    val = f'{CGRAY}{val}{CEND}'
+                    val = f'{CKEYWORD}{val}{CEND}'
                 elif val.replace('.', '', 1).isdigit():
-                    val = f'{CVIOLET}{val}{CEND}'
+                    val = f'{CNUMBER}{val}{CEND}'
                 else:
-                    val = f'{CGREEN}{val}{CEND}'
+                    val = f'{CSTRING}{val}{CEND}'
 
                 print(f'{path}.{k} = {val};')
 
     else:
         val = json.dumps(src)
         if val == 'true' or val == 'false' or val == 'null':
-            val = f'{CGRAY}{val}{CEND}'
+            val = f'{CKEYWORD}{val}{CEND}'
         elif val.replace('.', '', 1).isdigit():
-            val = f'{CVIOLET}{val}{CEND}'
+            val = f'{CNUMBER}{val}{CEND}'
         else:
-            val = f'{CGREEN}{val}{CEND}'
+            val = f'{CSTRING}{val}{CEND}'
 
         print(f'{path} = {val};')
 
@@ -213,7 +282,9 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
             return f'"{data}"'
 
 
-def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None, schema=None):
+def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None, schema=None,
+            keyname_color=None, keyword_color=None, number_color=None, string_color=None, arrayid_color=None,
+            arraybracket_color=None):
     _ = data
     jelloconf = ''
 
@@ -235,7 +306,7 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
     output = None
 
     try:
-        # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono)
+        # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono, and custom colors)
         for expr in ast.parse(jelloconf).body:
             if isinstance(expr, ast.Assign):
                 if expr.targets[0].id == 'compact':
@@ -250,6 +321,41 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                     mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'schema':
                     schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'keyname_color':
+                    keyname_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'keyword_color':
+                    keyword_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'number_color':
+                    number_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'string_color':
+                    string_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'arrayid_color':
+                    arrayid_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                if expr.targets[0].id == 'arraybracket_color':
+                    arraybracket_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+
+                # validate the data in the initialization file
+                warn_options = False
+                warn_colors = False
+
+                for option in [compact, raw, lines, nulls, mono, schema]:
+                    if not isinstance(option, bool):
+                        compact = raw = lines = nulls = mono = schema = None
+                        warn_options = True
+
+                for color_config in [keyname_color, keyword_color, number_color, string_color, arrayid_color, arraybracket_color]:
+                    valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
+                                    'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
+                    if color_config not in valid_colors and color_config is not None:
+                        keyname_color = keyword_color = number_color = string_color = arrayid_color = arraybracket_color = None
+                        warn_colors = True
+
+                if warn_options:
+                    print(f'Jello:   Warning: Options must be set to True or False in {conf_file}\n         Unsetting all options.\n')
+
+                if warn_colors:
+                    valid_colors_string = ', '.join(valid_colors)
+                    print(f'Jello:   Warning: Colors must be set to one of: {valid_colors_string} in {conf_file}\n         Unsetting all colors.\n')
 
         # run the query
         block = ast.parse(query, mode='exec')
@@ -257,8 +363,10 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
         exec(compile(block, '<string>', mode='exec'))
         output = eval(compile(last, '<string>', mode='eval'))
 
-        # need to return compact, nulls, raw, lines, mono, schema in case they were changed in .jelloconf.py
-        return (output, compact, nulls, raw, lines, mono, schema)
+        # need to return compact, nulls, raw, lines, mono, schema, keyname_color, number_color, sring_color,
+        # arrayid_color, arraybracket_color in case they were changed in .jelloconf.py
+        return (output, compact, nulls, raw, lines, mono, schema, keyname_color, keyword_color, number_color, string_color,
+                arrayid_color, arraybracket_color)
 
     except KeyError as e:
         print_error(textwrap.dedent(f'''\
@@ -370,6 +478,8 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     version_info = version_info if not commandline else 'v' in options
     helpme = helpme if not commandline else 'h' in options
 
+    keyname_color = keyword_color = number_color = string_color = arrayid_color = arraybracket_color = None
+
     if helpme:
         helptext()
 
@@ -387,9 +497,28 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
     # pulling variables back from pyquery since the user may have defined intialization options
     # in their .jelloconf.py file
-    response, compact, nulls, raw, lines, mono, schema = pyquery(list_dict_data, query, initialize=initialize,
-                                                                 compact=compact, nulls=nulls, raw=raw, lines=lines,
-                                                                 mono=mono, schema=schema)
+    (response, compact, nulls, raw, lines, mono, schema, 
+     keyname_color, keyword_color, number_color, string_color,
+     arrayid_color, arraybracket_color) = pyquery(list_dict_data, query, initialize=initialize,
+                                                  compact=compact, nulls=nulls, raw=raw, lines=lines,
+                                                  mono=mono, schema=schema, keyname_color=keyname_color,
+                                                  keyword_color=keyword_color, number_color=number_color,
+                                                  string_color=string_color, arrayid_color=arrayid_color,
+                                                  arraybracket_color=arraybracket_color)
+
+    set_env_colors(keyname_color, keyword_color, number_color,
+                   string_color, arrayid_color, arraybracket_color)
+
+    # create JelloStyle class with user values from set_env_colors() or default values
+    # need to do this here (not at global level), otherwise default values will not be updated
+    class JelloStyle(Style):
+        styles = {
+            Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
+            Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
+            Number: f'{JelloTheme.colors["number"][0]}',            # int, float
+            String: f'{JelloTheme.colors["string"][0]}'             # string
+        }
+ 
 
     if schema:
         if not stdout_is_tty():
@@ -402,7 +531,10 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     try:
         if commandline:
             if not mono and not lines and stdout_is_tty():
-                print(highlight(output, JsonLexer(), Terminal256Formatter(style=JelloStyle))[0:-1])
+                lexer = JsonLexer()
+                formatter = Terminal256Formatter(style=JelloStyle)
+                highlighted_json = highlight(output, lexer, formatter)
+                print(highlighted_json[0:-1])
             else:
                 print(output)
         else:
