@@ -62,6 +62,7 @@ raw = True             # -r option
 nulls = True           # -n option
 schema = True          # -s option
 ```
+##### Setting Colors
 You can customize the colors by setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
 ```
 keyname_color = 'blue'            # Key names
