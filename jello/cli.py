@@ -341,6 +341,29 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                 if expr.targets[0].id == 'arraybracket_color':
                     arraybracket_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
 
+                # validate the data in the initialization file
+                warn_options = False
+                warn_colors = False
+
+                for option in [compact, raw, lines, nulls, mono, schema]:
+                    if not isinstance(option, bool):
+                        compact = raw = lines = nulls = mono = schema = None
+                        warn_options = True
+
+                for color_config in [keyname_color, keyword_color, number_color, string_color, arrayid_color, arraybracket_color]:
+                    valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
+                                    'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
+                    if color_config not in valid_colors and color_config is not None:
+                        keyname_color = keyword_color = number_color = string_color = arrayid_color = arraybracket_color = None
+                        warn_colors = True
+
+                if warn_options:
+                    print(f'Jello:   Warning: Options must be set to True or False in {conf_file}\n         Unsetting all options.\n')
+
+                if warn_colors:
+                    valid_colors_string = ', '.join(valid_colors)
+                    print(f'Jello:   Warning: Colors must be set to one of: {valid_colors_string} in {conf_file}\n         Unsetting all colors.\n')
+
         # run the query
         block = ast.parse(query, mode='exec')
         last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
