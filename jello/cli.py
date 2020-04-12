@@ -38,15 +38,8 @@ color_map = {
 
 
 class JelloTheme:
-    # default colors
-    colors = {
-        'key_name': color_map['blue'],
-        'keyword': color_map['brightblack'],
-        'number': color_map['magenta'],
-        'string': color_map['green'],
-        'array_id': color_map['red'],
-        'array_bracket': color_map['magenta']
-    }
+    """this class will contain the colors dictionary generated from set_env_colors()"""
+    pass
 
 
 def set_env_colors(keyname_color, keyword_color, number_color, string_color,
