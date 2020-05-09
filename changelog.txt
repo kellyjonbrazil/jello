@@ -1,5 +1,10 @@
 jello changelog
 
+20200509 v1.2.6
+- Add license file to package
+- Remove tests from package
+- Reduce pygments requirement to v2.4.2
+
 20200412 v1.2.5
 - Add custom colors to JELLO_COLORS env variable and .jelloconf.py
 
