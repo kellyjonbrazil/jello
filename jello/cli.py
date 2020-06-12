@@ -14,7 +14,7 @@ from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
 
-__version__ = '1.2.6'
+__version__ = '1.2.7'
 
 color_map = {
     'black': ('ansiblack', '\33[30m'),
@@ -492,60 +492,62 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     if query and 'lines(' in query:
         print_error('jello:  Error: lines() function is deprecated. Please use the -l option instead.\n')
 
-    list_dict_data = load_json(data)
+    # only process if there is data
+    if list(filter(None, data.strip().splitlines())):
+        list_dict_data = load_json(data)
 
-    # pulling variables back from pyquery since the user may have defined intialization options
-    # in their .jelloconf.py file
-    (response, compact, nulls, raw, lines, mono, schema, 
-     keyname_color, keyword_color, number_color, string_color,
-     arrayid_color, arraybracket_color) = pyquery(list_dict_data, query, initialize=initialize,
-                                                  compact=compact, nulls=nulls, raw=raw, lines=lines,
-                                                  mono=mono, schema=schema, keyname_color=keyname_color,
-                                                  keyword_color=keyword_color, number_color=number_color,
-                                                  string_color=string_color, arrayid_color=arrayid_color,
-                                                  arraybracket_color=arraybracket_color)
+        # pulling variables back from pyquery since the user may have defined intialization options
+        # in their .jelloconf.py file
+        (response, compact, nulls, raw, lines, mono, schema, 
+         keyname_color, keyword_color, number_color, string_color,
+         arrayid_color, arraybracket_color) = pyquery(list_dict_data, query, initialize=initialize,
+                                                      compact=compact, nulls=nulls, raw=raw, lines=lines,
+                                                      mono=mono, schema=schema, keyname_color=keyname_color,
+                                                      keyword_color=keyword_color, number_color=number_color,
+                                                      string_color=string_color, arrayid_color=arrayid_color,
+                                                      arraybracket_color=arraybracket_color)
 
-    set_env_colors(keyname_color, keyword_color, number_color,
-                   string_color, arrayid_color, arraybracket_color)
+        set_env_colors(keyname_color, keyword_color, number_color,
+                       string_color, arrayid_color, arraybracket_color)
 
-    # create JelloStyle class with user values from set_env_colors() or default values
-    # need to do this here (not at global level), otherwise default values will not be updated
-    class JelloStyle(Style):
-        styles = {
-            Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
-            Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
-            Number: f'{JelloTheme.colors["number"][0]}',            # int, float
-            String: f'{JelloTheme.colors["string"][0]}'             # string
-        }
- 
+        # create JelloStyle class with user values from set_env_colors() or default values
+        # need to do this here (not at global level), otherwise default values will not be updated
+        class JelloStyle(Style):
+            styles = {
+                Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
+                Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
+                Number: f'{JelloTheme.colors["number"][0]}',            # int, float
+                String: f'{JelloTheme.colors["string"][0]}'             # string
+            }
+     
 
-    if schema:
-        if not stdout_is_tty():
-            mono = True
-        print_schema(response, mono=mono)
-        exit()
-    else:
-        output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
-
-    try:
-        if commandline:
-            if not mono and not lines and stdout_is_tty():
-                lexer = JsonLexer()
-                formatter = Terminal256Formatter(style=JelloStyle)
-                highlighted_json = highlight(output, lexer, formatter)
-                print(highlighted_json[0:-1])
-            else:
-                print(output)
+        if schema:
+            if not stdout_is_tty():
+                mono = True
+            print_schema(response, mono=mono)
+            exit()
         else:
-            return output
+            output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
 
-    except Exception as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  Output Exception:  {e}
-                    list_dict_data: {list_dict_data}
-                    response: {response}
-                    output: {output}
-        '''))
+        try:
+            if commandline:
+                if not mono and not lines and stdout_is_tty():
+                    lexer = JsonLexer()
+                    formatter = Terminal256Formatter(style=JelloStyle)
+                    highlighted_json = highlight(output, lexer, formatter)
+                    print(highlighted_json[0:-1])
+                else:
+                    print(output)
+            else:
+                return output
+
+        except Exception as e:
+            print_error(textwrap.dedent(f'''\
+                jello:  Output Exception:  {e}
+                        list_dict_data: {list_dict_data}
+                        response: {response}
+                        output: {output}
+            '''))
 
 
 if __name__ == '__main__':
