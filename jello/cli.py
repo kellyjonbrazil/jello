@@ -14,7 +14,7 @@ from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
 
-__version__ = '1.2.7'
+__version__ = '1.2.8'
 
 color_map = {
     'black': ('ansiblack', '\33[30m'),
@@ -493,7 +493,7 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
         print_error('jello:  Error: lines() function is deprecated. Please use the -l option instead.\n')
 
     # only process if there is data
-    if data and not data.isspace()
+    if data and not data.isspace():
 
         list_dict_data = load_json(data)
 

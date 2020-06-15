@@ -1,5 +1,8 @@
 jello changelog
 
+20200614 v1.2.8
+- Improve handling of blank input
+
 20200612 v1.2.7
 - Handle blank input gracefully
 
