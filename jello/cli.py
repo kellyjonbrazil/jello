@@ -493,7 +493,8 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
         print_error('jello:  Error: lines() function is deprecated. Please use the -l option instead.\n')
 
     # only process if there is data
-    if list(filter(None, data.strip().splitlines())):
+    if data and not data.isspace()
+
         list_dict_data = load_json(data)
 
         # pulling variables back from pyquery since the user may have defined intialization options
