@@ -154,7 +154,7 @@ def print_schema(src, path='', mono=False):
         CNUMBER = f'{JelloTheme.colors["number"][1]}'
         CSTRING = f'{JelloTheme.colors["string"][1]}'
         CARRAYID = f'{JelloTheme.colors["array_id"][1]}'
-        CARRAYBRACKET =  f'{JelloTheme.colors["array_bracket"][1]}'
+        CARRAYBRACKET = f'{JelloTheme.colors["array_bracket"][1]}'
 
     else:
         CEND = ''
@@ -164,7 +164,7 @@ def print_schema(src, path='', mono=False):
         CNUMBER = ''
         CSTRING = ''
         CARRAYID = ''
-        CARRAYBRACKET =  ''
+        CARRAYBRACKET = ''
 
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
@@ -499,7 +499,7 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
         # pulling variables back from pyquery since the user may have defined intialization options
         # in their .jelloconf.py file
-        (response, compact, nulls, raw, lines, mono, schema, 
+        (response, compact, nulls, raw, lines, mono, schema,
          keyname_color, keyword_color, number_color, string_color,
          arrayid_color, arraybracket_color) = pyquery(list_dict_data, query, initialize=initialize,
                                                       compact=compact, nulls=nulls, raw=raw, lines=lines,
@@ -520,7 +520,6 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                 Number: f'{JelloTheme.colors["number"][0]}',            # int, float
                 String: f'{JelloTheme.colors["string"][0]}'             # string
             }
-     
 
         if schema:
             if not stdout_is_tty():
