@@ -1,5 +1,8 @@
 jello changelog
 
+20200728 v1.2.9
+- Use sys.exit() for pyoxidizer support
+
 20200614 v1.2.8
 - Improve handling of blank input
 
