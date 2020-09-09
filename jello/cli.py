@@ -14,7 +14,7 @@ from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
 
-__version__ = '1.2.9'
+__version__ = '1.2.10'
 
 color_map = {
     'black': ('ansiblack', '\33[30m'),
@@ -283,7 +283,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
 
 def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None, schema=None,
             keyname_color=None, keyword_color=None, number_color=None, string_color=None, arrayid_color=None,
-            arraybracket_color=None):
+            arraybracket_color=None, as_lib=None):
     _ = data
     jelloconf = ''
 
@@ -368,43 +368,69 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
                 arrayid_color, arraybracket_color)
 
     except KeyError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  Key does not exist: {e}
-        '''))
+        msg = f'Key does not exist: {e}'
+        if as_lib:
+            raise type(e)(msg)
+        else:
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
 
     except IndexError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  {e}
-        '''))
+        if as_lib:
+            raise type(e)(e)
+        else:
+            print_error(textwrap.dedent(f'''\
+                jello:  {e}
+            '''))
 
     except SyntaxError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  {e}
-                    {e.text}
-        '''))
+        if as_lib:
+            raise type(e)(e)
+        else:
+            print_error(textwrap.dedent(f'''\
+                jello:  {e}
+                        {e.text}
+            '''))
 
     except TypeError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  TypeError: {e}
-        '''))
+        msg = f'TypeError: {e}'
+        if as_lib:
+            raise type(e)(msg)
+        else:
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
 
     except AttributeError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  AttributeError: {e}
-        '''))
+        msg = f'AttributeError: {e}'
+        if as_lib:
+            raise type(e)(msg)
+        else:
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
 
     except NameError as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  NameError: {e}
-        '''))
+        msg = f'NameError: {e}'
+        if as_lib:
+            raise type(e)(msg)
+        else:
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
 
     except Exception as e:
-        print_error(textwrap.dedent(f'''\
-            jello:  Query Exception: {e}
-                    _: {_}
-                    query: {query}
-                    output: {output}
-        '''))
+        msg = textwrap.dedent(f'''Query Exception: {e}
+                                  _: {_}
+                                  query: {query}
+                                  output: {output}''')
+        if as_lib:
+            raise type(e)(msg)
+        else:
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
 
 
 def load_json(data):
