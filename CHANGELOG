@@ -1,7 +1,7 @@
 jello changelog
 
 20200909 v1.2.10
-- Add 'as_lib' option to pyquery to allow raising exceptions when being used as a module
+- Add 'as_lib' option to pyquery and load_json to allow raising exceptions when being used as a module
 
 20200728 v1.2.9
 - Use sys.exit() for pyoxidizer support
