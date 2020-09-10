@@ -1,6 +1,8 @@
 ![Tests](https://github.com/kellyjonbrazil/jello/workflows/Tests/badge.svg?branch=master)
 ![Pypi](https://img.shields.io/pypi/v/jello.svg)
 
+> Try the new `jello` [web demo](https://jello-web-demo.herokuapp.com/)!
+
 # jello
 Filter JSON and JSON Lines data with Python syntax
 
