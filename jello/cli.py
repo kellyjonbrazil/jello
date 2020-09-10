@@ -433,7 +433,7 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
             '''))
 
 
-def load_json(data):
+def load_json(data, as_lib=None):
     try:
         json_dict = json.loads(data)
 
@@ -447,11 +447,14 @@ def load_json(data):
                 data_list.append(entry)
             except Exception as e:
                 # can't parse the data. Throw an error and quit
-                print_error(textwrap.dedent(f'''\
-                    jello:  JSON Load Exception: {e}
-                            Cannot parse line {i + 1} (Not JSON or JSON Lines data):
-                            {str(jsonline)[:70]}
-                    '''))
+                msg = f'''JSON Load Exception: {e}
+        Cannot parse line {i + 1} (Not JSON or JSON Lines data):
+        {str(jsonline)[:70]}'''
+                if as_lib:
+                    e.args = (msg, *e.args)
+                    raise
+                else:
+                    print_error(f'''jello:  {msg}''')
 
         json_dict = data_list
 
