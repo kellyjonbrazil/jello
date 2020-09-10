@@ -451,7 +451,7 @@ def load_json(data, as_lib=None):
         Cannot parse line {i + 1} (Not JSON or JSON Lines data):
         {str(jsonline)[:70]}'''
                 if as_lib:
-                    e.args = (msg, *e.args)
+                    e.args = (msg,)
                     raise
                 else:
                     print_error(f'''jello:  {msg}''')
