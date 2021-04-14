@@ -139,7 +139,7 @@ def helptext():
         Use '_' as the input data and use python dict and list syntax.
 
         Example:
-                <JSON Data> | jello '_["foo"]'
+                cat data.json | jello '_["foo"]'
                 variable=($(cat data.json | jello -l '_["foo"]'))
     '''))
 
