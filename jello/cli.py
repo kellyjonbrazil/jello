@@ -472,6 +472,10 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     except AttributeError:
         pass
 
+    # enable colors for Windows cmd.exe terminal
+    if sys.platform.startswith('win32'):
+        os.system('')
+
     commandline = False
     if data is None:
         commandline = True
