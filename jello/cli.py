@@ -14,7 +14,7 @@ from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
 
-__version__ = '1.2.10'
+__version__ = '1.2.11'
 
 color_map = {
     'black': ('ansiblack', '\33[30m'),

@@ -1,5 +1,10 @@
 jello changelog
 
+20210524 v1.2.11
+- Fix colors on Windows
+- Fix unrecognized characters in README.md for Windows
+- Create MSI installer for Windows
+
 20200909 v1.2.10
 - Add 'as_lib' option to pyquery and load_json to allow raising exceptions when being used as a module
 
