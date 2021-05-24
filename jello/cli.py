@@ -14,7 +14,7 @@ from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 
 
-__version__ = '1.2.10'
+__version__ = '1.2.11'
 
 color_map = {
     'black': ('ansiblack', '\33[30m'),
@@ -471,6 +471,10 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     except AttributeError:
         pass
+
+    # enable colors for Windows cmd.exe terminal
+    if sys.platform.startswith('win32'):
+        os.system('')
 
     commandline = False
     if data is None:
