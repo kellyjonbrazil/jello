@@ -453,9 +453,18 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
             '''))
 
     except Exception as e:
+        if len(str(_)) > 70:
+                _ = str(_)[0:35] + ' ... ' + str(_)[-35:-1]
+
+        if len(str(query)) > 70:
+                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+
+        if len(str(output)) > 70:
+                output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
+
         msg = textwrap.dedent(f'''Query Exception: {e}
-                                  _: {_}
                                   query: {query}
+                                  data: {_}
                                   output: {output}''')
         if as_lib:
             raise type(e)(msg)
@@ -603,6 +612,12 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                 return output
 
         except Exception as e:
+            # this is a hack to show a pretty message when the user uses a reserved keyname in the query
+            # since dotmap does not raise an exception.
+            if '<bound method DotMap' in str(response):
+                e = 'A reserved keyname with dotted notation was used in the query.\n' + \
+                    '                        Please use python bracket dict notation.\n'
+
             if len(str(list_dict_data)) > 70:
                 list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
 
@@ -612,9 +627,13 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
             if len(str(output)) > 70:
                 output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
 
+            if len(str(query)) > 70:
+                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+
             print_error(textwrap.dedent(f'''\
                 jello:  Output Exception:  {e}
-                        list_dict_data: {list_dict_data}
+                        query: {query}
+                        data: {list_dict_data}
                         response: {response}
                         output: {output}
             '''))
