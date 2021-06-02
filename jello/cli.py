@@ -391,6 +391,9 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
 
             output = new_data
 
+        elif isinstance(output, DotMap):
+            output = output.toDict()
+
         # need to return compact, nulls, raw, lines, mono, schema, keyname_color, number_color, sring_color,
         # arrayid_color, arraybracket_color in case they were changed in .jelloconf.py
         return (output, compact, nulls, raw, lines, mono, schema, keyname_color, keyword_color, number_color, string_color,
