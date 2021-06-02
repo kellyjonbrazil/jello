@@ -15,7 +15,7 @@ from pygments.formatters import Terminal256Formatter
 from jello.dotmap import DotMap
 
 
-__version__ = '1.3.1'
+__version__ = '1.3.0'
 
 color_map = {
     'black': ('ansiblack', '\33[30m'),
