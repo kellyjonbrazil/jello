@@ -220,22 +220,16 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
     separators = None
     indent = 2
 
-    if compact:
+    if compact or lines:
         separators = (',', ':')
         indent = None
 
     if isinstance(data, dict):
-        if compact or lines:
-            return json.dumps(data)
-        else:
-            return json.dumps(data, indent=2)
+        return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
 
     if isinstance(data, list):
         if not lines:
-            if compact:
-                return json.dumps(data)
-            else:
-                return json.dumps(data, indent=2)
+            return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
 
         # check if this list includes lists
         list_includes_list = False
@@ -258,7 +252,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
                         flat_list += '\n'
 
                 elif isinstance(entry, (dict, bool, int, float)):
-                    flat_list += json.dumps(entry) + '\n'
+                    flat_list += json.dumps(entry, separators=separators, ensure_ascii=False) + '\n'
 
                 elif isinstance(entry, str):
                     # replace \n with \\n here so lines with newlines literally print the \n char
@@ -278,7 +272,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
             return ''
 
     elif isinstance(data, (bool, int, float)):
-        return json.dumps(data)
+        return json.dumps(data, ensure_ascii=False)
 
     elif isinstance(data, str):
         # replace \n with \\n here so lines with newlines literally print the \n char

@@ -1,5 +1,9 @@
 jello changelog
 
+20210601 v1.3.0
+- Add ability to use dot notation
+- Enhance compact output to even more compact by removing extra spaces
+
 20210524 v1.2.11
 - Fix colors on Windows
 - Fix unrecognized characters in README.md for Windows
