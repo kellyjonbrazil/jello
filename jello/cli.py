@@ -12,6 +12,7 @@ from pygments.style import Style
 from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
+from jello.dotmap import DotMap
 
 
 __version__ = '1.2.11'
@@ -216,6 +217,13 @@ def print_error(message):
 
 
 def create_json(data, compact=None, nulls=None, raw=None, lines=None):
+    separators = None
+    indent = 2
+
+    if compact:
+        separators = (',', ':')
+        indent = None
+
     if isinstance(data, dict):
         if compact or lines:
             return json.dumps(data)
@@ -284,7 +292,23 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
 def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None, schema=None,
             keyname_color=None, keyword_color=None, number_color=None, string_color=None, arrayid_color=None,
             arraybracket_color=None, as_lib=None):
-    _ = data
+    
+    # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
+    if isinstance(data, list):
+        new_data = []
+        for item in data:
+            if isinstance(item, dict):
+                new_data.append(DotMap(item))
+            else:
+                new_data.append(item)
+        _ = new_data
+
+    elif isinstance(data, dict):
+        _ = DotMap(data)
+
+    else:
+        _ = data
+
     jelloconf = ''
 
     if initialize:
@@ -361,6 +385,17 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
         last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
         exec(compile(block, '<string>', mode='exec'))
         output = eval(compile(last, '<string>', mode='eval'))
+
+        # convert output back to normal dict
+        if isinstance(output, list):
+            new_data = []
+            for item in output:
+                if isinstance(item, DotMap):
+                    new_data.append(item.toDict())
+                else:
+                    new_data.append(item)
+
+            output = new_data
 
         # need to return compact, nulls, raw, lines, mono, schema, keyname_color, number_color, sring_color,
         # arrayid_color, arraybracket_color in case they were changed in .jelloconf.py
@@ -520,10 +555,6 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
     if data is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
-
-    # lines() function is deprecated. Warn and quit if detected.
-    if query and 'lines(' in query:
-        print_error('jello:  Error: lines() function is deprecated. Please use the -l option instead.\n')
 
     # only process if there is data
     if data and not data.isspace():
