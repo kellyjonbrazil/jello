@@ -292,13 +292,13 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
         new_data = []
         for item in data:
             if isinstance(item, dict):
-                new_data.append(DotMap(item))
+                new_data.append(DotMap(item, _dynamic=False, _prevent_method_masking=True))
             else:
                 new_data.append(item)
         _ = new_data
 
     elif isinstance(data, dict):
-        _ = DotMap(data)
+        _ = DotMap(data, _dynamic=False, _prevent_method_masking=True)
 
     else:
         _ = data
@@ -569,6 +569,7 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
         # pulling variables back from pyquery since the user may have defined intialization options
         # in their .jelloconf.py file
+
         (response, compact, nulls, raw, lines, mono, schema,
          keyname_color, keyword_color, number_color, string_color,
          arrayid_color, arraybracket_color) = pyquery(list_dict_data, query, initialize=initialize,
@@ -577,6 +578,15 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                                                       keyword_color=keyword_color, number_color=number_color,
                                                       string_color=string_color, arrayid_color=arrayid_color,
                                                       arraybracket_color=arraybracket_color)
+
+        # if DotMap returns a bound function then we know it was a reserved attribute name
+        if hasattr(response, '__self__'):
+            print_error(textwrap.dedent(f'''\
+                jello:  A reserved key name with dotted notation was used in the query.
+                        Please use python bracket dict notation to access this key.
+
+                        query: {query}
+            '''))
 
         set_env_colors(keyname_color, keyword_color, number_color,
                        string_color, arrayid_color, arraybracket_color)
@@ -612,12 +622,6 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                 return output
 
         except Exception as e:
-            # this is a hack to show a pretty message when the user uses a reserved keyname in the query
-            # since dotmap does not raise an exception.
-            if '<bound method DotMap' in str(response):
-                e = 'A reserved keyname with dotted notation was used in the query.\n' + \
-                    '                        Please use python bracket dict notation.\n'
-
             if len(str(list_dict_data)) > 70:
                 list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
 

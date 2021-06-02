@@ -15,6 +15,10 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+
+# Note: commented out code on lines 52-55 and 79-82. Changes on line 122-125
+
+
 from collections import OrderedDict
 try:
     from collections.abc import MutableMapping, Iterable
@@ -45,8 +49,10 @@ class DotMap(MutableMapping, OrderedDict):
                 src = d
 
             for k,v in src:
-                if self._prevent_method_masking and k in reserved_keys:
-                    raise KeyError('"{}" is reserved'.format(k))
+                # Remove this code so we can load data that has reserved key names, yet
+                # still raise an exception when attempting to create them later.
+                # if self._prevent_method_masking and k in reserved_keys:
+                #     raise KeyError('"{}" is reserved'.format(k))
                 if isinstance(v, dict):
                     idv = id(v)
                     if idv in trackedIDs:
@@ -70,8 +76,10 @@ class DotMap(MutableMapping, OrderedDict):
                 self._map[k] = v
         if kwargs:
             for k,v in self.__call_items(kwargs):
-                if self._prevent_method_masking and k in reserved_keys:
-                    raise KeyError('"{}" is reserved'.format(k))
+                # Remove this code so we can load data that has reserved key names, yet
+                # still raise an exception when attempting to create them later.
+                # if self._prevent_method_masking and k in reserved_keys:
+                #     raise KeyError('"{}" is reserved'.format(k))
                 self._map[k] = v
 
     def __call_items(self, obj):
@@ -94,6 +102,7 @@ class DotMap(MutableMapping, OrderedDict):
 
     def __setitem__(self, k, v):
         self._map[k] = v
+
     def __getitem__(self, k):
         if k not in self._map and self._dynamic and k != '_ipython_canary_method_should_not_exist_':
             # automatically extend to new DotMap
@@ -110,7 +119,10 @@ class DotMap(MutableMapping, OrderedDict):
 
     def __getattr__(self, k):
         if k.startswith('__') and k.endswith('__'):
-            raise AttributeError(k)
+            raise AttributeError(f'{k} is reserved')
+        
+        if self._prevent_method_masking and k in reserved_keys:
+            raise AttributeError(f'{k} is reserved')
 
         if k in {'_map','_dynamic','_ipython_canary_method_should_not_exist_'}:
             return super(DotMap, self).__getattr__(k)
@@ -356,3 +368,5 @@ class DotMap(MutableMapping, OrderedDict):
         lines.append('--')
         s = '\n'.join(lines)
         return s
+
+reserved_keys = {i for i in dir(DotMap) if not i.startswith('__') and not i.endswith('__')}
