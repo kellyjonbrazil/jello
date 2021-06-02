@@ -603,6 +603,15 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                 return output
 
         except Exception as e:
+            if len(str(list_dict_data)) > 70:
+                list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
+
+            if len(str(response)) > 70:
+                response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
+
+            if len(str(output)) > 70:
+                output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
+
             print_error(textwrap.dedent(f'''\
                 jello:  Output Exception:  {e}
                         list_dict_data: {list_dict_data}
