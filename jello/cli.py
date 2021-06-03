@@ -37,13 +37,30 @@ color_map = {
 }
 
 
+class opts:
+    initialize = None
+    version_info = None
+    helpme = None
+    compact = None
+    nulls = None
+    raw = None
+    lines = None
+    mono = None
+    schema = None
+    keyname_color = None
+    keyword_color = None
+    number_color = None
+    string_color = None
+    arrayid_color = None
+    arraybracket_color = None
+
+
 class JelloTheme:
     """this class will contain the colors dictionary generated from set_env_colors()"""
     pass
 
 
-def set_env_colors(keyname_color, keyword_color, number_color, string_color,
-                   arrayid_color, arraybracket_color):
+def set_env_colors():
     """
     This function does not return a value. It just updates the JelloTheme.colors dictionary.
 
@@ -91,12 +108,12 @@ def set_env_colors(keyname_color, keyword_color, number_color, string_color,
     # Try the color set in the JELLO_COLORS env variable first. If it is set to default, then fall back to .jelloconf.py
     # configuration. If nothing is set in jelloconf.py, then use the default colors.
     JelloTheme.colors = {
-        'key_name': color_map[color_list[0]] if not color_list[0] == 'default' else color_map[keyname_color] if keyname_color else color_map['blue'],
-        'keyword': color_map[color_list[1]] if not color_list[1] == 'default' else color_map[keyword_color] if keyword_color else color_map['brightblack'],
-        'number': color_map[color_list[2]] if not color_list[2] == 'default' else color_map[number_color] if number_color else color_map['magenta'],
-        'string': color_map[color_list[3]] if not color_list[3] == 'default' else color_map[string_color] if string_color else color_map['green'],
-        'array_id': color_map[color_list[4]] if not color_list[4] == 'default' else color_map[arrayid_color] if arrayid_color else color_map['red'],
-        'array_bracket': color_map[color_list[5]] if not color_list[5] == 'default' else color_map[arraybracket_color] if arraybracket_color else color_map['magenta']
+        'key_name': color_map[color_list[0]] if not color_list[0] == 'default' else color_map[keyname_color] if opts.keyname_color else color_map['blue'],
+        'keyword': color_map[color_list[1]] if not color_list[1] == 'default' else color_map[keyword_color] if opts.keyword_color else color_map['brightblack'],
+        'number': color_map[color_list[2]] if not color_list[2] == 'default' else color_map[number_color] if opts.number_color else color_map['magenta'],
+        'string': color_map[color_list[3]] if not color_list[3] == 'default' else color_map[string_color] if opts.string_color else color_map['green'],
+        'array_id': color_map[color_list[4]] if not color_list[4] == 'default' else color_map[arrayid_color] if opts.arrayid_color else color_map['red'],
+        'array_bracket': color_map[color_list[5]] if not color_list[5] == 'default' else color_map[arraybracket_color] if opts.arraybracket_color else color_map['magenta']
     }
 
 
@@ -125,7 +142,7 @@ def helptext():
     print_error(textwrap.dedent('''\
         jello:   query JSON at the command line with python syntax
 
-        Usage:  <JSON Data> | jello [OPTIONS] [QUERY]
+        Usage:  cat data.json | jello [OPTIONS] [QUERY]
 
                 -c   compact JSON output
                 -i   initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
@@ -137,17 +154,18 @@ def helptext():
                 -v   version info
                 -h   help
 
-        Use '_' as the input data and use python dict and list syntax.
+        Use '_' as the input data and use python dict and list bracket syntax or dot notation.
 
         Example:
+                cat data.json | jello _.foo
                 cat data.json | jello '_["foo"]'
-                variable=($(cat data.json | jello -l '_["foo"]'))
+                variable=($(cat data.json | jello -l _.foo))
     '''))
 
 
-def print_schema(src, path='', mono=False):
+def print_schema(src, path=''):
     """prints a grep-able schema representation of the JSON"""
-    if not mono:
+    if not opts.mono:
         CEND = '\33[0m'
         CBOLD = '\33[1m'
         CKEYNAME = f'{JelloTheme.colors["key_name"][1]}'
@@ -169,22 +187,22 @@ def print_schema(src, path='', mono=False):
 
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
-            print_schema(item, path=f'.{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
+            print_schema(item, path=f'.{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
-            print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{src}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
+            print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{src}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
 
     elif isinstance(src, dict):
         for k, v in src.items():
             if isinstance(v, list):
                 for i, item in enumerate(v):
-                    print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{k}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}', mono=mono)
+                    print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{k}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
 
             elif isinstance(v, dict):
-                if not mono:
+                if not opts.mono:
                     k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
-                print_schema(v, path=f'{path}.{k}', mono=mono)
+                print_schema(v, path=f'{path}.{k}')
 
             else:
                 k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
@@ -216,11 +234,11 @@ def print_error(message):
     sys.exit(1)
 
 
-def create_json(data, compact=None, nulls=None, raw=None, lines=None):
+def create_json(data):
     separators = None
     indent = 2
 
-    if compact or lines:
+    if opts.compact or opts.lines:
         separators = (',', ':')
         indent = None
 
@@ -228,7 +246,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
         return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
 
     if isinstance(data, list):
-        if not lines:
+        if not opts.lines:
             return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
 
         # check if this list includes lists
@@ -238,7 +256,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
                 list_includes_list = True
                 break
 
-        if lines and list_includes_list:
+        if opts.lines and list_includes_list:
             print_error('jello:  Cannot print list of lists as lines. Try normal JSON output.\n')
 
         # print lines for a flat list
@@ -246,7 +264,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
             flat_list = ''
             for entry in data:
                 if entry is None:
-                    if nulls:
+                    if opts.nulls:
                         flat_list += 'null\n'
                     else:
                         flat_list += '\n'
@@ -257,7 +275,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
                 elif isinstance(entry, str):
                     # replace \n with \\n here so lines with newlines literally print the \n char
                     entry = entry.replace('\n', '\\n')
-                    if raw:
+                    if opts.raw:
                         flat_list += f'{entry}' + '\n'
                     else:
                         flat_list += f'"{entry}"' + '\n'
@@ -266,7 +284,7 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
 
     # naked single item return case
     elif data is None:
-        if nulls:
+        if opts.nulls:
             return 'null'
         else:
             return ''
@@ -277,15 +295,13 @@ def create_json(data, compact=None, nulls=None, raw=None, lines=None):
     elif isinstance(data, str):
         # replace \n with \\n here so lines with newlines literally print the \n char
         data = data.replace('\n', '\\n')
-        if raw:
+        if opts.raw:
             return f'{data}'
         else:
             return f'"{data}"'
 
 
-def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, lines=None, mono=None, schema=None,
-            keyname_color=None, keyword_color=None, number_color=None, string_color=None, arrayid_color=None,
-            arraybracket_color=None, as_lib=None):
+def pyquery(data, query, as_lib=None):
     
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
     if isinstance(data, list):
@@ -305,7 +321,7 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
 
     jelloconf = ''
 
-    if initialize:
+    if opts.initialize:
         if platform.system() == 'Windows':
             conf_file = os.path.join(os.environ['APPDATA'], '.jelloconf.py')
         else:
@@ -327,44 +343,45 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
         for expr in ast.parse(jelloconf).body:
             if isinstance(expr, ast.Assign):
                 if expr.targets[0].id == 'compact':
-                    compact = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.compact = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'raw':
-                    raw = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.raw = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'lines':
-                    lines = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.lines = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'nulls':
-                    nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'mono':
-                    mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'schema':
-                    schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'keyname_color':
-                    keyname_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.keyname_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'keyword_color':
-                    keyword_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.keyword_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'number_color':
-                    number_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.number_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'string_color':
-                    string_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.string_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'arrayid_color':
-                    arrayid_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.arrayid_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
                 if expr.targets[0].id == 'arraybracket_color':
-                    arraybracket_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+                    opts.arraybracket_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
 
                 # validate the data in the initialization file
                 warn_options = False
                 warn_colors = False
 
-                for option in [compact, raw, lines, nulls, mono, schema]:
+                for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema]:
                     if not isinstance(option, bool):
-                        compact = raw = lines = nulls = mono = schema = None
+                        opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = None
                         warn_options = True
 
-                for color_config in [keyname_color, keyword_color, number_color, string_color, arrayid_color, arraybracket_color]:
+                for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color,
+                                     opts.string_color, opts.arrayid_color, opts.arraybracket_color]:
                     valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
                                     'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
                     if color_config not in valid_colors and color_config is not None:
-                        keyname_color = keyword_color = number_color = string_color = arrayid_color = arraybracket_color = None
+                        opts.keyname_color = optskeyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
                         warn_colors = True
 
                 if warn_options:
@@ -394,10 +411,7 @@ def pyquery(data, query, initialize=None, compact=None, nulls=None, raw=None, li
         elif isinstance(output, DotMap):
             output = output.toDict()
 
-        # need to return compact, nulls, raw, lines, mono, schema, keyname_color, number_color, sring_color,
-        # arrayid_color, arraybracket_color in case they were changed in .jelloconf.py
-        return (output, compact, nulls, raw, lines, mono, schema, keyname_color, keyword_color, number_color, string_color,
-                arrayid_color, arraybracket_color)
+        return output
 
     except KeyError as e:
         msg = f'Key does not exist: {e}'
@@ -502,8 +516,7 @@ def load_json(data, as_lib=None):
     return json_dict
 
 
-def main(data=None, query='_', initialize=None, version_info=None, helpme=None, compact=None,
-         nulls=None, raw=None, lines=None, mono=None, schema=None):
+def main(data=None, query='_'):
     # break on ctrl-c keyboard interrupt
     signal.signal(signal.SIGINT, ctrlc)
 
@@ -517,9 +530,7 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
     if sys.platform.startswith('win32'):
         os.system('')
 
-    commandline = False
     if data is None:
-        commandline = True
         data = get_stdin()
     # for debugging
     # data = r'''["word", null, false, 1, 3.14, true, "multiple words", false, "words\nwith\nnewlines", 42]'''
@@ -538,25 +549,25 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                 helptext()
 
         else:
-            if commandline:
-                query = arg
+            # if commandline:
+            query = arg
 
-    compact = compact if not commandline else'c' in options
-    initialize = initialize if not commandline else 'i' in options
-    lines = lines if not commandline else 'l' in options
-    mono = mono if not commandline else 'm' in options
-    nulls = nulls if not commandline else 'n' in options
-    raw = raw if not commandline else 'r' in options
-    schema = schema if not commandline else 's' in options
-    version_info = version_info if not commandline else 'v' in options
-    helpme = helpme if not commandline else 'h' in options
+    opts.compact = opts.compact or 'c' in options
+    opts.initialize = opts.initialize or 'i' in options
+    opts.lines = opts.lines or 'l' in options
+    opts.mono = opts.mono or 'm' in options
+    opts.nulls = opts.nulls or 'n' in options
+    opts.raw = opts.raw or 'r' in options
+    opts.schema = opts.schema or 's' in options
+    opts.version_info = opts.version_info or 'v' in options
+    opts.helpme = opts.helpme or 'h' in options
 
     keyname_color = keyword_color = number_color = string_color = arrayid_color = arraybracket_color = None
 
-    if helpme:
+    if opts.helpme:
         helptext()
 
-    if version_info:
+    if opts.version_info:
         print_error(f'jello:   version {__version__}\n')
 
     if data is None:
@@ -567,17 +578,7 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
 
         list_dict_data = load_json(data)
 
-        # pulling variables back from pyquery since the user may have defined intialization options
-        # in their .jelloconf.py file
-
-        (response, compact, nulls, raw, lines, mono, schema,
-         keyname_color, keyword_color, number_color, string_color,
-         arrayid_color, arraybracket_color) = pyquery(list_dict_data, query, initialize=initialize,
-                                                      compact=compact, nulls=nulls, raw=raw, lines=lines,
-                                                      mono=mono, schema=schema, keyname_color=keyname_color,
-                                                      keyword_color=keyword_color, number_color=number_color,
-                                                      string_color=string_color, arrayid_color=arrayid_color,
-                                                      arraybracket_color=arraybracket_color)
+        response = pyquery(list_dict_data, query)
 
         # if DotMap returns a bound function then we know it was a reserved attribute name
         if hasattr(response, '__self__'):
@@ -588,8 +589,7 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                         query: {query}
             '''))
 
-        set_env_colors(keyname_color, keyword_color, number_color,
-                       string_color, arrayid_color, arraybracket_color)
+        set_env_colors()
 
         # create JelloStyle class with user values from set_env_colors() or default values
         # need to do this here (not at global level), otherwise default values will not be updated
@@ -601,25 +601,22 @@ def main(data=None, query='_', initialize=None, version_info=None, helpme=None, 
                 String: f'{JelloTheme.colors["string"][0]}'             # string
             }
 
-        if schema:
+        if opts.schema:
             if not stdout_is_tty():
-                mono = True
-            print_schema(response, mono=mono)
+                opts.mono = True
+            print_schema(response)
             sys.exit()
         else:
-            output = create_json(response, compact=compact, nulls=nulls, raw=raw, lines=lines)
+            output = create_json(response)
 
         try:
-            if commandline:
-                if not mono and not lines and stdout_is_tty():
-                    lexer = JsonLexer()
-                    formatter = Terminal256Formatter(style=JelloStyle)
-                    highlighted_json = highlight(output, lexer, formatter)
-                    print(highlighted_json[0:-1])
-                else:
-                    print(output)
+            if not opts.mono and not opts.lines and stdout_is_tty():
+                lexer = JsonLexer()
+                formatter = Terminal256Formatter(style=JelloStyle)
+                highlighted_json = highlight(output, lexer, formatter)
+                print(highlighted_json[0:-1])
             else:
-                return output
+                print(output)
 
         except Exception as e:
             if len(str(list_dict_data)) > 70:
