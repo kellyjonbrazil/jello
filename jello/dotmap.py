@@ -119,10 +119,10 @@ class DotMap(MutableMapping, OrderedDict):
 
     def __getattr__(self, k):
         if k.startswith('__') and k.endswith('__'):
-            raise AttributeError(f'{k} is reserved')
+            raise AttributeError(f'{k} is reserved. Please use python dict bracket notation for this key.')
         
         if self._prevent_method_masking and k in reserved_keys:
-            raise AttributeError(f'{k} is reserved')
+            raise AttributeError(f'{k} is reserved. Please use python dict bracket notation for this key.')
 
         if k in {'_map','_dynamic','_ipython_canary_method_should_not_exist_'}:
             return super(DotMap, self).__getattr__(k)

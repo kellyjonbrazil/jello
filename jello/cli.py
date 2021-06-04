@@ -130,16 +130,8 @@ def get_stdin():
         return sys.stdin.read()
 
 
-def stdout_is_tty():
-    """returns True if stdout is a TTY. False if output is being piped to another program"""
-    if sys.stdout.isatty():
-        return True
-    else:
-        return False
-
-
 def helptext():
-    print_error(textwrap.dedent('''\
+    print(textwrap.dedent('''\
         jello:   query JSON at the command line with python syntax
 
         Usage:  cat data.json | jello [OPTIONS] [QUERY]
@@ -161,6 +153,7 @@ def helptext():
                 cat data.json | jello '_["foo"]'
                 variable=($(cat data.json | jello -l _.foo))
     '''))
+    sys.exit()
 
 
 def print_schema(src, path=''):
@@ -562,13 +555,12 @@ def main(data=None, query='_'):
     opts.version_info = opts.version_info or 'v' in options
     opts.helpme = opts.helpme or 'h' in options
 
-    keyname_color = keyword_color = number_color = string_color = arrayid_color = arraybracket_color = None
-
     if opts.helpme:
         helptext()
 
     if opts.version_info:
-        print_error(f'jello:   version {__version__}\n')
+        print(f'jello:   version {__version__}\n')
+        sys.exit()
 
     if data is None:
         print_error('jello:  missing piped JSON or JSON Lines data\n')
@@ -602,7 +594,7 @@ def main(data=None, query='_'):
             }
 
         if opts.schema:
-            if not stdout_is_tty():
+            if not sys.stdout.isatty():
                 opts.mono = True
             print_schema(response)
             sys.exit()
@@ -610,7 +602,7 @@ def main(data=None, query='_'):
             output = create_json(response)
 
         try:
-            if not opts.mono and not opts.lines and stdout_is_tty():
+            if not opts.mono and not opts.lines and sys.stdout.isatty():
                 lexer = JsonLexer()
                 formatter = Terminal256Formatter(style=JelloStyle)
                 highlighted_json = highlight(output, lexer, formatter)
