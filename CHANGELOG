@@ -1,8 +1,9 @@
 jello changelog
 
-20210601 v1.3.0
+20210603 v1.3.0
 - Add ability to use dot notation
 - Enhance compact output to even more compact by removing extra spaces
+- Add tests for python 3.9
 
 20210524 v1.2.11
 - Fix colors on Windows
