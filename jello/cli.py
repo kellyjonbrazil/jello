@@ -298,7 +298,7 @@ def create_json(data):
             return f'"{data}"'
 
 
-def pyquery(data, query, as_lib=None):
+def pyquery(data, query):
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
     if isinstance(data, list):
         new_data = []
@@ -334,157 +334,82 @@ def pyquery(data, query, as_lib=None):
     query = jelloconf + query
     output = None
 
-    try:
-        # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono, and custom colors)
-        for expr in ast.parse(jelloconf).body:
-            if isinstance(expr, ast.Assign):
-                if expr.targets[0].id == 'compact':
-                    opts.compact = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'raw':
-                    opts.raw = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'lines':
-                    opts.lines = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'nulls':
-                    opts.nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'mono':
-                    opts.mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'schema':
-                    opts.schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'keyname_color':
-                    opts.keyname_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'keyword_color':
-                    opts.keyword_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'number_color':
-                    opts.number_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'string_color':
-                    opts.string_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'arrayid_color':
-                    opts.arrayid_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-                if expr.targets[0].id == 'arraybracket_color':
-                    opts.arraybracket_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+    # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono, and custom colors)
+    for expr in ast.parse(jelloconf).body:
+        if isinstance(expr, ast.Assign):
+            if expr.targets[0].id == 'compact':
+                opts.compact = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'raw':
+                opts.raw = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'lines':
+                opts.lines = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'nulls':
+                opts.nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'mono':
+                opts.mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'schema':
+                opts.schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'keyname_color':
+                opts.keyname_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'keyword_color':
+                opts.keyword_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'number_color':
+                opts.number_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'string_color':
+                opts.string_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'arrayid_color':
+                opts.arrayid_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+            if expr.targets[0].id == 'arraybracket_color':
+                opts.arraybracket_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
 
-                # validate the data in the initialization file
-                warn_options = False
-                warn_colors = False
+            # validate the data in the initialization file
+            warn_options = False
+            warn_colors = False
 
-                for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema]:
-                    if not isinstance(option, bool):
-                        opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = None
-                        warn_options = True
+            for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema]:
+                if not isinstance(option, bool):
+                    opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = None
+                    warn_options = True
 
-                for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color,
-                                     opts.string_color, opts.arrayid_color, opts.arraybracket_color]:
-                    valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
-                                    'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
-                    if color_config not in valid_colors and color_config is not None:
-                        opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
-                        warn_colors = True
+            for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color,
+                                 opts.string_color, opts.arrayid_color, opts.arraybracket_color]:
+                valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
+                                'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
+                if color_config not in valid_colors and color_config is not None:
+                    opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
+                    warn_colors = True
 
-                if warn_options:
-                    print(f'Jello:   Warning: Options must be set to True or False in {conf_file}\n         Unsetting all options.\n')
+            if warn_options:
+                print(f'Jello:   Warning: Options must be set to True or False in {conf_file}\n         Unsetting all options.\n')
 
-                if warn_colors:
-                    valid_colors_string = ', '.join(valid_colors)
-                    print(f'Jello:   Warning: Colors must be set to one of: {valid_colors_string} in {conf_file}\n         Unsetting all colors.\n')
+            if warn_colors:
+                valid_colors_string = ', '.join(valid_colors)
+                print(f'Jello:   Warning: Colors must be set to one of: {valid_colors_string} in {conf_file}\n         Unsetting all colors.\n')
 
-        # run the query
-        block = ast.parse(query, mode='exec')
-        last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
-        exec(compile(block, '<string>', mode='exec'))
-        output = eval(compile(last, '<string>', mode='eval'))
+    # run the query
+    block = ast.parse(query, mode='exec')
+    last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
+    exec(compile(block, '<string>', mode='exec'))
+    output = eval(compile(last, '<string>', mode='eval'))
 
-        # convert output back to normal dict
-        if isinstance(output, list):
-            new_data = []
-            for item in output:
-                if isinstance(item, DotMap):
-                    new_data.append(item.toDict())
-                else:
-                    new_data.append(item)
+    # convert output back to normal dict
+    if isinstance(output, list):
+        new_data = []
+        for item in output:
+            if isinstance(item, DotMap):
+                new_data.append(item.toDict())
+            else:
+                new_data.append(item)
 
-            output = new_data
+        output = new_data
 
-        elif isinstance(output, DotMap):
-            output = output.toDict()
+    elif isinstance(output, DotMap):
+        output = output.toDict()
 
-        return output
-
-    except KeyError as e:
-        msg = f'Key does not exist: {e}'
-        if as_lib:
-            raise type(e)(msg)
-        else:
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
-    except IndexError as e:
-        if as_lib:
-            raise type(e)(e)
-        else:
-            print_error(textwrap.dedent(f'''\
-                jello:  {e}
-            '''))
-
-    except SyntaxError as e:
-        if as_lib:
-            raise type(e)(e)
-        else:
-            print_error(textwrap.dedent(f'''\
-                jello:  {e}
-                        {e.text}
-            '''))
-
-    except TypeError as e:
-        msg = f'TypeError: {e}'
-        if as_lib:
-            raise type(e)(msg)
-        else:
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
-    except AttributeError as e:
-        msg = f'AttributeError: {e}'
-        if as_lib:
-            raise type(e)(msg)
-        else:
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
-    except NameError as e:
-        msg = f'NameError: {e}'
-        if as_lib:
-            raise type(e)(msg)
-        else:
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
-    except Exception as e:
-        if len(str(_)) > 70:
-            _ = str(_)[0:35] + ' ... ' + str(_)[-35:-1]
-
-        if len(str(query)) > 70:
-            query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
-
-        if len(str(output)) > 70:
-            output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
-
-        msg = textwrap.dedent(f'''Query Exception: {e}
-                                  query: {query}
-                                  data: {_}
-                                  output: {output}''')
-        if as_lib:
-            raise type(e)(msg)
-        else:
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
+    return output
 
 
-def load_json(data, as_lib=None):
+def load_json(data):
     try:
         json_dict = json.loads(data)
 
@@ -492,20 +417,10 @@ def load_json(data, as_lib=None):
         # if json.loads fails, assume the data is json lines and parse
         data = data.splitlines()
         data_list = []
+
         for i, jsonline in enumerate(data):
-            try:
-                entry = json.loads(jsonline)
-                data_list.append(entry)
-            except Exception as e:
-                # can't parse the data. Throw an error and quit
-                msg = f'''JSON Load Exception: {e}
-        Cannot parse line {i + 1} (Not JSON or JSON Lines data):
-        {str(jsonline)[:70]}'''
-                if as_lib:
-                    e.args = (msg,)
-                    raise
-                else:
-                    print_error(f'''jello:  {msg}''')
+            entry = json.loads(jsonline)
+            data_list.append(entry)
 
         json_dict = data_list
 
@@ -577,9 +492,73 @@ def main(data=None, query='_'):
     # only process if there is data
     if data and not data.isspace():
 
-        list_dict_data = load_json(data)
+        # load the JSON or JSON Lines
+        try:
+            list_dict_data = load_json(data)
 
-        response = pyquery(list_dict_data, query)
+        except Exception as e:
+            # can't parse the data. Throw an error and quit
+            msg = f'''JSON Load Exception: {e}
+        Cannot parse the data (Not valid JSON or JSON Lines):
+        '''
+            print_error(f'''jello:  {msg}''')
+
+        # run the query and check for various errors
+        try:
+            response = pyquery(list_dict_data, query)
+
+        except KeyError as e:
+            msg = f'Key does not exist: {e}'
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
+
+        except IndexError as e:
+            print_error(textwrap.dedent(f'''\
+                jello:  {e}
+            '''))
+
+        except SyntaxError as e:
+            print_error(textwrap.dedent(f'''\
+                jello:  {e}
+                        {e.text}
+            '''))
+
+        except TypeError as e:
+            msg = f'TypeError: {e}'
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
+
+        except AttributeError as e:
+            msg = f'AttributeError: {e}'
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
+
+        except NameError as e:
+            msg = f'NameError: {e}'
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
+
+        except Exception as e:
+            if len(str(list_dict_data)) > 70:
+                err_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
+
+            if len(str(query)) > 70:
+                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+
+            if len(str(response)) > 70:
+                response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
+
+            msg = textwrap.dedent(f'''Query Exception: {e}
+                                      query: {query}
+                                      data: {err_data}
+                                      output: {response}''')
+            print_error(textwrap.dedent(f'''\
+                jello:  {msg}
+            '''))
 
         # if DotMap returns a bound function then we know it was a reserved attribute name
         if hasattr(response, '__self__'):
@@ -602,6 +581,7 @@ def main(data=None, query='_'):
                 String: f'{JelloTheme.colors["string"][0]}'             # string
             }
 
+        # output as a schema if the user desires, otherwise generate JSON or Lines
         if opts.schema:
             if not sys.stdout.isatty():
                 opts.mono = True
@@ -610,6 +590,7 @@ def main(data=None, query='_'):
         else:
             output = create_json(response)
 
+        # Print colorized or mono JSON to STDOUT
         try:
             if not opts.mono and not opts.lines and sys.stdout.isatty():
                 lexer = JsonLexer()
