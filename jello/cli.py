@@ -108,12 +108,12 @@ def set_env_colors():
     # Try the color set in the JELLO_COLORS env variable first. If it is set to default, then fall back to .jelloconf.py
     # configuration. If nothing is set in jelloconf.py, then use the default colors.
     JelloTheme.colors = {
-        'key_name': color_map[color_list[0]] if not color_list[0] == 'default' else color_map[keyname_color] if opts.keyname_color else color_map['blue'],
-        'keyword': color_map[color_list[1]] if not color_list[1] == 'default' else color_map[keyword_color] if opts.keyword_color else color_map['brightblack'],
-        'number': color_map[color_list[2]] if not color_list[2] == 'default' else color_map[number_color] if opts.number_color else color_map['magenta'],
-        'string': color_map[color_list[3]] if not color_list[3] == 'default' else color_map[string_color] if opts.string_color else color_map['green'],
-        'array_id': color_map[color_list[4]] if not color_list[4] == 'default' else color_map[arrayid_color] if opts.arrayid_color else color_map['red'],
-        'array_bracket': color_map[color_list[5]] if not color_list[5] == 'default' else color_map[arraybracket_color] if opts.arraybracket_color else color_map['magenta']
+        'key_name': color_map[color_list[0]] if not color_list[0] == 'default' else color_map[opts.keyname_color] if opts.keyname_color else color_map['blue'],
+        'keyword': color_map[color_list[1]] if not color_list[1] == 'default' else color_map[opts.keyword_color] if opts.keyword_color else color_map['brightblack'],
+        'number': color_map[color_list[2]] if not color_list[2] == 'default' else color_map[opts.number_color] if opts.number_color else color_map['magenta'],
+        'string': color_map[color_list[3]] if not color_list[3] == 'default' else color_map[opts.string_color] if opts.string_color else color_map['green'],
+        'array_id': color_map[color_list[4]] if not color_list[4] == 'default' else color_map[opts.arrayid_color] if opts.arrayid_color else color_map['red'],
+        'array_bracket': color_map[color_list[5]] if not color_list[5] == 'default' else color_map[opts.arraybracket_color] if opts.arraybracket_color else color_map['magenta']
     }
 
 
@@ -295,7 +295,6 @@ def create_json(data):
 
 
 def pyquery(data, query, as_lib=None):
-    
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
     if isinstance(data, list):
         new_data = []
@@ -374,7 +373,7 @@ def pyquery(data, query, as_lib=None):
                     valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
                                     'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
                     if color_config not in valid_colors and color_config is not None:
-                        opts.keyname_color = optskeyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
+                        opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
                         warn_colors = True
 
                 if warn_options:
@@ -461,13 +460,13 @@ def pyquery(data, query, as_lib=None):
 
     except Exception as e:
         if len(str(_)) > 70:
-                _ = str(_)[0:35] + ' ... ' + str(_)[-35:-1]
+            _ = str(_)[0:35] + ' ... ' + str(_)[-35:-1]
 
         if len(str(query)) > 70:
-                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+            query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
 
         if len(str(output)) > 70:
-                output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
+            output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
 
         msg = textwrap.dedent(f'''Query Exception: {e}
                                   query: {query}
