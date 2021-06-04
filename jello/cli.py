@@ -16,6 +16,10 @@ from jello.dotmap import DotMap
 
 
 __version__ = '1.3.0'
+AUTHOR = 'Kelly Brazil'
+WEBSITE = 'https://github.com/kellyjonbrazil/jello'
+COPYRIGHT = '© 2020-2021 Kelly Brazil'
+LICENSE = 'MIT License'
 
 color_map = {
     'black': ('ansiblack', '\33[30m'),
@@ -558,7 +562,13 @@ def main(data=None, query='_'):
         helptext()
 
     if opts.version_info:
-        print(f'jello:   version {__version__}\n')
+        print(textwrap.dedent(f'''\
+            jello:   Version: {__version__}
+                     Author: {AUTHOR}
+                     Website: {WEBSITE}
+                     Copyright: {COPYRIGHT}
+                     License: {LICENSE}
+        '''))
         sys.exit()
 
     if data is None:
