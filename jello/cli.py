@@ -529,6 +529,7 @@ def main(data=None, query='_'):
 
     options = []
     long_options = {}
+
     for arg in sys.argv[1:]:
         if arg.startswith('-') and not arg.startswith('--'):
             options.extend(arg[1:])
@@ -541,7 +542,6 @@ def main(data=None, query='_'):
                 helptext()
 
         else:
-            # if commandline:
             query = arg
 
     opts.compact = opts.compact or 'c' in options
