@@ -134,6 +134,12 @@ def get_stdin():
         return sys.stdin.read()
 
 
+def print_error(message):
+    """print error messages to STDERR and quit with error code"""
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
 def helptext():
     print(textwrap.dedent('''\
         jello:   query JSON at the command line with python syntax
@@ -223,12 +229,6 @@ def print_schema(src, path=''):
             val = f'{CSTRING}{val}{CEND}'
 
         print(f'{path} = {val};')
-
-
-def print_error(message):
-    """print error messages to STDERR and quit with error code"""
-    print(message, file=sys.stderr)
-    sys.exit(1)
 
 
 def create_json(data):
