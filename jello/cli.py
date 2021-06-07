@@ -400,11 +400,9 @@ def pyquery(data, query):
 def load_json(data):
     try:
         json_dict = json.loads(data)
-
     except Exception:
         # if json.loads fails, assume the data is json lines and parse
-        data = data.splitlines()
-        json_dict = [json.loads(i) for i in data]
+        json_dict = [json.loads(i) for i in data.splitlines()]
 
     return json_dict
 
@@ -477,7 +475,6 @@ def main(data=None, query='_'):
         # load the JSON or JSON Lines
         try:
             list_dict_data = load_json(data)
-
         except Exception as e:
             # can't parse the data. Throw an error and quit
             msg = f'''JSON Load Exception: {e}
