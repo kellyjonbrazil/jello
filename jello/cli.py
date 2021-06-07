@@ -301,13 +301,8 @@ def create_json(data):
 def pyquery(data, query):
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
     if isinstance(data, list):
-        new_data = []
-        for item in data:
-            if isinstance(item, dict):
-                new_data.append(DotMap(item, _dynamic=False, _prevent_method_masking=True))
-            else:
-                new_data.append(item)
-        _ = new_data
+        _ = [DotMap(i, _dynamic=False, _prevent_method_masking=True) if isinstance(i, dict)
+             else i for i in data]
 
     elif isinstance(data, dict):
         _ = DotMap(data, _dynamic=False, _prevent_method_masking=True)
@@ -394,14 +389,7 @@ def pyquery(data, query):
 
     # convert output back to normal dict
     if isinstance(output, list):
-        new_data = []
-        for item in output:
-            if isinstance(item, DotMap):
-                new_data.append(item.toDict())
-            else:
-                new_data.append(item)
-
-        output = new_data
+        output = [i.toDict() if isinstance(i, DotMap) else i for i in output]
 
     elif isinstance(output, DotMap):
         output = output.toDict()
@@ -416,13 +404,7 @@ def load_json(data):
     except Exception:
         # if json.loads fails, assume the data is json lines and parse
         data = data.splitlines()
-        data_list = []
-
-        for i, jsonline in enumerate(data):
-            entry = json.loads(jsonline)
-            data_list.append(entry)
-
-        json_dict = data_list
+        json_dict = [json.loads(i) for i in data]
 
     return json_dict
 
