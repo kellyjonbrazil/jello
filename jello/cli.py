@@ -59,6 +59,9 @@ class opts:
     arraybracket_color = None
 
 
+schema_list = []
+
+
 class JelloTheme:
     """this class will contain the colors dictionary generated from set_env_colors()"""
     pass
@@ -165,8 +168,8 @@ def helptext():
     sys.exit()
 
 
-def print_schema(src, path=''):
-    """prints a grep-able schema representation of the JSON"""
+def create_schema(src, path=''):
+    """creates a grep-able schema representation of the JSON"""
     if not opts.mono:
         CEND = '\33[0m'
         CBOLD = '\33[1m'
@@ -189,22 +192,22 @@ def print_schema(src, path=''):
 
     if isinstance(src, list) and path == '':
         for i, item in enumerate(src):
-            print_schema(item, path=f'.{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
+            create_schema(item, path=f'.{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
 
     elif isinstance(src, list):
         for i, item in enumerate(src):
-            print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{src}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
+            create_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{src}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
 
     elif isinstance(src, dict):
         for k, v in src.items():
             if isinstance(v, list):
                 for i, item in enumerate(v):
-                    print_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{k}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
+                    create_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{k}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
 
             elif isinstance(v, dict):
                 if not opts.mono:
                     k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
-                print_schema(v, path=f'{path}.{k}')
+                create_schema(v, path=f'{path}.{k}')
 
             else:
                 k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
@@ -216,7 +219,8 @@ def print_schema(src, path=''):
                 else:
                     val = f'{CSTRING}{val}{CEND}'
 
-                print(f'{path}.{k} = {val};')
+                # print(f'{path}.{k} = {val};')
+                schema_list.append(f'{path}.{k} = {val};')
 
     else:
         val = json.dumps(src)
@@ -227,7 +231,8 @@ def print_schema(src, path=''):
         else:
             val = f'{CSTRING}{val}{CEND}'
 
-        print(f'{path} = {val};')
+        # print(f'{path} = {val};')
+        schema_list.append(f'{path} = {val};')
 
 
 def create_json(data):
@@ -563,7 +568,8 @@ def main(data=None, query='_'):
         if opts.schema:
             if not sys.stdout.isatty():
                 opts.mono = True
-            print_schema(response)
+            create_schema(response)
+            print('\n'.join(schema_list))
             sys.exit()
         else:
             output = create_json(response)
