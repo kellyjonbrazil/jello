@@ -2,6 +2,9 @@ jello changelog
 
 20210603 v1.3.0
 - Add ability to use dot notation
+- Add more version information
+- Enhance performance and memory utilization for larger datasets
+- Enhance JSON strings to output UTF-8 characters instead of escaped codes
 - Enhance compact output to even more compact by removing extra spaces
 - Add tests for python 3.9
 
