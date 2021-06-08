@@ -1178,7 +1178,7 @@ class MyTests(unittest.TestCase):
         """
         self.data_in = self.list_of_lists_sample
         opts.lines = True
-        self.assertRaises(AttributeError, jello.cli.create_json, self.data_in)
+        self.assertRaises(ValueError, jello.cli.create_json, self.data_in)
 
     def test_list_list_cr(self):
         """
@@ -1197,7 +1197,7 @@ class MyTests(unittest.TestCase):
         self.data_in = self.list_of_lists_sample
         opts.compact = True
         opts.lines = True
-        self.assertRaises(AttributeError, jello.cli.create_json, self.data_in)
+        self.assertRaises(ValueError, jello.cli.create_json, self.data_in)
 
     def test_list_list_rl(self):
         """
@@ -1206,7 +1206,7 @@ class MyTests(unittest.TestCase):
         self.data_in = self.list_of_lists_sample
         opts.raw = True
         opts.lines = True
-        self.assertRaises(AttributeError, jello.cli.create_json, self.data_in)
+        self.assertRaises(ValueError, jello.cli.create_json, self.data_in)
 
     def test_list_list_crl(self):
         """
@@ -1216,7 +1216,7 @@ class MyTests(unittest.TestCase):
         opts.compact = True
         opts.raw = True
         opts.lines = True
-        self.assertRaises(AttributeError, jello.cli.create_json, self.data_in)
+        self.assertRaises(ValueError, jello.cli.create_json, self.data_in)
 
 
 if __name__ == '__main__':

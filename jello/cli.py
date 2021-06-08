@@ -258,7 +258,7 @@ def create_json(data):
                 break
 
         if opts.lines and list_includes_list:
-            raise AttributeError('Cannot print list of lists as lines. Try normal JSON output.\n')
+            raise ValueError('Cannot print list of lists as lines. Try normal JSON output.\n')
 
         # print lines for a flat list
         else:
