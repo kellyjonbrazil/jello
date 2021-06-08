@@ -3,6 +3,8 @@
 
 > Try the new `jello` [web demo](https://jello-web-demo.herokuapp.com/)!
 
+> `jello` now supports dot notation!
+
 # jello
 Filter JSON and JSON Lines data with Python syntax
 
