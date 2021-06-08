@@ -139,7 +139,7 @@ Bash variable:
 .IP
 .nf
 
-variable=($(cat data.json | jello -rl \[aq]_[\[dq]foo\[dq]]\[aq]))
+variable=($(cat data.json | jello -rl _.foo))
 
 .fi
 .PP
@@ -150,7 +150,7 @@ Bash array variable:
 variable=()
 while read -r value; do
     variable+=(\[dq]$value\[dq])
-done < <(cat data.json | jello -rl \[aq]_[\[dq]foo\[dq]]\[aq])
+done < <(cat data.json | jello -rl _.foo)
 
 .fi
 .PP
