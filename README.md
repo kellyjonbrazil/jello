@@ -163,10 +163,10 @@ jc -a | jello -s
 ### Lambda Functions and Math
 ```bash
 echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
-keys = _.keys()
-vals = _.values()
-cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
-dict(zip(keys, cel))'
+    keys = _.keys()
+    vals = _.values()
+    cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
+    dict(zip(keys, cel))'
 {
   "t1": -34.44444444444444,
   "t2": -28.88888888888889,
@@ -185,11 +185,11 @@ jc -a | jello 'len([entry for entry in _.parsers if "darwin" in entry.compatible
 Output as JSON array
 ```bash
 jc -a | jello '\
-result = []
-for entry in _.parsers:
-  if "darwin" in entry.compatible:
-    result.append(entry.name)
-result'
+    result = []
+    for entry in _.parsers:
+      if "darwin" in entry.compatible:
+        result.append(entry.name)
+    result'
 [
   "airport",
   "airport_s",
@@ -202,11 +202,11 @@ result'
 Output as bash array
 ```bash
 jc -a | jello -rl '\
-result = []
-for entry in _.parsers:
-  if "darwin" in entry.compatible:
-    result.append(entry.name)
-result'
+    result = []
+    for entry in _.parsers:
+      if "darwin" in entry.compatible:
+        result.append(entry.name)
+    result'
 airport
 airport_s
 arp
@@ -242,7 +242,7 @@ crontab_u
 ### Environment Variables
 ```bash
 echo '{"login_name": "joeuser"}' | jello '\
-True if os.getenv("LOGNAME") == _.login_name else False'
+    True if os.getenv("LOGNAME") == _.login_name else False'
 true
 ```
 
@@ -250,8 +250,8 @@ true
 You can import and use your favorite modules to manipulate the data.  For example, using `glom`:
 ```bash
 jc -a | jello '\
-from glom import *
-glom(_, ("parsers", ["name"]))'
+    from glom import *
+    glom(_, ("parsers", ["name"]))'
 [
   "airport",
   "airport_s",
@@ -276,23 +276,23 @@ https://programminghistorian.org/en/lessons/json-and-jq
 Here is a simple solution using `jello`:
 ```bash
 cat jq_twitter.json | jello -l '\
-user_ids = set()
-for tweet in _:
-    user_ids.add(tweet.user.id)
-result = []
-for user in user_ids:
-    user_profile = {}
-    tweet_ids = []
+    user_ids = set()
     for tweet in _:
-        if tweet.user.id == user:
-            user_profile.update({
-                "user_id": user,
-                "user_name": tweet.user.screen_name,
-                "user_followers": tweet.user.followers_count})
-            tweet_ids.append(str(tweet.id))
-    user_profile["tweet_ids"] = ";".join(tweet_ids)
-    result.append(user_profile)
-result'
+        user_ids.add(tweet.user.id)
+    result = []
+    for user in user_ids:
+        user_profile = {}
+        tweet_ids = []
+        for tweet in _:
+            if tweet.user.id == user:
+                user_profile.update({
+                    "user_id": user,
+                    "user_name": tweet.user.screen_name,
+                    "user_followers": tweet.user.followers_count})
+                tweet_ids.append(str(tweet.id))
+        user_profile["tweet_ids"] = ";".join(tweet_ids)
+        result.append(user_profile)
+    result'
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}
