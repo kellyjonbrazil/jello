@@ -258,7 +258,7 @@ def create_json(data):
                 break
 
         if opts.lines and list_includes_list:
-            print_error('jello:  Cannot print list of lists as lines. Try normal JSON output.\n')
+            raise AttributeError('Cannot print list of lists as lines. Try normal JSON output.\n')
 
         # print lines for a flat list
         else:
@@ -565,14 +565,30 @@ def main(data=None, query='_'):
             }
 
         # output as a schema if the user desires, otherwise generate JSON or Lines
-        if opts.schema:
-            if not sys.stdout.isatty():
-                opts.mono = True
-            create_schema(response)
-            print('\n'.join(schema_list))
-            sys.exit()
-        else:
-            output = create_json(response)
+        try:
+            if opts.schema:
+                if not sys.stdout.isatty():
+                    opts.mono = True
+                create_schema(response)
+                print('\n'.join(schema_list))
+                sys.exit()
+            else:
+                output = create_json(response)
+        except Exception as e:
+            if len(str(list_dict_data)) > 70:
+                list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
+
+            if len(str(response)) > 70:
+                response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
+
+            if len(str(query)) > 70:
+                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+            print_error(textwrap.dedent(f'''\
+                jello:  Formatting Exception:  {e}
+                        query: {query}
+                        data: {list_dict_data}
+                        response: {response}
+            '''))
 
         # Print colorized or mono JSON to STDOUT
         try:
