@@ -225,7 +225,6 @@ def create_schema(src, path=''):
                 else:
                     val = f'{CSTRING}{val}{CEND}'
 
-                # print(f'{path}.{k} = {val};')
                 schema_list.append(f'{path}.{k} = {val};')
 
     else:
@@ -237,7 +236,8 @@ def create_schema(src, path=''):
         else:
             val = f'{CSTRING}{val}{CEND}'
 
-        # print(f'{path} = {val};')
+        path = path or '.'
+
         schema_list.append(f'{path} = {val};')
 
 

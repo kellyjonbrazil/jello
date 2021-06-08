@@ -126,7 +126,7 @@ class MyTests(unittest.TestCase):
         Test True
         """
         self.data_in = True
-        self.expected = ' = \x1b[90mtrue\x1b[0m;'
+        self.expected = '. = \x1b[90mtrue\x1b[0m;'
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
 
@@ -135,7 +135,7 @@ class MyTests(unittest.TestCase):
         Test True -m
         """
         self.data_in = True
-        self.expected = ' = true;'
+        self.expected = '. = true;'
         opts.mono = True
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
@@ -149,7 +149,7 @@ class MyTests(unittest.TestCase):
         Test False
         """
         self.data_in = False
-        self.expected = ' = \x1b[90mfalse\x1b[0m;'
+        self.expected = '. = \x1b[90mfalse\x1b[0m;'
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
 
@@ -158,7 +158,7 @@ class MyTests(unittest.TestCase):
         Test False -m
         """
         self.data_in = False
-        self.expected = ' = false;'
+        self.expected = '. = false;'
         opts.mono = True
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
@@ -172,7 +172,7 @@ class MyTests(unittest.TestCase):
         Test None
         """
         self.data_in = None
-        self.expected = ' = \x1b[90mnull\x1b[0m;'
+        self.expected = '. = \x1b[90mnull\x1b[0m;'
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
 
@@ -181,7 +181,7 @@ class MyTests(unittest.TestCase):
         Test None -m
         """
         self.data_in = None
-        self.expected = ' = null;'
+        self.expected = '. = null;'
         opts.mono = True
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
@@ -195,7 +195,7 @@ class MyTests(unittest.TestCase):
         Test int
         """
         self.data_in = 42
-        self.expected = ' = \x1b[35m42\x1b[0m;'
+        self.expected = '. = \x1b[35m42\x1b[0m;'
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
 
@@ -204,7 +204,7 @@ class MyTests(unittest.TestCase):
         Test int -m
         """
         self.data_in = 42
-        self.expected = ' = 42;'
+        self.expected = '. = 42;'
         opts.mono = True
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
@@ -218,7 +218,7 @@ class MyTests(unittest.TestCase):
         Test float
         """
         self.data_in = 3.14
-        self.expected = ' = \x1b[35m3.14\x1b[0m;'
+        self.expected = '. = \x1b[35m3.14\x1b[0m;'
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
 
@@ -227,7 +227,7 @@ class MyTests(unittest.TestCase):
         Test float -m
         """
         self.data_in = 3.14
-        self.expected = ' = 3.14;'
+        self.expected = '. = 3.14;'
         opts.mono = True
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
@@ -241,7 +241,7 @@ class MyTests(unittest.TestCase):
         Test string
         """
         self.data_in = '"string with\\nnewline char"'
-        self.expected = ' = \x1b[32m"\\"string with\\\\nnewline char\\""\x1b[0m;'
+        self.expected = '. = \x1b[32m"\\"string with\\\\nnewline char\\""\x1b[0m;'
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
 
@@ -250,7 +250,7 @@ class MyTests(unittest.TestCase):
         Test string -m
         """
         self.data_in = '"string with\\nnewline char"'
-        self.expected = ' = "\\"string with\\\\nnewline char\\"";'
+        self.expected = '. = "\\"string with\\\\nnewline char\\"";'
         opts.mono = True
         jello.cli.create_schema(self.data_in)
         self.assertEqual('\n'.join(jello.cli.schema_list), self.expected)
