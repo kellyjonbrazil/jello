@@ -169,7 +169,13 @@ def helptext():
 
 
 def create_schema(src, path=''):
-    """creates a grep-able schema representation of the JSON"""
+    """
+    Creates a grep-able schema representation of the JSON.
+
+    This function is recursive, so output is stored within the schema_list list. Make sure to
+    initialize schema_list to a blank list and set colors by calling set_env_colors() before
+    calling this function.
+    """
     if not opts.mono:
         CEND = '\33[0m'
         CBOLD = '\33[1m'
