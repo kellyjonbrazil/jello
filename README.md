@@ -143,7 +143,7 @@ while read -r value; do
 done < <(cat data.json | jello -rl _.foo)
 ```
 
-Here is more [advanced usage](https://github.com/kellyjonbrazil/jc/blob/master/ADVANCED_USAGE.md) information.
+Here is more [advanced usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md) information.
 
 ## Examples:
 ### Printing the Grep-able Schema
