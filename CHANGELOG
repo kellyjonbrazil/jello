@@ -1,5 +1,11 @@
 jello changelog
 
+20210608 v1.3.2
+- Fix JSON strings with UTF-8 characters in Schema output
+
+20210608 v1.3.1
+- Fix regression with JELLO_COLORS environment variable
+
 20210608 v1.3.0
 - Add ability to use dot notation
 - Add more version information

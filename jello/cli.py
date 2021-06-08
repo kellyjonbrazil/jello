@@ -15,7 +15,7 @@ from pygments.formatters import Terminal256Formatter
 from jello.dotmap import DotMap
 
 
-__version__ = '1.3.1'
+__version__ = '1.3.2'
 AUTHOR = 'Kelly Brazil'
 WEBSITE = 'https://github.com/kellyjonbrazil/jello'
 COPYRIGHT = '© 2020-2021 Kelly Brazil'
@@ -217,7 +217,7 @@ def create_schema(src, path=''):
 
             else:
                 k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
-                val = json.dumps(v)
+                val = json.dumps(v, ensure_ascii=False)
                 if val == 'true' or val == 'false' or val == 'null':
                     val = f'{CKEYWORD}{val}{CEND}'
                 elif val.replace('.', '', 1).isdigit():
@@ -228,7 +228,7 @@ def create_schema(src, path=''):
                 schema_list.append(f'{path}.{k} = {val};')
 
     else:
-        val = json.dumps(src)
+        val = json.dumps(src, ensure_ascii=False)
         if val == 'true' or val == 'false' or val == 'null':
             val = f'{CKEYWORD}{val}{CEND}'
         elif val.replace('.', '', 1).isdigit():
