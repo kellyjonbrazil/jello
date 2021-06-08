@@ -3,6 +3,8 @@
 
 > Try the new `jello` [web demo](https://jello-web-demo.herokuapp.com/)!
 
+> `jello` now supports dot notation!
+
 # jello
 Filter JSON and JSON Lines data with Python syntax
 
@@ -53,13 +55,20 @@ Linux and macOS x86_64 binaries are built from PyPi and can be copied to any loc
 
 ### Usage
 ```
-<JSON Data> | jello [OPTIONS] [QUERY]
+cat data.json | jello [OPTIONS] [QUERY]
 ``` 
-`QUERY` is optional and can be most any valid python code. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. If `QUERY` is omitted then the original JSON input will simply be pretty printed.
+`QUERY` is optional and can be most any valid python code. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. If `QUERY` is omitted then the original JSON input will simply be pretty printed. You can use dot notation or traditional python bracket notation to access key names.
+
+> Note: Reserved key names that cannot be accessed using dot notation can be accessed via standard python dictionary notation. (e.g. _.foo["get"] instead of _.foo.get)
+
 
 A simple query:
+```bash
+cat data.json | jello _.foo
 ```
-$ cat data.json | jello '_["foo"]'
+or
+```bash
+cat data.json | jello '_["foo"]'
 ```
 
 #### Options
@@ -72,6 +81,50 @@ $ cat data.json | jello '_["foo"]'
 - `-s` print the JSON schema in grep-able format
 - `-h` help
 - `-v` version info
+
+#### Simple Examples
+`jello` simply pretty prints the JSON if there are no options passed:
+```bash
+echo '{"foo":"bar","baz":[1,2,3]}' | jello
+{
+  "foo": "bar",
+  "baz": [
+    1,
+    2,
+    3
+  ]
+}
+```
+
+If you prefer compact output, use the `-c` option:
+```bash
+echo '{"foo":"bar","baz":[1,2,3]}' | jello -c
+{"foo":"bar","baz":[1,2,3]}
+```
+
+Use the `-l` option to convert lists/arrays into lines:
+```bash
+echo '{"foo":"bar","baz":[1,2,3]}' | jello -l _.baz
+1
+2
+3
+```
+
+Create [JSON Lines](https://jsonlines.org/) by combining the `-c` and `-l` options:
+```bash
+echo '[{"foo":"bar","baz":[1,2,3]},{"foo":"bar","baz":[1,2,3]}]' | jello -cl
+{"foo":"bar","baz":[1,2,3]}
+{"foo":"bar","baz":[1,2,3]}
+```
+
+You can also print a grep-able schema by using the `-s` option:
+```bash
+echo '{"foo":"bar","baz":[1,2,3]}' | jello -s
+.foo = "bar";
+.baz[0] = 1;
+.baz[1] = 2;
+.baz[2] = 3;
+```
 
 #### Assigning Results to a Bash Array
 
@@ -90,91 +143,12 @@ while read -r value; do
 done < <(cat data.json | jello -rl '_["foo"]')
 ```
 
-#### Custom Configuration File
-
-You can use the `-i` option to initialize the `jello` environment with your own configuration file. The configuration file accepts valid python code where you can set the `jello` options you would like enabled or disabled, customize your colors, add `import` statements for your favorite modules, and define your own functions.
-
-The file must be named `.jelloconf.py` and must be located in the proper directory based on the OS platform:
-- Linux, unix, macOS: `~/`
-- Windows: `%appdata%/`
-
-##### Setting Options
-To set `jello` options in the `.jelloconf.py` file, add any of the following and set to `True` or `False`:
-```
-mono = True            # -m option
-compact = True         # -c option
-lines = True           # -l option
-raw = True             # -r option
-nulls = True           # -n option
-schema = True          # -s option
-```
-##### Setting Colors
-You can customize the colors by setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
-```
-keyname_color = 'blue'            # Key names
-keyword_color = 'brightblack'     # true, false, null
-number_color = 'magenta'          # integers, floats
-string_color = 'green'            # strings
-arrayid_color = 'red'             # array IDs in Schema view
-arraybracket_color = 'magenta'    # array brackets in Schema view
-```
-> Note: Any colors set via the `JELLO_COLORS` environment variable will take precedence over any color values set in the `.jelloconf.py` configuration file
-
-##### Importing Modules
-To import a module (e.g. `glom`) during initialization, just add the `import` statement to your `.jelloconf.py` file:
-```
-from glom import *
-```
-Then you can use `glom` in your `jello` filters without importing:
-```
-$ jc -a | jello -i 'glom(_, "parsers.25.name")'
-
-"lsblk"
-```
-
-##### Adding Functions
-You can also add functions to your initialization file.  For example, you could simplify `glom` use by adding the following function to `.jelloconf.py`:
-```
-def g(q, data=_):
-    import glom
-    return glom.glom(data, q)
-```
-Then you can use the following syntax to filter the JSON data:
-```
-$ jc -a | jello -i 'g("parsers.6.compatible")'
-
-[
-  "linux",
-  "darwin",
-  "cygwin",
-  "win32",
-  "aix",
-  "freebsd"
-]
-```
-## Setting Custom Colors via Environment Variable
-In addition to setting custom colors in the `.jelloconf.py` intialization file, you can also set them via the `JELLO_COLORS` environment variable. Any colors set in the environment variable will take precedence over any colors set in the initialization file.
-
-The `JELLO_COLORS` environment variable takes six comma separated string values in the following format:
-```
-JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
-```
-Where colors are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `gray`, `brightblack`, `brightred`, `brightgreen`, `brightyellow`, `brightblue`, `brightmagenta`, `brightcyan`, `white`, or  `default`
-
-For example, to set to the default colors:
-```
-JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
-```
-or
-```
-JELLO_COLORS=default,default,default,default,default,default
-```
+Here is more [advanced usage](https://github.com/kellyjonbrazil/jc/blob/master/ADVANCED_USAGE.md) information.
 
 ## Examples:
 ### Printing the Grep-able Schema
-```
-$ jc -a | jello -s
-
+```bash
+jc -a | jello -s
 .name = "jc";
 .version = "1.10.2";
 .description = "jc cli output JSON conversion tool";
@@ -195,13 +169,12 @@ $ jc -a | jello -s
 ...
 ```
 ### Lambda Functions and Math
-```
-$ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
-keys = _.keys()
-vals = _.values()
-cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
-dict(zip(keys, cel))'
-
+```bash
+echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
+    keys = _.keys()
+    vals = _.values()
+    cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
+    dict(zip(keys, cel))'
 {
   "t1": -34.44444444444444,
   "t2": -28.88888888888889,
@@ -210,21 +183,21 @@ dict(zip(keys, cel))'
 }
 
 ```
-```
-$ jc -a | jello 'len([entry for entry in _["parsers"] if "darwin" in entry["compatible"]])'
 
-32
+```bash
+jc -a | jello 'len([entry for entry in _.parsers if "darwin" in entry.compatible])'
+45
 ```
+
 ### For Loops
 Output as JSON array
-```
-$ jc -a | jello '\
-result = []
-for entry in _["parsers"]:
-  if "darwin" in entry["compatible"]:
-    result.append(entry["name"])
-result'
-
+```bash
+jc -a | jello '\
+    result = []
+    for entry in _.parsers:
+      if "darwin" in entry.compatible:
+        result.append(entry.name)
+    result'
 [
   "airport",
   "airport_s",
@@ -235,14 +208,13 @@ result'
 ]
 ```
 Output as bash array
-```
-$ jc -a | jello -rl '\
-result = []
-for entry in _["parsers"]:
-  if "darwin" in entry["compatible"]:
-    result.append(entry["name"])
-result'
-
+```bash
+jc -a | jello -rl '\
+    result = []
+    for entry in _.parsers:
+      if "darwin" in entry.compatible:
+        result.append(entry.name)
+    result'
 airport
 airport_s
 arp
@@ -252,9 +224,8 @@ crontab_u
 ```
 ### List and Dictionary Comprehension
 Output as JSON array
-```
-$ jc -a | jello '[entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
-
+```bash
+jc -a | jello '[entry.name for entry in _.parsers if "darwin" in entry.compatible]'
 [
   "airport",
   "airport_s",
@@ -264,10 +235,10 @@ $ jc -a | jello '[entry["name"] for entry in _["parsers"] if "darwin" in entry["
   ...
 ]
 ```
-Output as bash array
-```
-$ jc -a | jello -rl '[entry["name"] for entry in _["parsers"] if "darwin" in entry["compatible"]]'
 
+Output as bash array
+```bash
+jc -a | jello -rl '[entry.name for entry in _.parsers if "darwin" in entry.compatible]'
 airport
 airport_s
 arp
@@ -275,20 +246,20 @@ crontab
 crontab_u
 ...
 ```
-### Environment Variables
-```
-$ echo '{"login_name": "joeuser"}' | jello '\
-True if os.getenv("LOGNAME") == _["login_name"] else False'
 
+### Environment Variables
+```bash
+echo '{"login_name": "joeuser"}' | jello '\
+    True if os.getenv("LOGNAME") == _.login_name else False'
 true
 ```
+
 ### Using 3rd Party Modules
 You can import and use your favorite modules to manipulate the data.  For example, using `glom`:
-```
-$ jc -a | jello '\
-from glom import *
-glom(_, ("parsers", ["name"]))'
-
+```bash
+jc -a | jello '\
+    from glom import *
+    glom(_, ("parsers", ["name"]))'
 [
   "airport",
   "airport_s",
@@ -300,6 +271,7 @@ glom(_, ("parsers", ["name"]))'
   ...
 ]
 ```
+
 ### Advanced JSON Manipulation
 The data from this example comes from https://programminghistorian.org/assets/jq_twitter.json
 
@@ -310,26 +282,25 @@ Under **Grouping and Counting**, Matthew describes an advanced `jq` filter again
 https://programminghistorian.org/en/lessons/json-and-jq
 
 Here is a simple solution using `jello`:
-```
-$ cat jq_twitter.json | jello -l '\
-user_ids = set()
-for tweet in _:
-    user_ids.add(tweet["user"]["id"])
-result = []
-for user in user_ids:
-    user_profile = {}
-    tweet_ids = []
+```bash
+cat jq_twitter.json | jello -l '\
+    user_ids = set()
     for tweet in _:
-        if tweet["user"]["id"] == user:
-            user_profile.update({
-                "user_id": user,
-                "user_name": tweet["user"]["screen_name"],
-                "user_followers": tweet["user"]["followers_count"]})
-            tweet_ids.append(str(tweet["id"]))
-    user_profile["tweet_ids"] = ";".join(tweet_ids)
-    result.append(user_profile)
-result'
-
+        user_ids.add(tweet.user.id)
+    result = []
+    for user in user_ids:
+        user_profile = {}
+        tweet_ids = []
+        for tweet in _:
+            if tweet.user.id == user:
+                user_profile.update({
+                    "user_id": user,
+                    "user_name": tweet.user.screen_name,
+                    "user_followers": tweet.user.followers_count})
+                tweet_ids.append(str(tweet.id))
+        user_profile["tweet_ids"] = ";".join(tweet_ids)
+        result.append(user_profile)
+    result'
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}

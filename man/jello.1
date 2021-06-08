@@ -1,0 +1,440 @@
+.TH jello 1 2021-06-08 1.3.0 "Jello JSON Filter"
+.SH NAME
+Jello \- Filter JSON and JSON Lines data with Python syntax
+.SH SYNOPSIS
+.PP
+Jello is similar to jq in that it processes JSON and
+JSON Lines data except jello uses standard python dict and
+list syntax.
+.PP
+JSON or JSON Lines can be piped into jello (JSON Lines are
+automatically slurped into a list of dictionaries) and are available as
+the variable `\fB_\fP`.
+Processed data can be output as JSON, JSON Lines, bash array lines, or a
+grep-able schema.
+.PP
+
+.SH USAGE
+
+cat data.json | jello [OPTIONS] [QUERY]
+
+.fi
+.PP
+QUERY is optional and can be most any valid python code.
+`\fB_\fP` is the sanitized JSON from \fBSTDIN\fP presented as a python dict
+or list of dicts.
+If QUERY is omitted then the original JSON input will simply
+be pretty printed.
+You can use dot notation or traditional python bracket notation to
+access key names.
+.RS
+.PP
+Note: Reserved key names that cannot be accessed using dot notation can
+be accessed via standard python dictionary notation.
+(e.g.
+_.foo[\[dq]get\[dq]] instead of _.foo.get)
+.RE
+.PP
+A simple query:
+.IP
+.nf
+
+$ cat data.json | jello _.foo
+
+.fi
+.PP
+or
+.IP
+.nf
+
+$ cat data.json | jello \[aq]_[\[dq]foo\[dq]]\[aq]
+
+.fi
+.SS Options
+.IP
+\fB-c\fP compact print JSON output instead of pretty printing
+.IP
+\fB-i\fP initialize environment with a custom config file
+.IP
+\fB-l\fP lines output (suitable for bash array assignment)
+.IP
+\fB-m\fP monochrome output
+.IP
+\fB-n\fP print selected null values
+.IP
+\fB-r\fP raw output of selected strings (no quotes)
+.IP
+\fB-s\fP print the JSON schema in grep-able format
+.IP
+\fB-h\fP help
+.IP
+\fB-v\fP version info
+
+.SS Simple Examples
+.PP
+Jello simply pretty prints the JSON if there are no options
+passed:
+.IP
+.nf
+
+$ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello
+{
+  \[dq]foo\[dq]: \[dq]bar\[dq],
+  \[dq]baz\[dq]: [
+    1,
+    2,
+    3
+  ]
+}
+
+.fi
+.PP
+If you prefer compact output, use the \fB-c\fP option:
+.IP
+.nf
+
+$ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -c
+{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}
+
+.fi
+.PP
+Use the \fB-l\fP option to convert lists/arrays into lines:
+.IP
+.nf
+
+$ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -l _.baz
+1
+2
+3
+
+.fi
+.PP
+Create JSON Lines by combining the \fB-c\fP and \fB-l\fP options:
+.IP
+.nf
+
+$ echo \[aq][{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]},{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}]\[aq] | jello -cl
+{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}
+{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}
+
+.fi
+.PP
+You can also print a grep-able schema by using the \fB-s\fP option:
+.IP
+.nf
+
+$ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -s
+\&.foo = \[dq]bar\[dq];
+\&.baz[0] = 1;
+\&.baz[1] = 2;
+\&.baz[2] = 3;
+
+.fi
+.SS Assigning Results to a Bash Array
+.PP
+Use the \fB-l\fP option to print JSON array output in a manner suitable to be assigned to a bash array.
+The \fB-r\fP option can be used to remove quotation marks around strings. If you want null values to be printed as null, use the \fB-n\fP option, otherwise they are skipped.
+.PP
+Bash variable:
+.IP
+.nf
+
+variable=($(cat data.json | jello -rl \[aq]_[\[dq]foo\[dq]]\[aq]))
+
+.fi
+.PP
+Bash array variable:
+.IP
+.nf
+
+variable=()
+while read -r value; do
+    variable+=(\[dq]$value\[dq])
+done < <(cat data.json | jello -rl \[aq]_[\[dq]foo\[dq]]\[aq])
+
+.fi
+.PP
+.SS Examples:
+.SS Printing the Grep-able Schema
+.IP
+.nf
+
+$ jc -a | jello -s
+\&.name = \[dq]jc\[dq];
+\&.version = \[dq]1.10.2\[dq];
+\&.description = \[dq]jc cli output JSON conversion tool\[dq];
+\&.author = \[dq]Kelly Brazil\[dq];
+\&.author_email = \[dq]kellyjonbrazil\[at]gmail.com\[dq];
+\&.parser_count = 50;
+\&.parsers[0].name = \[dq]airport\[dq];
+\&.parsers[0].argument = \[dq]--airport\[dq];
+\&.parsers[0].version = \[dq]1.0\[dq];
+\&.parsers[0].description = \[dq]airport -I command parser\[dq];
+\&.parsers[0].author = \[dq]Kelly Brazil\[dq];
+\&.parsers[0].author_email = \[dq]kellyjonbrazil\[at]gmail.com\[dq];
+\&.parsers[0].compatible[0] = \[dq]darwin\[dq];
+\&.parsers[0].magic_commands[0] = \[dq]airport -I\[dq];
+\&.parsers[1].name = \[dq]airport_s\[dq];
+\&.parsers[1].argument = \[dq]--airport-s\[dq];
+\&.parsers[1].version = \[dq]1.0\[dq];
+\&...
+
+.fi
+.SS Lambda Functions and Math
+.IP
+.nf
+
+$ echo \[aq]{\[dq]t1\[dq]:-30, \[dq]t2\[dq]:-20, \[dq]t3\[dq]:-10, \[dq]t4\[dq]:0}\[aq] | jello \[aq]\[rs]
+keys = _.keys()
+vals = _.values()
+cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
+dict(zip(keys, cel))\[aq]
+{
+  \[dq]t1\[dq]: -34.44444444444444,
+  \[dq]t2\[dq]: -28.88888888888889,
+  \[dq]t3\[dq]: -23.333333333333336,
+  \[dq]t4\[dq]: -17.77777777777778
+}
+
+
+.fi
+.IP
+.nf
+
+$ jc -a | jello \[aq]len([entry for entry in _.parsers if \[dq]darwin\[dq] in entry.compatible])\[aq]
+45
+
+.fi
+.SS For Loops
+.PP
+Output as JSON array
+.IP
+.nf
+
+$ jc -a | jello \[aq]\[rs]
+result = []
+for entry in _.parsers:
+  if \[dq]darwin\[dq] in entry.compatible:
+    result.append(entry.name)
+result\[aq]
+[
+  \[dq]airport\[dq],
+  \[dq]airport_s\[dq],
+  \[dq]arp\[dq],
+  \[dq]crontab\[dq],
+  \[dq]crontab_u\[dq],
+  ...
+]
+
+.fi
+.PP
+Output as bash array
+.IP
+.nf
+
+$ jc -a | jello -rl \[aq]\[rs]
+result = []
+for entry in _.parsers:
+  if \[dq]darwin\[dq] in entry.compatible:
+    result.append(entry.name)
+result\[aq]
+airport
+airport_s
+arp
+crontab
+crontab_u
+\&...
+
+.fi
+.SS List and Dictionary Comprehension
+.PP
+Output as JSON array
+.IP
+.nf
+
+$ jc -a | jello \[aq][entry.name for entry in _.parsers if \[dq]darwin\[dq] in entry.compatible]\[aq]
+[
+  \[dq]airport\[dq],
+  \[dq]airport_s\[dq],
+  \[dq]arp\[dq],
+  \[dq]crontab\[dq],
+  \[dq]crontab_u\[dq],
+  ...
+]
+
+.fi
+.PP
+Output as bash array
+.IP
+.nf
+
+$ jc -a | jello -rl \[aq][entry.name for entry in _.parsers if \[dq]darwin\[dq] in entry.compatible]\[aq]
+airport
+airport_s
+arp
+crontab
+crontab_u
+\&...
+
+.fi
+.SS Environment Variables
+.IP
+.nf
+
+$ echo \[aq]{\[dq]login_name\[dq]: \[dq]joeuser\[dq]}\[aq] | jello \[aq]\[rs]
+True if os.getenv(\[dq]LOGNAME\[dq]) == _.login_name else False\[aq]
+true
+
+.fi
+.SS Using 3rd Party Modules
+.PP
+You can import and use your favorite modules to manipulate the data. For example, using \fBglom\fP:
+.IP
+.nf
+
+$ jc -a | jello \[aq]\[rs]
+from glom import *
+glom(_, (\[dq]parsers\[dq], [\[dq]name\[dq]]))\[aq]
+[
+  \[dq]airport\[dq],
+  \[dq]airport_s\[dq],
+  \[dq]arp\[dq],
+  \[dq]blkid\[dq],
+  \[dq]crontab\[dq],
+  \[dq]crontab_u\[dq],
+  \[dq]csv\[dq],
+  ...
+]
+
+.fi
+
+.SH ADVANCED USAGE
+.SS Custom Configuration File
+.PP
+You can use the \fB-i\fP option to initialize the jello environment with your own configuration file. The configuration file accepts valid python code where you can enable/disable \f[C]jello\f[R] options, customize your colors, add \fBimport\fP statements for your favorite modules, and define your own functions.
+.PP
+The file must be named \fB.jelloconf.py\fP and must be located in the proper directory based on the OS platform:
+.IP
+Linux, unix, macOS: \fB\[ti]/\fP
+.IP
+Windows: \fB%appdata%/\fP
+.SS Setting Options
+.PP
+To set jello options in the \fB.jelloconf.py\fP file, add any of the following and set to \fBTrue\fP or \fBFalse\fP:
+.IP
+.nf
+mono = True            # -m option
+compact = True         # -c option
+lines = True           # -l option
+raw = True             # -r option
+nulls = True           # -n option
+schema = True          # -s option
+.fi
+.SS Setting Colors
+.PP
+You can customize the colors by setting the following variables to one of the following string values: \fBblack\fP, \fBred\fP, \fBgreen\fP, \fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP, \fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP, \fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP, \fBbrightmagenta\fP, \fBbrightcyan\fP, or \fBwhite\fP.
+.IP
+.nf
+\f[C]
+keyname_color = \[aq]blue\[aq]            # Key names
+keyword_color = \[aq]brightblack\[aq]     # true, false, null
+number_color = \[aq]magenta\[aq]          # integers, floats
+string_color = \[aq]green\[aq]            # strings
+arrayid_color = \[aq]red\[aq]             # array IDs in Schema view
+arraybracket_color = \[aq]magenta\[aq]    # array brackets in Schema view
+\f[R]
+.fi
+.RS
+.PP
+Note: Any colors set via the \fBJELLO_COLORS\fP environment variable will take precedence over any color values set in the \fB.jelloconf.py\fP configuration file
+.RE
+.SS Importing Modules
+.PP
+To import a module (e.g. \fBglom\fP) during initialization, just add the \fBimport\fP statement to your \fB.jelloconf.py\fP file:
+.IP
+.nf
+\f[C]
+from glom import *
+\f[R]
+.fi
+.PP
+Then you can use \fBglom\fP in your jello filters without importing:
+.IP
+.nf
+\f[C]
+$ jc -a | jello -i \[aq]glom(_, \[dq]parsers.25.name\[dq])\[aq]
+\[dq]lsblk\[dq]
+\f[R]
+.fi
+.SS Adding Functions
+.PP
+You can also add functions to your initialization file. For example, you could simplify \fBglom\fP use by adding the following function to \fB.jelloconf.py\fP:
+.IP
+.nf
+\f[C]
+def g(q, data=_):
+    import glom
+    return glom.glom(data, q)
+\f[R]
+.fi
+.PP
+Then you can use the following syntax to filter the JSON data:
+.IP
+.nf
+\f[C]
+$ jc -a | jello -i \[aq]g(\[dq]parsers.6.compatible\[dq])\[aq]
+[
+  \[dq]linux\[dq],
+  \[dq]darwin\[dq],
+  \[dq]cygwin\[dq],
+  \[dq]win32\[dq],
+  \[dq]aix\[dq],
+  \[dq]freebsd\[dq]
+]
+\f[R]
+.fi
+.SS Setting Custom Colors via Environment Variable
+.PP
+In addition to setting custom colors in the \fB.jelloconf.py\fP intialization file, you can also set them via the \fBJELLO_COLORS\fP environment variable. Any colors set in the environment variable will take precedence over any
+colors set in the initialization file.
+.PP
+The \fBJELLO_COLORS\fP environment variable takes six comma separated string values in the following format:
+.IP
+.nf
+\f[C]
+JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+\f[R]
+.fi
+.PP
+Where colors are: \fBblack\fP, \fBred\fP, \fBgreen\fP,
+\fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP,
+\fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP,
+\fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP,
+\fBbrightmagenta\fP, \fBbrightcyan\fP, \fBwhite\fP, or
+\fBdefault\fP
+.PP
+For example, to set to the default colors:
+.IP
+.nf
+\f[C]
+JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+\f[R]
+.fi
+.PP
+or
+.IP
+.nf
+\f[C]
+JELLO_COLORS=default,default,default,default,default,default
+\f[R]
+.fi
+
+.SH AUTHOR
+Kelly Brazil (kellyjonbrazil@gmail.com)
+
+https://github.com/kellyjonbrazil/jello
+
+.SH COPYRIGHT
+Copyright (c) 2020-2021 Kelly Brazil
+
+License: MIT License
