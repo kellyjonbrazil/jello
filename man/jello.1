@@ -307,3 +307,134 @@ glom(_, (\[dq]parsers\[dq], [\[dq]name\[dq]]))\[aq]
 ]
 
 .fi
+
+.SH ADVANCED USAGE
+.SS Custom Configuration File
+.PP
+You can use the \fB-i\fP option to initialize the jello environment with your own configuration file. The configuration file accepts valid python code where you can enable/disable \f[C]jello\f[R] options, customize your colors, add \fBimport\fP statements for your favorite modules, and define your own functions.
+.PP
+The file must be named \fB.jelloconf.py\fP and must be located in the proper directory based on the OS platform:
+.IP
+Linux, unix, macOS: \fB\[ti]/\fP
+.IP
+Windows: \fB%appdata%/\fP
+.SS Setting Options
+.PP
+To set jello options in the \fB.jelloconf.py\fP file, add any of the following and set to \fBTrue\fP or \fBFalse\fP:
+.IP
+.nf
+mono = True            # -m option
+compact = True         # -c option
+lines = True           # -l option
+raw = True             # -r option
+nulls = True           # -n option
+schema = True          # -s option
+.fi
+.SS Setting Colors
+.PP
+You can customize the colors by setting the following variables to one of the following string values: \fBblack\fP, \fBred\fP, \fBgreen\fP, \fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP, \fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP, \fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP, \fBbrightmagenta\fP, \fBbrightcyan\fP, or \fBwhite\fP.
+.IP
+.nf
+\f[C]
+keyname_color = \[aq]blue\[aq]            # Key names
+keyword_color = \[aq]brightblack\[aq]     # true, false, null
+number_color = \[aq]magenta\[aq]          # integers, floats
+string_color = \[aq]green\[aq]            # strings
+arrayid_color = \[aq]red\[aq]             # array IDs in Schema view
+arraybracket_color = \[aq]magenta\[aq]    # array brackets in Schema view
+\f[R]
+.fi
+.RS
+.PP
+Note: Any colors set via the \fBJELLO_COLORS\fP environment variable will take precedence over any color values set in the \fB.jelloconf.py\fP configuration file
+.RE
+.SS Importing Modules
+.PP
+To import a module (e.g. \fBglom\fP) during initialization, just add the \fBimport\fP statement to your \fB.jelloconf.py\fP file:
+.IP
+.nf
+\f[C]
+from glom import *
+\f[R]
+.fi
+.PP
+Then you can use \fBglom\fP in your jello filters without importing:
+.IP
+.nf
+\f[C]
+$ jc -a | jello -i \[aq]glom(_, \[dq]parsers.25.name\[dq])\[aq]
+\[dq]lsblk\[dq]
+\f[R]
+.fi
+.SS Adding Functions
+.PP
+You can also add functions to your initialization file. For example, you could simplify \fBglom\fP use by adding the following function to \fB.jelloconf.py\fP:
+.IP
+.nf
+\f[C]
+def g(q, data=_):
+    import glom
+    return glom.glom(data, q)
+\f[R]
+.fi
+.PP
+Then you can use the following syntax to filter the JSON data:
+.IP
+.nf
+\f[C]
+$ jc -a | jello -i \[aq]g(\[dq]parsers.6.compatible\[dq])\[aq]
+[
+  \[dq]linux\[dq],
+  \[dq]darwin\[dq],
+  \[dq]cygwin\[dq],
+  \[dq]win32\[dq],
+  \[dq]aix\[dq],
+  \[dq]freebsd\[dq]
+]
+\f[R]
+.fi
+.SS Setting Custom Colors via Environment Variable
+.PP
+In addition to setting custom colors in the \fB.jelloconf.py\fP intialization file, you can also set them via the \fBJELLO_COLORS\fP environment variable. Any colors set in the environment variable will take precedence over any
+colors set in the initialization file.
+.PP
+The \fBJELLO_COLORS\fP environment variable takes six comma separated string values in the following format:
+.IP
+.nf
+\f[C]
+JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+\f[R]
+.fi
+.PP
+Where colors are: \fBblack\fP, \fBred\fP, \fBgreen\fP,
+\fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP,
+\fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP,
+\fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP,
+\fBbrightmagenta\fP, \fBbrightcyan\fP, \fBwhite\fP, or
+\fBdefault\fP
+.PP
+For example, to set to the default colors:
+.IP
+.nf
+\f[C]
+JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+\f[R]
+.fi
+.PP
+or
+.IP
+.nf
+\f[C]
+JELLO_COLORS=default,default,default,default,default,default
+\f[R]
+.fi
+
+.SH AUTHOR
+Kelly Brazil (kellyjonbrazil@gmail.com)
+
+https://github.com/kellyjonbrazil/jello
+
+.SH COPYRIGHT
+Copyright (c) 2020-2021 Kelly Brazil
+
+License: MIT License
