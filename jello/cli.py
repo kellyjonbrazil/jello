@@ -160,7 +160,7 @@ def helptext():
 
         Use '_' as the input data and use python dict and list bracket syntax or dot notation.
 
-        Example:
+        Examples:
                 cat data.json | jello _.foo
                 cat data.json | jello '_["foo"]'
                 variable=($(cat data.json | jello -l _.foo))
