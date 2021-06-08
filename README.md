@@ -132,7 +132,7 @@ Use the `-l` option to print JSON array output in a manner suitable to be assign
 
 Bash variable:
 ```
-variable=($(cat data.json | jello -rl '_["foo"]'))
+variable=($(cat data.json | jello -rl _.foo))
 ```
 
 Bash array variable:
@@ -140,7 +140,7 @@ Bash array variable:
 variable=()
 while read -r value; do
     variable+=("$value")
-done < <(cat data.json | jello -rl '_["foo"]')
+done < <(cat data.json | jello -rl _.foo)
 ```
 
 Here is more [advanced usage](https://github.com/kellyjonbrazil/jc/blob/master/ADVANCED_USAGE.md) information.
