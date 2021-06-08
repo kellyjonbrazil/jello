@@ -144,7 +144,7 @@ def print_error(message):
 
 def helptext():
     print(textwrap.dedent('''\
-        jello:   query JSON at the command line with python syntax
+        jello:  query JSON at the command line with python syntax
 
         Usage:  cat data.json | jello [OPTIONS] [QUERY]
 
