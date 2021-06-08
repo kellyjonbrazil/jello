@@ -488,7 +488,7 @@ def main(data=None, query='_'):
         except Exception as e:
             # can't parse the data. Throw an error and quit
             msg = f'''JSON Load Exception: {e}
-        Cannot parse the data (Not valid JSON or JSON Lines):
+        Cannot parse the data (Not valid JSON or JSON Lines)
         '''
             print_error(f'''jello:  {msg}''')
 
