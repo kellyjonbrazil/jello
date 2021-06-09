@@ -27,7 +27,7 @@ pip3 install jello
 ```
 
 ### Packages and Binaries
-See the [Jello Packaging](https://github.com/kellyjonbrazil/jello-packaging) site for MSI packages and binaries.
+See the [Jello Packaging](https://kellyjonbrazil.github.io/jello-packaging/) site for MSI packages and binaries.
 
 ### Usage
 ```
