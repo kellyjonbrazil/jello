@@ -35,6 +35,7 @@ The MSI Installer packages for Windows are built from PyPi and can be installed 
 
 | Version   | File                                                                                    | SHA256 Hash                                                       |
 |-----------|-----------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| 1.3.3     | [jello-1.3.3.msi](https://jello-packages.s3-us-west-1.amazonaws.com/jello-1.3.3.msi)    | 27ab9c84278cca966af8292e0118d9fc54807f54f2b057f7a99b6ac0ef6c6b28  |
 | 1.3.2     | [jello-1.3.2.msi](https://jello-packages.s3-us-west-1.amazonaws.com/jello-1.3.2.msi)    | 3cbdbb36adf33c7090e9f2d7aac577e4286edae1544c9582c1377eaccc08ef49  |
 | 1.2.11    | [jello-1.2.11.msi](https://jello-packages.s3-us-west-1.amazonaws.com/jello-1.2.11.msi)  | 08da1c91e5d1930542529473350dc10ffc3d4adf5c06cc365c333663ac82a8fc  |
 
@@ -45,6 +46,7 @@ Linux and macOS x86_64 binaries are built from PyPi and can be copied to any loc
 
 | Version   | File                                                                                                               | SHA256 Hash (binary file)                                         |
 |-----------|--------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| 1.3.3     | [jello-1.3.3-linux.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.3.3-linux-x86_64.tar.gz)  | ac27dd672de794ec26477994d40ff4d060537691f3ca6eafd84c2ab2bf1470ca  |
 | 1.3.2     | [jello-1.3.2-linux.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.3.2-linux-x86_64.tar.gz)  | 4fea973ab37b2def713240757a18304ba7399f026afe3bf211d775b0d9db083c  |
 | 1.2.9     | [jello-1.2.9-linux.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.2.9-linux.tar.gz)         | ffe8dfe2cc1dc446aeade32078db654de604176976be5dee89f83f0049551c45  |
 
@@ -52,6 +54,7 @@ Linux and macOS x86_64 binaries are built from PyPi and can be copied to any loc
 
 | Version   | File                                                                                                                 | SHA256 Hash (binary file)                                         |
 |-----------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| 1.3.3     | [jello-1.3.3-darwin.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.3.3-darwin-x86_64.tar.gz)  | c5fa3c08960d2e11a6bbab9755a1b3b42897526b3e2b5bc49f686b59704d9ed8  |
 | 1.3.2     | [jello-1.3.2-darwin.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.3.2-darwin-x86_64.tar.gz)  | a21ad322e8d4a279f3b2c8ba9b60835c1c6ba5809994f965ae529369520ec113  |
 | 1.2.9     | [jello-1.2.9-darwin.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.2.9-darwin.tar.gz)         | 9355bf19212cce60f5f592a1a778fdf26984f4b86968ceca2a3e99792c258037  |
 
