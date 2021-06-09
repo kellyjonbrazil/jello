@@ -112,9 +112,9 @@ echo '{"foo":"bar","baz":[1,2,3]}' | jello -l _.baz
 3
 ```
 
-Create [JSON Lines](https://jsonlines.org/) by combining the `-c` and `-l` options:
+You can also create [JSON Lines](https://jsonlines.org/) with the `-l` option:
 ```bash
-echo '[{"foo":"bar","baz":[1,2,3]},{"foo":"bar","baz":[1,2,3]}]' | jello -cl
+echo '[{"foo":"bar","baz":[1,2,3]},{"foo":"bar","baz":[1,2,3]}]' | jello -l
 {"foo":"bar","baz":[1,2,3]}
 {"foo":"bar","baz":[1,2,3]}
 ```
