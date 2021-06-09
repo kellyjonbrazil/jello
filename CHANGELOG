@@ -1,5 +1,8 @@
 jello changelog
 
+20210608 v1.3.4
+- Documentation fixes
+
 20210608 v1.3.3
 - Raise exception while creating JSON for non-serializable objects
 
