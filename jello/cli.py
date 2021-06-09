@@ -307,6 +307,11 @@ def create_json(data):
         else:
             return f'"{data}"'
 
+    # only non-serializable types are left. Force an exception from json.dumps()
+    else:
+        json.dumps(data)
+        # this code should not run, but just in case something slips by above
+        raise TypeError(f'Object is not JSON serializable')
 
 def pyquery(data, query):
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
