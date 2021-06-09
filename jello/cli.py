@@ -15,7 +15,7 @@ from pygments.formatters import Terminal256Formatter
 from jello.dotmap import DotMap
 
 
-__version__ = '1.3.3'
+__version__ = '1.3.5'
 AUTHOR = 'Kelly Brazil'
 WEBSITE = 'https://github.com/kellyjonbrazil/jello'
 COPYRIGHT = '© 2020-2021 Kelly Brazil'
@@ -603,7 +603,7 @@ def main(data=None, query='_'):
 
         # Print colorized or mono JSON to STDOUT
         try:
-            if not opts.mono and not opts.lines and sys.stdout.isatty():
+            if not opts.mono and not opts.raw and sys.stdout.isatty():
                 lexer = JsonLexer()
                 formatter = Terminal256Formatter(style=JelloStyle)
                 highlighted_json = highlight(output, lexer, formatter)
