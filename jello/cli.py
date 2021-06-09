@@ -603,7 +603,7 @@ def main(data=None, query='_'):
 
         # Print colorized or mono JSON to STDOUT
         try:
-            if not opts.mono and not opts.lines and sys.stdout.isatty():
+            if not opts.mono and not opts.raw and sys.stdout.isatty():
                 lexer = JsonLexer()
                 formatter = Terminal256Formatter(style=JelloStyle)
                 highlighted_json = highlight(output, lexer, formatter)
