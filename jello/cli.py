@@ -15,7 +15,7 @@ from pygments.formatters import Terminal256Formatter
 from jello.dotmap import DotMap
 
 
-__version__ = '1.3.0'
+__version__ = '1.3.3'
 AUTHOR = 'Kelly Brazil'
 WEBSITE = 'https://github.com/kellyjonbrazil/jello'
 COPYRIGHT = '© 2020-2021 Kelly Brazil'
@@ -94,8 +94,6 @@ def set_env_colors():
 
     if env_colors:
         color_list = env_colors.split(',')
-    else:
-        input_error = True
 
     if env_colors and len(color_list) != 6:
         input_error = True
@@ -105,6 +103,8 @@ def set_env_colors():
             if color not in ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
                              'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white', 'default']:
                 input_error = True
+    else:
+        color_list = ['default', 'default', 'default', 'default', 'default', 'default']
 
     # if there is an issue with the env variable, just set all colors to default and move on
     if input_error:
@@ -217,7 +217,7 @@ def create_schema(src, path=''):
 
             else:
                 k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
-                val = json.dumps(v)
+                val = json.dumps(v, ensure_ascii=False)
                 if val == 'true' or val == 'false' or val == 'null':
                     val = f'{CKEYWORD}{val}{CEND}'
                 elif val.replace('.', '', 1).isdigit():
@@ -228,7 +228,7 @@ def create_schema(src, path=''):
                 schema_list.append(f'{path}.{k} = {val};')
 
     else:
-        val = json.dumps(src)
+        val = json.dumps(src, ensure_ascii=False)
         if val == 'true' or val == 'false' or val == 'null':
             val = f'{CKEYWORD}{val}{CEND}'
         elif val.replace('.', '', 1).isdigit():
@@ -307,6 +307,11 @@ def create_json(data):
         else:
             return f'"{data}"'
 
+    # only non-serializable types are left. Force an exception from json.dumps()
+    else:
+        json.dumps(data)
+        # this code should not run, but just in case something slips by above
+        raise TypeError(f'Object is not JSON serializable')
 
 def pyquery(data, query):
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap

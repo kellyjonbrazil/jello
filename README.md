@@ -15,13 +15,12 @@ JSON or JSON Lines can be piped into `jello` (JSON Lines are automatically slurp
 For more information on the motivations for this project, see my [blog post](https://blog.kellybrazil.com/2020/03/25/jello-the-jq-alternative-for-pythonistas/).
 
 ## Install
-You can install `jello` via `pip`, via OS Package Repository, or by downloading the correct binary for your architecture and running it anywhere on your filesystem.
+You can install `jello` via `pip`, via OS Package Repository, MSI installer for Windows, or by downloading the correct binary for your architecture and running it anywhere on your filesystem.
 
 ### Pip (macOS, linux, unix, Windows)
 For the most up-to-date version and the most cross-platform option, use `pip` or `pip3` to download and install `jello` directly from [PyPi](https://pypi.org/project/jello/):
 
 ![Pypi](https://img.shields.io/pypi/v/jello.svg)
-
 
 ```bash
 pip3 install jello
@@ -31,21 +30,30 @@ pip3 install jello
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/jello.svg)](https://repology.org/project/jello/versions)
 
+### MSI Installer (Windows 2016+)
+The MSI Installer packages for Windows are built from PyPi and can be installed on modern versions of Windows. These installers may not always be on the very latest `jello` version, but are regularly updated.
+
+| Version   | File                                                                                    | SHA256 Hash                                                       |
+|-----------|-----------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| 1.3.3     | [jello-1.3.3.msi](https://jello-packages.s3-us-west-1.amazonaws.com/jello-1.3.3.msi)    | 27ab9c84278cca966af8292e0118d9fc54807f54f2b057f7a99b6ac0ef6c6b28  |
+| 1.2.11    | [jello-1.2.11.msi](https://jello-packages.s3-us-west-1.amazonaws.com/jello-1.2.11.msi)  | 08da1c91e5d1930542529473350dc10ffc3d4adf5c06cc365c333663ac82a8fc  |
+
 ### Binaries (x86_64)
 Linux and macOS x86_64 binaries are built from PyPi and can be copied to any location in your path and run. These binaries may not always be on the very latest `jello` version, but are regularly updated.
 
 #### Linux (Fedora, RHEL, CentOS, Debian, Ubuntu)
 
-| Version   | File                                                                                                        | SHA256 Hash (binary file)                                         |
-|-----------|-------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
-| 1.2.9     | [jello-1.2.9-linux.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.2.9-linux.tar.gz)  | ffe8dfe2cc1dc446aeade32078db654de604176976be5dee89f83f0049551c45  |
-
+| Version   | File                                                                                                               | SHA256 Hash (binary file)                                         |
+|-----------|--------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| 1.3.3     | [jello-1.3.3-linux.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.3.3-linux-x86_64.tar.gz)  | ac27dd672de794ec26477994d40ff4d060537691f3ca6eafd84c2ab2bf1470ca  |
+| 1.2.9     | [jello-1.2.9-linux.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.2.9-linux.tar.gz)         | ffe8dfe2cc1dc446aeade32078db654de604176976be5dee89f83f0049551c45  |
 
 #### macOS (Mojave and higher)
 
-| Version   | File                                                                                                          | SHA256 Hash (binary file)                                         |
-|-----------|---------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
-| 1.2.9     | [jello-1.2.9-darwin.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.2.9-darwin.tar.gz)  | 9355bf19212cce60f5f592a1a778fdf26984f4b86968ceca2a3e99792c258037  |
+| Version   | File                                                                                                                 | SHA256 Hash (binary file)                                         |
+|-----------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| 1.3.3     | [jello-1.3.3-darwin.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.3.3-darwin-x86_64.tar.gz)  | c5fa3c08960d2e11a6bbab9755a1b3b42897526b3e2b5bc49f686b59704d9ed8  |
+| 1.2.9     | [jello-1.2.9-darwin.tar.gz](https://jello-packages.s3-us-west-1.amazonaws.com/bin/jello-1.2.9-darwin.tar.gz)         | 9355bf19212cce60f5f592a1a778fdf26984f4b86968ceca2a3e99792c258037  |
 
 ### Usage
 ```
@@ -80,6 +88,7 @@ cat data.json | jello '_["foo"]'
 `jello` simply pretty prints the JSON if there are no options passed:
 ```bash
 echo '{"foo":"bar","baz":[1,2,3]}' | jello
+
 {
   "foo": "bar",
   "baz": [
@@ -93,20 +102,23 @@ echo '{"foo":"bar","baz":[1,2,3]}' | jello
 If you prefer compact output, use the `-c` option:
 ```bash
 echo '{"foo":"bar","baz":[1,2,3]}' | jello -c
+
 {"foo":"bar","baz":[1,2,3]}
 ```
 
 Use the `-l` option to convert lists/arrays into lines:
 ```bash
 echo '{"foo":"bar","baz":[1,2,3]}' | jello -l _.baz
+
 1
 2
 3
 ```
 
-Create [JSON Lines](https://jsonlines.org/) by combining the `-c` and `-l` options:
+You can also create [JSON Lines](https://jsonlines.org/) with the `-l` option:
 ```bash
-echo '[{"foo":"bar","baz":[1,2,3]},{"foo":"bar","baz":[1,2,3]}]' | jello -cl
+echo '[{"foo":"bar","baz":[1,2,3]},{"foo":"bar","baz":[1,2,3]}]' | jello -l
+
 {"foo":"bar","baz":[1,2,3]}
 {"foo":"bar","baz":[1,2,3]}
 ```
@@ -114,6 +126,7 @@ echo '[{"foo":"bar","baz":[1,2,3]},{"foo":"bar","baz":[1,2,3]}]' | jello -cl
 You can also print a grep-able schema by using the `-s` option:
 ```bash
 echo '{"foo":"bar","baz":[1,2,3]}' | jello -s
+
 .foo = "bar";
 .baz[0] = 1;
 .baz[1] = 2;
@@ -126,7 +139,7 @@ Use the `-l` option to print JSON array output in a manner suitable to be assign
 
 Bash variable:
 ```
-variable=($(cat data.json | jello -rl '_["foo"]'))
+variable=($(cat data.json | jello -rl _.foo))
 ```
 
 Bash array variable:
@@ -134,15 +147,16 @@ Bash array variable:
 variable=()
 while read -r value; do
     variable+=("$value")
-done < <(cat data.json | jello -rl '_["foo"]')
+done < <(cat data.json | jello -rl _.foo)
 ```
 
-Here is more [advanced usage](https://github.com/kellyjonbrazil/jc/blob/master/ADVANCED_USAGE.md) information.
+Here is more [advanced usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md) information.
 
 ## Examples:
 ### Printing the Grep-able Schema
 ```bash
 jc -a | jello -s
+
 .name = "jc";
 .version = "1.10.2";
 .description = "jc cli output JSON conversion tool";
@@ -165,10 +179,11 @@ jc -a | jello -s
 ### Lambda Functions and Math
 ```bash
 echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
-    keys = _.keys()
-    vals = _.values()
-    cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
-    dict(zip(keys, cel))'
+keys = _.keys()
+vals = _.values()
+cel = list(map(lambda x: (float(5)/9)*(x-32), vals))
+dict(zip(keys, cel))'
+
 {
   "t1": -34.44444444444444,
   "t2": -28.88888888888889,
@@ -180,6 +195,7 @@ echo '{"t1":-30, "t2":-20, "t3":-10, "t4":0}' | jello '\
 
 ```bash
 jc -a | jello 'len([entry for entry in _.parsers if "darwin" in entry.compatible])'
+
 45
 ```
 
@@ -187,11 +203,12 @@ jc -a | jello 'len([entry for entry in _.parsers if "darwin" in entry.compatible
 Output as JSON array
 ```bash
 jc -a | jello '\
-    result = []
-    for entry in _.parsers:
-      if "darwin" in entry.compatible:
-        result.append(entry.name)
-    result'
+result = []
+for entry in _.parsers:
+  if "darwin" in entry.compatible:
+    result.append(entry.name)
+result'
+
 [
   "airport",
   "airport_s",
@@ -204,11 +221,12 @@ jc -a | jello '\
 Output as bash array
 ```bash
 jc -a | jello -rl '\
-    result = []
-    for entry in _.parsers:
-      if "darwin" in entry.compatible:
-        result.append(entry.name)
-    result'
+result = []
+for entry in _.parsers:
+  if "darwin" in entry.compatible:
+    result.append(entry.name)
+result'
+
 airport
 airport_s
 arp
@@ -220,6 +238,7 @@ crontab_u
 Output as JSON array
 ```bash
 jc -a | jello '[entry.name for entry in _.parsers if "darwin" in entry.compatible]'
+
 [
   "airport",
   "airport_s",
@@ -233,6 +252,7 @@ jc -a | jello '[entry.name for entry in _.parsers if "darwin" in entry.compatibl
 Output as bash array
 ```bash
 jc -a | jello -rl '[entry.name for entry in _.parsers if "darwin" in entry.compatible]'
+
 airport
 airport_s
 arp
@@ -244,7 +264,8 @@ crontab_u
 ### Environment Variables
 ```bash
 echo '{"login_name": "joeuser"}' | jello '\
-    True if os.getenv("LOGNAME") == _.login_name else False'
+True if os.getenv("LOGNAME") == _.login_name else False'
+
 true
 ```
 
@@ -252,8 +273,9 @@ true
 You can import and use your favorite modules to manipulate the data.  For example, using `glom`:
 ```bash
 jc -a | jello '\
-    from glom import *
-    glom(_, ("parsers", ["name"]))'
+from glom import *
+glom(_, ("parsers", ["name"]))'
+
 [
   "airport",
   "airport_s",
@@ -278,23 +300,24 @@ https://programminghistorian.org/en/lessons/json-and-jq
 Here is a simple solution using `jello`:
 ```bash
 cat jq_twitter.json | jello -l '\
-    user_ids = set()
+user_ids = set()
+for tweet in _:
+    user_ids.add(tweet.user.id)
+result = []
+for user in user_ids:
+    user_profile = {}
+    tweet_ids = []
     for tweet in _:
-        user_ids.add(tweet.user.id)
-    result = []
-    for user in user_ids:
-        user_profile = {}
-        tweet_ids = []
-        for tweet in _:
-            if tweet.user.id == user:
-                user_profile.update({
-                    "user_id": user,
-                    "user_name": tweet.user.screen_name,
-                    "user_followers": tweet.user.followers_count})
-                tweet_ids.append(str(tweet.id))
-        user_profile["tweet_ids"] = ";".join(tweet_ids)
-        result.append(user_profile)
-    result'
+        if tweet.user.id == user:
+            user_profile.update({
+                "user_id": user,
+                "user_name": tweet.user.screen_name,
+                "user_followers": tweet.user.followers_count})
+            tweet_ids.append(str(tweet.id))
+    user_profile["tweet_ids"] = ";".join(tweet_ids)
+    result.append(user_profile)
+result'
+
 ...
 {"user_id": 2696111005, "user_name": "EGEVER142", "user_followers": 1433, "tweet_ids": "619172303654518784"}
 {"user_id": 42226593, "user_name": "shirleycolleen", "user_followers": 2114, "tweet_ids": "619172281294655488;619172179960328192"}
