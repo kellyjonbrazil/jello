@@ -1,5 +1,8 @@
 jello changelog
 
+20210609 v1.3.6
+- Documentation fixes for packages and binaries hosting
+
 20210609 v1.3.5
 - Enhance lines output to support colors
 - Enhance raw output to force monochrome output

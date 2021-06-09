@@ -15,7 +15,7 @@ from pygments.formatters import Terminal256Formatter
 from jello.dotmap import DotMap
 
 
-__version__ = '1.3.5'
+__version__ = '1.3.6'
 AUTHOR = 'Kelly Brazil'
 WEBSITE = 'https://github.com/kellyjonbrazil/jello'
 COPYRIGHT = '© 2020-2021 Kelly Brazil'
