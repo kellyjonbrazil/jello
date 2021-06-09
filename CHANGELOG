@@ -1,6 +1,10 @@
 jello changelog
 
-20210608 v1.3.4
+20210609 v1.3.5
+- Enhance lines output to support colors
+- Enhance raw output to force monochrome output
+
+20210609 v1.3.4
 - Documentation fixes
 
 20210608 v1.3.3
