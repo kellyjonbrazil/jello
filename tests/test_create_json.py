@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
+from collections import OrderedDict
 import jello.cli
 from jello.cli import opts
 
@@ -1217,6 +1218,21 @@ class MyTests(unittest.TestCase):
         opts.raw = True
         opts.lines = True
         self.assertRaises(ValueError, jello.cli.create_json, self.data_in)
+
+    def test_non_serializable(self):
+        """
+        Test _.items()
+        """
+        self.data_in = OrderedDict(foo='bar').items()
+        self.assertRaises(TypeError, jello.cli.create_json, self.data_in)
+
+    def test_non_serializable_l(self):
+        """
+        Test _.items() -l
+        """
+        self.data_in = OrderedDict(foo='bar').items()
+        opts.lines = True
+        self.assertRaises(TypeError, jello.cli.create_json, self.data_in)
 
 
 if __name__ == '__main__':
