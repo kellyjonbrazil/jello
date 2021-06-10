@@ -109,7 +109,7 @@ echo '{"foo":"bar","baz":[1,2,3]}' | jello -s
 
 #### Assigning Results to a Bash Array
 
-Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option, otherwise they are skipped.
+Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option, otherwise they are blank lines.
 
 Bash variable:
 ```
