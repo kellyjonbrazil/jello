@@ -338,9 +338,6 @@ def pyquery(data, query):
                 jelloconf = f.read()
         except FileNotFoundError:
             raise FileNotFoundError(f'-i used and initialization file not found: {conf_file}')
-            # print_error(textwrap.dedent(f'''\
-            #     jello:  Initialization file not found: {conf_file}
-            # '''))
 
     query = jelloconf + query
     output = None
@@ -434,16 +431,16 @@ def format_exception(e=None, list_dict_data='', query='', response='', output=''
         e_text = e.text
 
     if len(str(list_dict_data)) > 70:
-        list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
+        list_dict_data = str(list_dict_data)[:34] + ' ... ' + str(list_dict_data)[-34:]
    
     if len(str(query)) > 70:
-        query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+        query = str(query)[:34] + ' ... ' + str(query)[-34:]
 
     if len(str(response)) > 70:
-        response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
+        response = str(response)[:34] + ' ... ' + str(response)[-34:]
 
     if len(str(output)) > 70:
-        output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
+        output = str(output)[0:34] + ' ... ' + str(output)[-34:]
 
     return e, e_text, list_dict_data, query, response, output
 
