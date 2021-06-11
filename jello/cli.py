@@ -264,7 +264,7 @@ def create_json(data):
                 break
 
         if opts.lines and list_includes_list:
-            raise ValueError('Cannot print list of lists as lines. Try normal JSON output.\n')
+            raise ValueError('Cannot print list of lists as lines. Try normal JSON output.')
 
         # print lines for a flat list
         else:
@@ -411,7 +411,7 @@ def pyquery(data, query):
 
     # if DotMap returns a bound function then we know it was a reserved attribute name
     if hasattr(output, '__self__'):
-        raise ValueError('A reserved key name with dotted notation was used in the query. Please use python bracket dict notation to access this key.')
+        raise ValueError('Reserved key name. Use bracket notation to access this key.')
 
     return output
 
@@ -424,6 +424,27 @@ def load_json(data):
         json_dict = [json.loads(i) for i in data.splitlines()]
 
     return json_dict
+
+def format_exception(e=None, list_dict_data='', query='', response='', output=''):
+    query = str(query).replace('\n', '; ')
+    e_text = ''
+
+    if hasattr(e, 'text'):
+        e_text = e.text
+
+    if len(str(list_dict_data)) > 70:
+        list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
+   
+    if len(str(query)) > 70:
+        query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+
+    if len(str(response)) > 70:
+        response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
+
+    if len(str(output)) > 70:
+        output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
+
+    return e, e_text, list_dict_data, query, response, output
 
 
 def main(data=None, query='_'):
@@ -507,59 +528,17 @@ def main(data=None, query='_'):
         try:
             response = pyquery(list_dict_data, query)
 
-        except KeyError as e:
-            msg = f'Key does not exist: {e}'
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
-        except IndexError as e:
-            print_error(textwrap.dedent(f'''\
-                jello:  {e}
-            '''))
-
-        except SyntaxError as e:
-            print_error(textwrap.dedent(f'''\
-                jello:  {e}
-                        {e.text}
-            '''))
-
-        except TypeError as e:
-            msg = f'TypeError: {e}'
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
-        except AttributeError as e:
-            msg = f'AttributeError: {e}'
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
-        except NameError as e:
-            msg = f'NameError: {e}'
-            print_error(textwrap.dedent(f'''\
-                jello:  {msg}
-            '''))
-
         except Exception as e:    
-            query = query.replace('\n', '; ')
-
-            err_data = ''
-            if len(str(list_dict_data)) > 70:
-                err_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
-           
-            if len(str(query)) > 70:
-                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
-        
-            if len(str(response)) > 70:
-                response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
+            e, e_text, list_dict_data, query, response, output = format_exception(e,
+                                                                                  list_dict_data,
+                                                                                  query)
 
             print_error(textwrap.dedent(f'''\
-                jello:  Query Exception:  {e}
+                jello:  Query Exception:  {e.__class__.__name__}
+                        {e}
+                        {e_text}
                         query: {query}
-                        data: {err_data}
-                        response: {response}
+                        data: {list_dict_data}
             '''))
 
         set_env_colors()
@@ -586,18 +565,15 @@ def main(data=None, query='_'):
             else:
                 output = create_json(response)
         except Exception as e:
-            query = query.replace('\n', '; ')
+            e, e_text, list_dict_data, query, response, output = format_exception(e,
+                                                                                  list_dict_data,
+                                                                                  query,
+                                                                                  response)
 
-            if len(str(list_dict_data)) > 70:
-                list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
-
-            if len(str(response)) > 70:
-                response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
-
-            if len(str(query)) > 70:
-                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
             print_error(textwrap.dedent(f'''\
-                jello:  Formatting Exception:  {e}
+                jello:  Formatting Exception:  {e.__class__.__name__}
+                        {e}
+                        {e_text}
                         query: {query}
                         data: {list_dict_data}
                         response: {response}
@@ -614,22 +590,16 @@ def main(data=None, query='_'):
                 print(output)
 
         except Exception as e:
-            query = query.replace('\n', '; ')
-
-            if len(str(list_dict_data)) > 70:
-                list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
-
-            if len(str(response)) > 70:
-                response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
-
-            if len(str(output)) > 70:
-                output = str(output)[0:35] + ' ... ' + str(output)[-35:-1]
-
-            if len(str(query)) > 70:
-                query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
+            e, e_text, list_dict_data, query, response, output = format_exception(e,
+                                                                                  list_dict_data,
+                                                                                  query,
+                                                                                  response,
+                                                                                  output)
 
             print_error(textwrap.dedent(f'''\
-                jello:  Output Exception:  {e}
+                jello:  Output Exception:  {e.__class__.__name__}
+                        {e}
+                        {e_text}
                         query: {query}
                         data: {list_dict_data}
                         response: {response}
