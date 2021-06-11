@@ -152,8 +152,8 @@ def main(data=None, query='_'):
             list_dict_data = load_json(data)
         except Exception as e:
             # can't parse the data. Throw an error and quit
-            msg = f'''JSON Load Exception: {e}
-        Cannot parse the data (Not valid JSON or JSON Lines)
+            msg = f'''JSON Load Exception: Cannot parse the data (Not valid JSON or JSON Lines)
+        {e}
         '''
             print_error(f'''jello:  {msg}''')
 
