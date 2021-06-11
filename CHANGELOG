@@ -1,5 +1,9 @@
 jello changelog
 
+20210610 v1.3.7
+- Enhance error handling when a dict method is raised
+- Enhance exception error messages
+
 20210609 v1.3.6
 - Documentation fixes for packages and binaries hosting
 
