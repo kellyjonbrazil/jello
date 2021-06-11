@@ -124,7 +124,25 @@ while read -r value; do
 done < <(cat data.json | jello -rl _.foo)
 ```
 
-Here is more [advanced usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md) information.
+### Setting Custom Colors via Environment Variable
+Custom colors can be set via the `JELLO_COLORS` environment variable. Any colors set in the environment variable will take precedence over any colors set in the initialization file. (see [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md))
+
+The `JELLO_COLORS` environment variable takes six comma separated string values in the following format:
+```
+JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+```
+Where colors are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `gray`, `brightblack`, `brightred`, `brightgreen`, `brightyellow`, `brightblue`, `brightmagenta`, `brightcyan`, `white`, or  `default`
+
+For example, to set to the default colors:
+```
+JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+```
+or
+```
+JELLO_COLORS=default,default,default,default,default,default
+```
+
+Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md) information.
 
 ## Examples:
 ### Printing the Grep-able Schema
