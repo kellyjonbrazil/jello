@@ -7,7 +7,7 @@ import contextlib
 import unittest
 from unittest.mock import patch
 import jello.cli
-from jello.options import opts
+from jello.lib import opts
 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))

@@ -5,10 +5,29 @@ import sys
 import ast
 import json
 from jello.dotmap import DotMap
-from jello.options import opts, JelloTheme
 
 
-schema_list = []
+class opts:
+    initialize = None
+    version_info = None
+    helpme = None
+    compact = None
+    nulls = None
+    raw = None
+    lines = None
+    mono = None
+    schema = None
+    keyname_color = None
+    keyword_color = None
+    number_color = None
+    string_color = None
+    arrayid_color = None
+    arraybracket_color = None
+
+
+class JelloTheme:
+    """this class will contain the colors dictionary generated from set_env_colors()"""
+    pass
 
 
 color_map = {
@@ -29,6 +48,9 @@ color_map = {
     'brightcyan': ('ansibrightcyan', '\33[96m'),
     'white': ('ansiwhite', '\33[97m'),
 }
+
+
+schema_list = []
 
 
 def set_env_colors():
@@ -343,7 +365,3 @@ def pyquery(data, query):
         raise ValueError('Reserved key name. Use bracket notation to access this key.')
 
     return output
-
-
-if __name__ == '__main__':
-    main()

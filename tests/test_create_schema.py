@@ -3,8 +3,7 @@
 import unittest
 import os
 import jello
-from jello.options import opts
-from jello.lib import set_env_colors, create_schema
+from jello.lib import opts, set_env_colors, create_schema
 
 
 class MyTests(unittest.TestCase):

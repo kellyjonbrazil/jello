@@ -10,8 +10,7 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 import jello
-from jello.lib import set_env_colors, load_json, create_schema, create_json, pyquery
-from jello.options import opts, JelloTheme
+from jello.lib import opts, JelloTheme, set_env_colors, load_json, create_schema, create_json, pyquery
 
 
 def ctrlc(signum, frame):
