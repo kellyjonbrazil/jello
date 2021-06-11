@@ -337,9 +337,10 @@ def pyquery(data, query):
             with open(conf_file, 'r') as f:
                 jelloconf = f.read()
         except FileNotFoundError:
-            print_error(textwrap.dedent(f'''\
-                jello:  Initialization file not found: {conf_file}
-            '''))
+            raise FileNotFoundError(f'-i used and initialization file not found: {conf_file}')
+            # print_error(textwrap.dedent(f'''\
+            #     jello:  Initialization file not found: {conf_file}
+            # '''))
 
     query = jelloconf + query
     output = None
@@ -564,6 +565,7 @@ def main(data=None, query='_'):
                 sys.exit()
             else:
                 output = create_json(response)
+
         except Exception as e:
             e, e_text, list_dict_data, query, response, output = format_exception(e,
                                                                                   list_dict_data,
