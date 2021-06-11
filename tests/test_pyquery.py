@@ -155,6 +155,14 @@ class MyTests(unittest.TestCase):
         self.query = 'variable'
         self.assertRaises(NameError, jello.cli.pyquery, self.data_in, self.query)
 
+    def test_ValueError(self):
+        """
+        Test _.get (ValueError)
+        """
+        self.data_in = {"foo": "bar"}
+        self.query = '_.get'
+        self.assertRaises(ValueError, jello.cli.pyquery, self.data_in, self.query)
+
 
 if __name__ == '__main__':
     unittest.main()

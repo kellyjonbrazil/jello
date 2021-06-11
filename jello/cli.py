@@ -409,6 +409,10 @@ def pyquery(data, query):
     elif isinstance(output, DotMap):
         output = output.toDict()
 
+    # if DotMap returns a bound function then we know it was a reserved attribute name
+    if hasattr(output, '__self__'):
+        raise ValueError('A reserved key name with dotted notation was used in the query. Please use python bracket dict notation to access this key.')
+
     return output
 
 
@@ -541,6 +545,7 @@ def main(data=None, query='_'):
         except Exception as e:    
             query = query.replace('\n', '; ')
 
+            err_data = ''
             if len(str(list_dict_data)) > 70:
                 err_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
            
@@ -555,15 +560,6 @@ def main(data=None, query='_'):
                         query: {query}
                         data: {err_data}
                         response: {response}
-            '''))
-
-        # if DotMap returns a bound function then we know it was a reserved attribute name
-        if hasattr(response, '__self__'):
-            print_error(textwrap.dedent(f'''\
-                jello:  A reserved key name with dotted notation was used in the query.
-                        Please use python bracket dict notation to access this key.
-
-                        query: {query}
             '''))
 
         set_env_colors()
