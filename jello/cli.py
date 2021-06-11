@@ -488,6 +488,7 @@ def main(data=None, query='_'):
     if data and not data.isspace():
 
         # load the JSON or JSON Lines
+        list_dict_data = None
         try:
             list_dict_data = load_json(data)
         except Exception as e:
@@ -498,6 +499,7 @@ def main(data=None, query='_'):
             print_error(f'''jello:  {msg}''')
 
         # run the query and check for various errors
+        response = ''
         try:
             response = pyquery(list_dict_data, query)
 
@@ -536,22 +538,23 @@ def main(data=None, query='_'):
                 jello:  {msg}
             '''))
 
-        except Exception as e:
+        except Exception as e:    
+            query = query.replace('\n', '; ')
+
             if len(str(list_dict_data)) > 70:
                 err_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
-
+           
             if len(str(query)) > 70:
                 query = str(query)[0:35] + ' ... ' + str(query)[-35:-1]
-
+        
             if len(str(response)) > 70:
                 response = str(response)[0:35] + ' ... ' + str(response)[-35:-1]
 
-            msg = textwrap.dedent(f'''Query Exception: {e}
-                                      query: {query}
-                                      data: {err_data}
-                                      output: {response}''')
             print_error(textwrap.dedent(f'''\
-                jello:  {msg}
+                jello:  Query Exception:  {e}
+                        query: {query}
+                        data: {err_data}
+                        response: {response}
             '''))
 
         # if DotMap returns a bound function then we know it was a reserved attribute name
@@ -576,6 +579,7 @@ def main(data=None, query='_'):
             }
 
         # output as a schema if the user desires, otherwise generate JSON or Lines
+        output = ''
         try:
             if opts.schema:
                 if not sys.stdout.isatty():
@@ -586,6 +590,8 @@ def main(data=None, query='_'):
             else:
                 output = create_json(response)
         except Exception as e:
+            query = query.replace('\n', '; ')
+
             if len(str(list_dict_data)) > 70:
                 list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
 
@@ -612,6 +618,8 @@ def main(data=None, query='_'):
                 print(output)
 
         except Exception as e:
+            query = query.replace('\n', '; ')
+
             if len(str(list_dict_data)) > 70:
                 list_dict_data = str(list_dict_data)[0:35] + ' ... ' + str(list_dict_data)[-35:-1]
 
