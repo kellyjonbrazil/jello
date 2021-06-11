@@ -89,15 +89,15 @@ echo '{"foo":"bar","baz":[1,2,3]}' | jello -l _.baz
 3
 ```
 
-You can also create [JSON Lines](https://jsonlines.org/) with the `-l` option:
+The `-l` option also allows you to create [JSON Lines](https://jsonlines.org/):
 ```bash
-echo '[{"foo":"bar","baz":[1,2,3]},{"foo":"bar","baz":[1,2,3]}]' | jello -l
+echo '[{"foo":"bar","baz":[1,2,3]},{"fiz":"boo","buz":[3,4,5]}]' | jello -l
 
 {"foo":"bar","baz":[1,2,3]}
-{"foo":"bar","baz":[1,2,3]}
+{"fiz":"boo","buz":[3,4,5]}
 ```
 
-You can also print a grep-able schema by using the `-s` option:
+You can print a grep-able schema by using the `-s` option:
 ```bash
 echo '{"foo":"bar","baz":[1,2,3]}' | jello -s
 
@@ -109,7 +109,7 @@ echo '{"foo":"bar","baz":[1,2,3]}' | jello -s
 
 #### Assigning Results to a Bash Array
 
-Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option, otherwise they are blank lines.
+Use the `-l` option to print JSON array output in a manner suitable to be assigned to a bash array. The `-r` option can be used to remove quotation marks around strings. If you want `null` values to be printed as `null`, use the `-n` option, otherwise they are printed as blank lines.
 
 Bash variable:
 ```
