@@ -2,94 +2,16 @@
 
 import os
 import sys
-import platform
 import textwrap
 import signal
-import ast
 from pygments import highlight
 from pygments.style import Style
 from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 import jello
-from jello.lib import load_json, create_schema, create_json, pyquery
+from jello.lib import set_env_colors, load_json, create_schema, create_json, pyquery
 from jello.options import opts, JelloTheme
-
-
-color_map = {
-    'black': ('ansiblack', '\33[30m'),
-    'red': ('ansired', '\33[31m'),
-    'green': ('ansigreen', '\33[32m'),
-    'yellow': ('ansiyellow', '\33[33m'),
-    'blue': ('ansiblue', '\33[34m'),
-    'magenta': ('ansimagenta', '\33[35m'),
-    'cyan': ('ansicyan', '\33[36m'),
-    'gray': ('ansigray', '\33[37m'),
-    'brightblack': ('ansibrightblack', '\33[90m'),
-    'brightred': ('ansibrightred', '\33[91m'),
-    'brightgreen': ('ansibrightgreen', '\33[92m'),
-    'brightyellow': ('ansibrightyellow', '\33[93m'),
-    'brightblue': ('ansibrightblue', '\33[94m'),
-    'brightmagenta': ('ansibrightmagenta', '\33[95m'),
-    'brightcyan': ('ansibrightcyan', '\33[96m'),
-    'white': ('ansiwhite', '\33[97m'),
-}
-
-
-def set_env_colors():
-    """
-    This function does not return a value. It just updates the JelloTheme.colors dictionary.
-
-    Grab custom colors from JELLO_COLORS environment variable and .jelloconf.py file. Individual colors from JELLO_COLORS
-    take precedence over .jelloconf.py. Individual colors from JELLO_COLORS will fall back to .jelloconf.py or default
-    if the env variable color is set to 'default'
-
-    JELLO_COLORS env variable takes 6 comma separated string values and should be in the format of:
-
-    JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
-
-    Where colors are: black, red, green, yellow, blue, magenta, cyan, gray, brightblack, brightred,
-                      brightgreen, brightyellow, brightblue, brightmagenta, brightcyan, white, default
-
-    Default colors:
-
-    JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
-    or
-    JELLO_COLORS=default,default,default,default,default,default
-
-    """
-    env_colors = os.getenv('JELLO_COLORS')
-    input_error = False
-
-    if env_colors:
-        color_list = env_colors.split(',')
-
-    if env_colors and len(color_list) != 6:
-        input_error = True
-
-    if env_colors:
-        for color in color_list:
-            if color not in ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
-                             'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white', 'default']:
-                input_error = True
-    else:
-        color_list = ['default', 'default', 'default', 'default', 'default', 'default']
-
-    # if there is an issue with the env variable, just set all colors to default and move on
-    if input_error:
-        print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
-        color_list = ['default', 'default', 'default', 'default', 'default', 'default']
-
-    # Try the color set in the JELLO_COLORS env variable first. If it is set to default, then fall back to .jelloconf.py
-    # configuration. If nothing is set in jelloconf.py, then use the default colors.
-    JelloTheme.colors = {
-        'key_name': color_map[color_list[0]] if not color_list[0] == 'default' else color_map[opts.keyname_color] if opts.keyname_color else color_map['blue'],
-        'keyword': color_map[color_list[1]] if not color_list[1] == 'default' else color_map[opts.keyword_color] if opts.keyword_color else color_map['brightblack'],
-        'number': color_map[color_list[2]] if not color_list[2] == 'default' else color_map[opts.number_color] if opts.number_color else color_map['magenta'],
-        'string': color_map[color_list[3]] if not color_list[3] == 'default' else color_map[opts.string_color] if opts.string_color else color_map['green'],
-        'array_id': color_map[color_list[4]] if not color_list[4] == 'default' else color_map[opts.arrayid_color] if opts.arrayid_color else color_map['red'],
-        'array_bracket': color_map[color_list[5]] if not color_list[5] == 'default' else color_map[opts.arraybracket_color] if opts.arraybracket_color else color_map['magenta']
-    }
 
 
 def ctrlc(signum, frame):
