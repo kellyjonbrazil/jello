@@ -326,6 +326,7 @@ def pyquery(data, query):
         _ = data
 
     jelloconf = ''
+    conf_file = ''
 
     if opts.initialize:
         if platform.system() == 'Windows':
