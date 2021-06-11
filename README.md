@@ -91,10 +91,10 @@ echo '{"foo":"bar","baz":[1,2,3]}' | jello -l _.baz
 
 The `-l` option also allows you to create [JSON Lines](https://jsonlines.org/):
 ```bash
-echo '[{"foo":"bar","baz":[1,2,3]},{"fiz":"boo","buz":[3,4,5]}]' | jello -l
+echo '[{"foo":"bar","baz":[1,2,3]},{"fiz":"boo","buz":[4,5,6]}]' | jello -l
 
 {"foo":"bar","baz":[1,2,3]}
-{"fiz":"boo","buz":[3,4,5]}
+{"fiz":"boo","buz":[4,5,6]}
 ```
 
 You can print a grep-able schema by using the `-s` option:

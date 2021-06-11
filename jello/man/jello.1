@@ -109,17 +109,17 @@ $ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -l 
 
 .fi
 .PP
-Create JSON Lines by combining the \fB-c\fP and \fB-l\fP options:
+The \fB-l\fP option also allows you to create JSON Lines:
 .IP
 .nf
 
-$ echo \[aq][{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]},{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}]\[aq] | jello -cl
+$ echo \[aq][{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]},{\[dq]fiz\[dq]:\[dq]boo\[dq],\[dq]buz\[dq]:[4,5,6]}]\[aq] | jello -l
 {\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}
-{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}
+{\[dq]fiz\[dq]:\[dq]boo\[dq],\[dq]buz\[dq]:[4,5,6]}
 
 .fi
 .PP
-You can also print a grep-able schema by using the \fB-s\fP option:
+You can print a grep-able schema by using the \fB-s\fP option:
 .IP
 .nf
 
