@@ -177,15 +177,14 @@ def main(data=None, query='_'):
 
         set_env_colors()
 
-        # output as a schema if the user desires, otherwise generate JSON or Lines
+        # Create schema or JSON/JSON-Lines/Lines
         output = ''
         try:
             if opts.schema:
                 if not sys.stdout.isatty():
                     opts.mono = True
                 create_schema(response)
-                print('\n'.join(jello.lib.schema_list))
-                sys.exit()
+                output = '\n'.join(jello.lib.schema_list)
             else:
                 output = create_json(response)
 
@@ -204,25 +203,30 @@ def main(data=None, query='_'):
                         response: {response}
             '''))
 
-        # Print colorized or mono JSON to STDOUT
+        # Print colorized or mono Schema or JSON to STDOUT
         try:
-            if not opts.mono and not opts.raw and sys.stdout.isatty():
-                # create JelloStyle class with user values from set_env_colors() or default values
-                # need to do this here (not at global level), otherwise default values will not be updated
-                class JelloStyle(Style):
-                    styles = {
-                        Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
-                        Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
-                        Number: f'{JelloTheme.colors["number"][0]}',            # int, float
-                        String: f'{JelloTheme.colors["string"][0]}'             # string
-                    }
-
-                lexer = JsonLexer()
-                formatter = Terminal256Formatter(style=JelloStyle)
-                highlighted_json = highlight(output, lexer, formatter)
-                print(highlighted_json[0:-1])
-            else:
+            if opts.schema:
                 print(output)
+
+            else:
+                if not opts.mono and not opts.raw and sys.stdout.isatty():
+                    # create JelloStyle class with user values from set_env_colors() or default values
+                    # need to do this here (not at global level), otherwise default values will not be updated
+                    class JelloStyle(Style):
+                        styles = {
+                            Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
+                            Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
+                            Number: f'{JelloTheme.colors["number"][0]}',            # int, float
+                            String: f'{JelloTheme.colors["string"][0]}'             # string
+                        }
+
+                    lexer = JsonLexer()
+                    formatter = Terminal256Formatter(style=JelloStyle)
+                    highlighted_json = highlight(output, lexer, formatter)
+                    print(highlighted_json[0:-1])
+
+                else:
+                    print(output)
 
         except Exception as e:
             e, e_text, list_dict_data, query, response, output = format_exception(e,

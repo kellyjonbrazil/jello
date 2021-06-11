@@ -1376,11 +1376,10 @@ class MyTests(unittest.TestCase):
 .parsers[49].compatible[5] = "freebsd";
 '''
         f = io.StringIO()
-        with self.assertRaises(SystemExit):
-            with contextlib.redirect_stdout(f):
-                testargs = ['jello', '-s']
-                with patch.object(sys, 'argv', testargs):
-                    _ = jello.cli.main(data=self.jc_a_output)
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-s']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=self.jc_a_output)
         self.assertEqual(f.getvalue(), self.expected)
 
     def test_jc_a_parsers(self):
@@ -2695,11 +2694,10 @@ class MyTests(unittest.TestCase):
 .[49].compatible[5] = "freebsd";
 '''
         f = io.StringIO()
-        with self.assertRaises(SystemExit):
-            with contextlib.redirect_stdout(f):
-                testargs = ['jello', '-s', '_.parsers']
-                with patch.object(sys, 'argv', testargs):
-                    _ = jello.cli.main(data=self.jc_a_output)
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-s', '_.parsers']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=self.jc_a_output)
         self.assertEqual(f.getvalue(), self.expected)
 
     def test_jc_a_c_parsers(self):
@@ -2932,11 +2930,10 @@ class MyTests(unittest.TestCase):
 .magic_commands[0] = "id";
 '''
         f = io.StringIO()
-        with self.assertRaises(SystemExit):
-            with contextlib.redirect_stdout(f):
-                testargs = ['jello', '-s', '_.parsers[18]']
-                with patch.object(sys, 'argv', testargs):
-                    _ = jello.cli.main(data=self.jc_a_output)
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-s', '_.parsers[18]']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=self.jc_a_output)
         self.assertEqual(f.getvalue(), self.expected)
 
     def test_jc_a_parsers_18_name(self):
@@ -3066,11 +3063,10 @@ class MyTests(unittest.TestCase):
 .[3] = "freebsd";
 '''
         f = io.StringIO()
-        with self.assertRaises(SystemExit):
-            with contextlib.redirect_stdout(f):
-                testargs = ['jello', '-s', '_.parsers[18].compatible']
-                with patch.object(sys, 'argv', testargs):
-                    _ = jello.cli.main(data=self.jc_a_output)
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-s', '_.parsers[18].compatible']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=self.jc_a_output)
         self.assertEqual(f.getvalue(), self.expected)
 
     def test_jc_a_c_parsers_18_compatible(self):
@@ -3298,11 +3294,10 @@ result
         self.expected = self.twitter_table_output_schema
 
         f = io.StringIO()
-        with self.assertRaises(SystemExit):
-            with contextlib.redirect_stdout(f):
-                testargs = ['jello', '-s', self.query]
-                with patch.object(sys, 'argv', testargs):
-                    _ = jello.cli.main(data=self.twitterdata)
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-s', self.query]
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=self.twitterdata)
         self.assertEqual(f.getvalue(), self.expected)
 
     def test_twitter_lines_table_dot(self):
