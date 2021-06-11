@@ -1,4 +1,4 @@
-.TH jello 1 2021-06-10 1.3.6 "Jello JSON Filter"
+.TH jello 1 2021-06-11 1.3.7 "Jello JSON Filter"
 .SH NAME
 Jello \- Filter JSON and JSON Lines data with Python syntax
 .SH SYNOPSIS
@@ -133,7 +133,7 @@ $ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -s
 .SS Assigning Results to a Bash Array
 .PP
 Use the \fB-l\fP option to print JSON array output in a manner suitable to be assigned to a bash array.
-The \fB-r\fP option can be used to remove quotation marks around strings. If you want null values to be printed as null, use the \fB-n\fP option, otherwise they are blank lines.
+The \fB-r\fP option can be used to remove quotation marks around strings. If you want null values to be printed as null, use the \fB-n\fP option, otherwise they are printed as blank lines.
 .PP
 Bash variable:
 .IP
