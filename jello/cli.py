@@ -59,7 +59,10 @@ def helptext():
 
 
 def format_exception(e=None, list_dict_data='', query='', response='', output=''):
-    query = str(query).replace('\n', '; ')
+    list_dict_data = str(list_dict_data).replace('\n', '\\n')
+    query = str(query).replace('\n', '\\n')
+    response = str(response).replace('\n', '\\n')
+    output = str(output).replace('\n', '\\n')
     e_text = ''
 
     if hasattr(e, 'text'):
@@ -96,8 +99,6 @@ def main(data=None, query='_'):
 
     if data is None:
         data = get_stdin()
-    # for debugging
-    # data = r'''["word", null, false, 1, 3.14, true, "multiple words", false, "words\nwith\nnewlines", 42]'''
 
     options = []
     long_options = {}
@@ -176,16 +177,6 @@ def main(data=None, query='_'):
 
         set_env_colors()
 
-        # create JelloStyle class with user values from set_env_colors() or default values
-        # need to do this here (not at global level), otherwise default values will not be updated
-        class JelloStyle(Style):
-            styles = {
-                Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
-                Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
-                Number: f'{JelloTheme.colors["number"][0]}',            # int, float
-                String: f'{JelloTheme.colors["string"][0]}'             # string
-            }
-
         # output as a schema if the user desires, otherwise generate JSON or Lines
         output = ''
         try:
@@ -216,6 +207,16 @@ def main(data=None, query='_'):
         # Print colorized or mono JSON to STDOUT
         try:
             if not opts.mono and not opts.raw and sys.stdout.isatty():
+                # create JelloStyle class with user values from set_env_colors() or default values
+                # need to do this here (not at global level), otherwise default values will not be updated
+                class JelloStyle(Style):
+                    styles = {
+                        Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
+                        Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
+                        Number: f'{JelloTheme.colors["number"][0]}',            # int, float
+                        String: f'{JelloTheme.colors["string"][0]}'             # string
+                    }
+
                 lexer = JsonLexer()
                 formatter = Terminal256Formatter(style=JelloStyle)
                 highlighted_json = highlight(output, lexer, formatter)
