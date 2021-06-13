@@ -58,7 +58,7 @@ class JelloTheme:
 
     def set_env_colors(self):
         """
-        Updates the JelloTheme.colors dictionary.
+        Updates the JelloTheme.colors dictionary used by the JelloStyle class.
 
         Grab custom colors from JELLO_COLORS environment variable and opts class set by .jelloconf.py file.
         Individual colors from JELLO_COLORS take precedence over .jelloconf.py. Individual colors from
