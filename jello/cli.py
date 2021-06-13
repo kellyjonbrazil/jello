@@ -26,12 +26,6 @@ def get_stdin():
         return sys.stdin.read()
 
 
-def print_error(message):
-    """print error messages to STDERR and quit with error code"""
-    print(message, file=sys.stderr)
-    sys.exit(1)
-
-
 def helptext():
     print(textwrap.dedent('''\
         jello:  query JSON at the command line with python syntax
@@ -58,7 +52,13 @@ def helptext():
     sys.exit()
 
 
-def format_exception(e=None, list_dict_data='', query='', response='', output=''):
+def print_error(message):
+    """print error messages to STDERR and quit with error code"""
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
+def print_exception(e=None, list_dict_data='', query='', response='', output='', ex_type=''):
     list_dict_data = str(list_dict_data).replace('\n', '\\n')
     query = str(query).replace('\n', '\\n')
     response = str(response).replace('\n', '\\n')
@@ -66,7 +66,7 @@ def format_exception(e=None, list_dict_data='', query='', response='', output=''
     e_text = ''
 
     if hasattr(e, 'text'):
-        e_text = e.text
+        e_text = e.text.replace('\n', '')
 
     if len(str(list_dict_data)) > 70:
         list_dict_data = str(list_dict_data)[:34] + ' ... ' + str(list_dict_data)[-34:]
@@ -80,7 +80,28 @@ def format_exception(e=None, list_dict_data='', query='', response='', output=''
     if len(str(output)) > 70:
         output = str(output)[0:34] + ' ... ' + str(output)[-34:]
 
-    return e, e_text, list_dict_data, query, response, output
+    ex_type = ex_type + ' ' or ''
+
+    exception_message = f'jello:  {ex_type}Exception:  {e.__class__.__name__}\n'
+
+    ex_map = {
+        'query': query,
+        'data': list_dict_data,
+        'response': response,
+        'output': output
+    }
+
+    exception_message += f'        {e}\n'
+
+    if e_text:
+        exception_message += f'        {e_text}\n'
+
+    for item_name, item in ex_map.items():
+        if item:
+            exception_message += f'        {item_name}: {item}\n'
+
+    print(exception_message, file=sys.stderr)
+    sys.exit(1)
 
 
 def main(data=None, query='_'):
@@ -155,7 +176,7 @@ def main(data=None, query='_'):
             msg = f'''JSON Load Exception: Cannot parse the data (Not valid JSON or JSON Lines)
         {e}
         '''
-            print_error(f'''jello:  {msg}''')
+            print_error(f'jello:  {msg}')
 
         # run the query and check for various errors
         response = ''
@@ -163,17 +184,7 @@ def main(data=None, query='_'):
             response = pyquery(list_dict_data, query)
 
         except Exception as e:
-            e, e_text, list_dict_data, query, response, output = format_exception(e,
-                                                                                  list_dict_data,
-                                                                                  query)
-
-            print_error(textwrap.dedent(f'''\
-                jello:  Query Exception:  {e.__class__.__name__}
-                        {e}
-                        {e_text}
-                        query: {query}
-                        data: {list_dict_data}
-            '''))
+            print_exception(e, list_dict_data, query, ex_type='Query')
 
         set_env_colors()
 
@@ -189,19 +200,7 @@ def main(data=None, query='_'):
                 output = create_json(response)
 
         except Exception as e:
-            e, e_text, list_dict_data, query, response, output = format_exception(e,
-                                                                                  list_dict_data,
-                                                                                  query,
-                                                                                  response)
-
-            print_error(textwrap.dedent(f'''\
-                jello:  Formatting Exception:  {e.__class__.__name__}
-                        {e}
-                        {e_text}
-                        query: {query}
-                        data: {list_dict_data}
-                        response: {response}
-            '''))
+            print_exception(e, list_dict_data, query, response, ex_type='Formatting')
 
         # Print colorized or mono Schema or JSON to STDOUT
         try:
@@ -229,21 +228,7 @@ def main(data=None, query='_'):
                     print(output)
 
         except Exception as e:
-            e, e_text, list_dict_data, query, response, output = format_exception(e,
-                                                                                  list_dict_data,
-                                                                                  query,
-                                                                                  response,
-                                                                                  output)
-
-            print_error(textwrap.dedent(f'''\
-                jello:  Output Exception:  {e.__class__.__name__}
-                        {e}
-                        {e_text}
-                        query: {query}
-                        data: {list_dict_data}
-                        response: {response}
-                        output: {output}
-            '''))
+            print_exception(e, list_dict_data, query, response, output, ex_type='Output')
 
 
 if __name__ == '__main__':
