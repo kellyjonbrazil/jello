@@ -27,6 +27,7 @@ class opts:
 
 class JelloTheme:
     def __init__(self):
+        # default colors
         self.colors = {
             'key_name': ('ansiblue', '\33[34m'),
             'keyword': ('ansibrightblack', '\33[90m'),
@@ -60,8 +61,8 @@ class JelloTheme:
         Updates the JelloTheme.colors dictionary.
 
         Grab custom colors from JELLO_COLORS environment variable and opts class set by .jelloconf.py file.
-        Individual colors from JELLO_COLORS take precedence over .jelloconf.py. Individual colors from JELLO_COLORS
-        will fall back to .jelloconf.py or default if the env variable color is set to 'default'
+        Individual colors from JELLO_COLORS take precedence over .jelloconf.py. Individual colors from
+        JELLO_COLORS will fall back to .jelloconf.py or default if the env variable color is set to 'default'
 
         JELLO_COLORS env variable takes 6 comma separated string values and should be in the format of:
 
@@ -97,15 +98,24 @@ class JelloTheme:
             print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
             color_list = ['default', 'default', 'default', 'default', 'default', 'default']
 
-        # Try the color set in the JELLO_COLORS env variable first. If it is set to default, then fall back to
-        # .jelloconf.py configuration. If nothing is set in jelloconf.py, then use the default colors.
+        # first set colors from opts class or fallback to defaults
         self.colors = {
-            'key_name': self.color_map[color_list[0]] if not color_list[0] == 'default' else self.color_map[opts.keyname_color] if opts.keyname_color else self.color_map['blue'],
-            'keyword': self.color_map[color_list[1]] if not color_list[1] == 'default' else self.color_map[opts.keyword_color] if opts.keyword_color else self.color_map['brightblack'],
-            'number': self.color_map[color_list[2]] if not color_list[2] == 'default' else self.color_map[opts.number_color] if opts.number_color else self.color_map['magenta'],
-            'string': self.color_map[color_list[3]] if not color_list[3] == 'default' else self.color_map[opts.string_color] if opts.string_color else self.color_map['green'],
-            'array_id': self.color_map[color_list[4]] if not color_list[4] == 'default' else self.color_map[opts.arrayid_color] if opts.arrayid_color else self.color_map['red'],
-            'array_bracket': self.color_map[color_list[5]] if not color_list[5] == 'default' else self.color_map[opts.arraybracket_color] if opts.arraybracket_color else self.color_map['magenta']
+            'key_name': self.color_map[opts.keyname_color] if opts.keyname_color else self.colors['key_name'],
+            'keyword': self.color_map[opts.keyword_color] if opts.keyword_color else self.colors['keyword'],
+            'number': self.color_map[opts.number_color] if opts.number_color else self.colors['number'],
+            'string': self.color_map[opts.string_color] if opts.string_color else self.colors['string'],
+            'array_id': self.color_map[opts.arrayid_color] if opts.arrayid_color else self.colors['array_id'],
+            'array_bracket': self.color_map[opts.arraybracket_color] if opts.arraybracket_color else self.colors['array_bracket']
+        }
+
+        # then set colors from JELLO_COLORS env variable or fallback to existing colors
+        self.colors = {
+            'key_name': self.color_map[color_list[0]] if not color_list[0] == 'default' else self.colors['key_name'],
+            'keyword': self.color_map[color_list[1]] if not color_list[1] == 'default' else self.colors['keyword'],
+            'number': self.color_map[color_list[2]] if not color_list[2] == 'default' else self.colors['number'],
+            'string': self.color_map[color_list[3]] if not color_list[3] == 'default' else self.colors['string'],
+            'array_id': self.color_map[color_list[4]] if not color_list[4] == 'default' else self.colors['array_id'],
+            'array_bracket': self.color_map[color_list[5]] if not color_list[5] == 'default' else self.colors['array_bracket']
         }
 
 
