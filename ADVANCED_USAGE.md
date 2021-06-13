@@ -63,3 +63,5 @@ jc -a | jello -i 'g("parsers.6.compatible")'
   "freebsd"
 ]
 ```
+
+> Tip: Add a line to print a message to STDERR in your `.jelloconf.py` file to show when the initialization file is being used: `print('Running initialization file', file=sys.stderr)`
