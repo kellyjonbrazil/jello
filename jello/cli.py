@@ -193,16 +193,16 @@ def main(data=None, query='_'):
         except Exception as e:
             print_exception(e, list_dict_data, query, ex_type='Query')
 
-        # Read environment variables to set colors
-        jello_theme = JelloTheme()
-        jello_theme.set_env_colors()
+        # Read environment variables and set colors to be used by Schema and JelloStyle
+        theme = JelloTheme()
+        theme.set_colors()
 
         # Create schema or JSON/JSON-Lines/Lines
         output = ''
         try:
             if opts.schema:
                 schema = Schema()
-                schema.colors = jello_theme.colors
+                schema.colors = theme.colors
 
                 if not sys.stdout.isatty() or not PYGMENTS_INSTALLED:
                     opts.mono = True
@@ -224,10 +224,10 @@ def main(data=None, query='_'):
                 if not opts.mono and not opts.raw and sys.stdout.isatty() and PYGMENTS_INSTALLED:
                     class JelloStyle(Style):
                         styles = {
-                            Name.Tag: f'bold {jello_theme.colors["key_name"][0]}',   # key names
-                            Keyword: f'{jello_theme.colors["keyword"][0]}',          # true, false, null
-                            Number: f'{jello_theme.colors["number"][0]}',            # int, float
-                            String: f'{jello_theme.colors["string"][0]}'             # string
+                            Name.Tag: f'bold {theme.colors["key_name"][0]}',   # key names
+                            Keyword: f'{theme.colors["keyword"][0]}',          # true, false, null
+                            Number: f'{theme.colors["number"][0]}',            # int, float
+                            String: f'{theme.colors["string"][0]}'             # string
                         }
 
                     lexer = JsonLexer()

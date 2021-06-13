@@ -32,7 +32,7 @@ class MyTests(unittest.TestCase):
 
         # set the colors
         self.jello_theme = JelloTheme()
-        self.jello_theme.set_env_colors()
+        self.jello_theme.set_colors()
 
         # create samples
         self.dict_sample = {

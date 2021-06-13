@@ -56,7 +56,7 @@ class JelloTheme:
             'white': ('ansiwhite', '\33[97m'),
         }
 
-    def set_env_colors(self):
+    def set_colors(self):
         """
         Updates the JelloTheme.colors dictionary used by the JelloStyle class.
 
