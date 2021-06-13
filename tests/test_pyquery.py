@@ -119,7 +119,7 @@ class MyTests(unittest.TestCase):
         """
         Test _.foo[99] (IndexError)
         """
-        self.data_in = [1,2,3]
+        self.data_in = [1, 2, 3]
         self.query = '_[9]'
         self.assertRaises(IndexError, jello.cli.pyquery, self.data_in, self.query)
 
@@ -127,7 +127,7 @@ class MyTests(unittest.TestCase):
         """
         Test % (SyntaxError)
         """
-        self.data_in = [1,2,3]
+        self.data_in = [1, 2, 3]
         self.query = '%'
         self.assertRaises(SyntaxError, jello.cli.pyquery, self.data_in, self.query)
 
@@ -143,7 +143,7 @@ class MyTests(unittest.TestCase):
         """
         Test _.items() on list (AttributeError)
         """
-        self.data_in = [1,2,3]
+        self.data_in = [1, 2, 3]
         self.query = '_.items()'
         self.assertRaises(AttributeError, jello.cli.pyquery, self.data_in, self.query)
 
