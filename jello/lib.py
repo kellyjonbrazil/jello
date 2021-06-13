@@ -26,17 +26,17 @@ class opts:
 
 
 class JelloTheme:
-    def __init__(self):
-        # default colors
-        self.colors = {
-            'key_name': ('ansiblue', '\33[34m'),
-            'keyword': ('ansibrightblack', '\33[90m'),
-            'number': ('ansimagenta', '\33[35m'),
-            'string': ('ansigreen', '\33[32m'),
-            'array_id': ('ansired', '\33[31m'),
-            'array_bracket': ('ansimagenta', '\33[35m')
-        }
+    # default colors
+    colors = {
+        'key_name': ('ansiblue', '\33[34m'),
+        'keyword': ('ansibrightblack', '\33[90m'),
+        'number': ('ansimagenta', '\33[35m'),
+        'string': ('ansigreen', '\33[32m'),
+        'array_id': ('ansired', '\33[31m'),
+        'array_bracket': ('ansimagenta', '\33[35m')
+    }
 
+    def __init__(self):
         self.color_map = {
             'black': ('ansiblack', '\33[30m'),
             'red': ('ansired', '\33[31m'),
@@ -123,14 +123,8 @@ class Schema:
     def __init__(self):
         self.schema_list = []
 
-        self.colors = {
-            'key_name': ('ansiblue', '\33[34m'),
-            'keyword': ('ansibrightblack', '\33[90m'),
-            'number': ('ansimagenta', '\33[35m'),
-            'string': ('ansigreen', '\33[32m'),
-            'array_id': ('ansired', '\33[31m'),
-            'array_bracket': ('ansimagenta', '\33[35m')
-        }
+        # default colors
+        self.colors = JelloTheme.colors
 
     def create_schema(self, src, path=''):
         """
