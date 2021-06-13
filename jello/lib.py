@@ -196,6 +196,10 @@ class Schema:
 
 
 def pyquery(data, query):
+    '''Sets options and runs the user's query'''
+    output = None
+
+    # read data into '_' variable
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
     if isinstance(data, list):
         _ = [DotMap(i, _dynamic=False, _prevent_method_masking=True) if isinstance(i, dict)
@@ -207,6 +211,7 @@ def pyquery(data, query):
     else:
         _ = data
 
+    # read initialization file to set colors, options, and user-defined functions
     jelloconf = ''
     conf_file = ''
 
@@ -222,60 +227,32 @@ def pyquery(data, query):
         except FileNotFoundError:
             raise FileNotFoundError(f'-i used and initialization file not found: {conf_file}')
 
-    query = jelloconf + query
-    output = None
+    warn_options = False
+    warn_colors = False
 
-    # extract jello options from .jelloconf.py (compact, raw, lines, nulls, mono, and custom colors)
-    for expr in ast.parse(jelloconf).body:
-        if isinstance(expr, ast.Assign):
-            if expr.targets[0].id == 'compact':
-                opts.compact = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'raw':
-                opts.raw = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'lines':
-                opts.lines = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'nulls':
-                opts.nulls = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'mono':
-                opts.mono = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'schema':
-                opts.schema = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'keyname_color':
-                opts.keyname_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'keyword_color':
-                opts.keyword_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'number_color':
-                opts.number_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'string_color':
-                opts.string_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'arrayid_color':
-                opts.arrayid_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
-            if expr.targets[0].id == 'arraybracket_color':
-                opts.arraybracket_color = eval(compile(ast.Expression(expr.value), '<string>', "eval"))
+    i_block = ast.parse(jelloconf, mode='exec')
+    exec(compile(i_block, '<string>', mode='exec'))
 
-            # validate the data in the initialization file
-            warn_options = False
-            warn_colors = False
+    for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema]:
+        if not isinstance(option, bool) and option is not None:
+            opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = False
+            warn_options = True
 
-            for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema]:
-                if not isinstance(option, bool):
-                    opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = None
-                    warn_options = True
+    for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color,
+                         opts.string_color, opts.arrayid_color, opts.arraybracket_color]:
+        valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
+                        'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
 
-            for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color,
-                                 opts.string_color, opts.arrayid_color, opts.arraybracket_color]:
-                valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
-                                'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
-                if color_config not in valid_colors and color_config is not None:
-                    opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
-                    warn_colors = True
+        if color_config not in valid_colors and color_config is not None:
+            opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
+            warn_colors = True
 
-            if warn_options:
-                print(f'Jello:   Warning: Options must be set to True or False in {conf_file}\n         Unsetting all options.\n')
+    if warn_options:
+        print(f'Jello:   Warning: Options must be set to True or False in {conf_file}\n         Unsetting all options.\n', file=sys.stderr)
 
-            if warn_colors:
-                valid_colors_string = ', '.join(valid_colors)
-                print(f'Jello:   Warning: Colors must be set to one of: {valid_colors_string} in {conf_file}\n         Unsetting all colors.\n')
+    if warn_colors:
+        valid_colors_string = ', '.join(valid_colors)
+        print(f'Jello:   Warning: Colors must be set to one of: {valid_colors_string} in {conf_file}\n         Unsetting all colors.\n', file=sys.stderr)
 
     # run the query
     block = ast.parse(query, mode='exec')
