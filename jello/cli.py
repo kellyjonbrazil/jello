@@ -185,7 +185,7 @@ def main(data=None, query='_'):
         '''
             print_error(f'jello:  {msg}')
 
-        # run the query and check for various errors
+        # Read .jelloconf.py (if it exists) and run the query
         response = ''
         try:
             response = pyquery(list_dict_data, query)
@@ -193,6 +193,7 @@ def main(data=None, query='_'):
         except Exception as e:
             print_exception(e, list_dict_data, query, ex_type='Query')
 
+        # Read environment variables to set colors
         jello_theme = JelloTheme()
         jello_theme.set_env_colors()
 
