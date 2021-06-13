@@ -320,28 +320,30 @@ Linux, unix, macOS: \fB\[ti]/\fP
 Windows: \fB%appdata%/\fP
 .SS Setting Options
 .PP
-To set jello options in the \fB.jelloconf.py\fP file, add any of the following and set to \fBTrue\fP or \fBFalse\fP:
+To set jello options in the \fB.jelloconf.py\fP file, import the \fBjello.lib.opts\fP class, add any of the following and set to \fBTrue\fP or \fBFalse\fP:
 .IP
 .nf
-mono = True            # -m option
-compact = True         # -c option
-lines = True           # -l option
-raw = True             # -r option
-nulls = True           # -n option
-schema = True          # -s option
+from jello.lib import opts
+opts.mono = True            # -m option
+opts.compact = True         # -c option
+opts.lines = True           # -l option
+opts.raw = True             # -r option
+opts.nulls = True           # -n option
+opts.schema = True          # -s option
 .fi
 .SS Setting Colors
 .PP
-You can customize the colors by setting the following variables to one of the following string values: \fBblack\fP, \fBred\fP, \fBgreen\fP, \fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP, \fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP, \fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP, \fBbrightmagenta\fP, \fBbrightcyan\fP, or \fBwhite\fP.
+You can customize the colors by importing the \fBjello.lib.opts\fP class and setting the following variables to one of the following string values: \fBblack\fP, \fBred\fP, \fBgreen\fP, \fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP, \fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP, \fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP, \fBbrightmagenta\fP, \fBbrightcyan\fP, or \fBwhite\fP.
 .IP
 .nf
 \f[C]
-keyname_color = \[aq]blue\[aq]            # Key names
-keyword_color = \[aq]brightblack\[aq]     # true, false, null
-number_color = \[aq]magenta\[aq]          # integers, floats
-string_color = \[aq]green\[aq]            # strings
-arrayid_color = \[aq]red\[aq]             # array IDs in Schema view
-arraybracket_color = \[aq]magenta\[aq]    # array brackets in Schema view
+from jello.lib import opts
+opts.keyname_color = \[aq]blue\[aq]            # Key names
+opts.keyword_color = \[aq]brightblack\[aq]     # true, false, null
+opts.number_color = \[aq]magenta\[aq]          # integers, floats
+opts.string_color = \[aq]green\[aq]            # strings
+opts.arrayid_color = \[aq]red\[aq]             # array IDs in Schema view
+opts.arraybracket_color = \[aq]magenta\[aq]    # array brackets in Schema view
 \f[R]
 .fi
 .RS

@@ -9,24 +9,26 @@ The file must be named `.jelloconf.py` and must be located in the proper directo
 - Windows: `%appdata%/`
 
 ##### Setting Options
-To set `jello` options in the `.jelloconf.py` file, add any of the following and set to `True` or `False`:
+To set `jello` options in the `.jelloconf.py` file, import the `jello.lib.opts` class, add any of the following and set to `True` or `False`:
 ```
-mono = True            # -m option
-compact = True         # -c option
-lines = True           # -l option
-raw = True             # -r option
-nulls = True           # -n option
-schema = True          # -s option
+from jello.lib import opts
+opts.mono = True            # -m option
+opts.compact = True         # -c option
+opts.lines = True           # -l option
+opts.raw = True             # -r option
+opts.nulls = True           # -n option
+opts.schema = True          # -s option
 ```
 ##### Setting Colors
-You can customize the colors by setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
+You can customize the colors by importing the `jello.lib.opts` class and setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
 ```
-keyname_color = 'blue'            # Key names
-keyword_color = 'brightblack'     # true, false, null
-number_color = 'magenta'          # integers, floats
-string_color = 'green'            # strings
-arrayid_color = 'red'             # array IDs in Schema view
-arraybracket_color = 'magenta'    # array brackets in Schema view
+from jello.lib import opts
+opts.keyname_color = 'blue'            # Key names
+opts.keyword_color = 'brightblack'     # true, false, null
+opts.number_color = 'magenta'          # integers, floats
+opts.string_color = 'green'            # strings
+opts.arrayid_color = 'red'             # array IDs in Schema view
+opts.arraybracket_color = 'magenta'    # array brackets in Schema view
 ```
 > Note: Any colors set via the `JELLO_COLORS` environment variable will take precedence over any color values set in the `.jelloconf.py` configuration file
 
