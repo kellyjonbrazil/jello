@@ -10,7 +10,7 @@ from pygments.token import (Name, Number, String, Keyword)
 from pygments.lexers import JsonLexer
 from pygments.formatters import Terminal256Formatter
 import jello
-from jello.lib import opts, JelloTheme, set_env_colors, load_json, create_schema, create_json, pyquery
+from jello.lib import opts, JelloTheme, Schema, pyquery, load_json, create_json
 
 
 def ctrlc(signum, frame):
@@ -171,6 +171,7 @@ def main(data=None, query='_'):
         list_dict_data = None
         try:
             list_dict_data = load_json(data)
+
         except Exception as e:
             # can't parse the data. Throw an error and quit
             msg = f'''JSON Load Exception: Cannot parse the data (Not valid JSON or JSON Lines)
@@ -186,16 +187,21 @@ def main(data=None, query='_'):
         except Exception as e:
             print_exception(e, list_dict_data, query, ex_type='Query')
 
-        set_env_colors()
+        jello_theme = JelloTheme()
+        jello_theme.set_env_colors()
 
         # Create schema or JSON/JSON-Lines/Lines
         output = ''
         try:
             if opts.schema:
+                schema = Schema()
+                schema.colors = jello_theme.colors
+
                 if not sys.stdout.isatty():
                     opts.mono = True
-                create_schema(response)
-                output = '\n'.join(jello.lib.schema_list)
+
+                schema.create_schema(response)
+                output = '\n'.join(schema.schema_list)
             else:
                 output = create_json(response)
 
@@ -209,14 +215,12 @@ def main(data=None, query='_'):
 
             else:
                 if not opts.mono and not opts.raw and sys.stdout.isatty():
-                    # create JelloStyle class with user values from set_env_colors() or default values
-                    # need to do this here (not at global level), otherwise default values will not be updated
                     class JelloStyle(Style):
                         styles = {
-                            Name.Tag: f'bold {JelloTheme.colors["key_name"][0]}',   # key names
-                            Keyword: f'{JelloTheme.colors["keyword"][0]}',          # true, false, null
-                            Number: f'{JelloTheme.colors["number"][0]}',            # int, float
-                            String: f'{JelloTheme.colors["string"][0]}'             # string
+                            Name.Tag: f'bold {jello_theme.colors["key_name"][0]}',   # key names
+                            Keyword: f'{jello_theme.colors["keyword"][0]}',          # true, false, null
+                            Number: f'{jello_theme.colors["number"][0]}',            # int, float
+                            String: f'{jello_theme.colors["string"][0]}'             # string
                         }
 
                     lexer = JsonLexer()
