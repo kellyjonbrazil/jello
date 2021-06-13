@@ -1,8 +1,9 @@
 jello changelog
 
-20210610 v1.3.7
+20210613 v1.4.0
 - Enhance error handling when a dict method is raised
 - Enhance exception error messages
+- Pygments library dependency is now optional
 - Code refactor to split cli from lib
 
 20210609 v1.3.6

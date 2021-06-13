@@ -4,13 +4,19 @@ import os
 import sys
 import textwrap
 import signal
-from pygments import highlight
-from pygments.style import Style
-from pygments.token import (Name, Number, String, Keyword)
-from pygments.lexers import JsonLexer
-from pygments.formatters import Terminal256Formatter
 import jello
 from jello.lib import opts, JelloTheme, Schema, pyquery, load_json, create_json
+
+# make pygments import optional
+try:
+    from pygments import highlight
+    from pygments.style import Style
+    from pygments.token import (Name, Number, String, Keyword)
+    from pygments.lexers import JsonLexer
+    from pygments.formatters import Terminal256Formatter
+    PYGMENTS_INSTALLED = True
+except Exception:
+    PYGMENTS_INSTALLED = False
 
 
 def ctrlc(signum, frame):
@@ -197,7 +203,7 @@ def main(data=None, query='_'):
                 schema = Schema()
                 schema.colors = jello_theme.colors
 
-                if not sys.stdout.isatty():
+                if not sys.stdout.isatty() or not PYGMENTS_INSTALLED:
                     opts.mono = True
 
                 schema.create_schema(response)
@@ -214,7 +220,7 @@ def main(data=None, query='_'):
                 print(output)
 
             else:
-                if not opts.mono and not opts.raw and sys.stdout.isatty():
+                if not opts.mono and not opts.raw and sys.stdout.isatty() and PYGMENTS_INSTALLED:
                     class JelloStyle(Style):
                         styles = {
                             Name.Tag: f'bold {jello_theme.colors["key_name"][0]}',   # key names
