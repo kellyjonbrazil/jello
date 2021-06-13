@@ -36,25 +36,24 @@ class JelloTheme:
         'array_bracket': ('ansimagenta', '\33[35m')
     }
 
-    def __init__(self):
-        self.color_map = {
-            'black': ('ansiblack', '\33[30m'),
-            'red': ('ansired', '\33[31m'),
-            'green': ('ansigreen', '\33[32m'),
-            'yellow': ('ansiyellow', '\33[33m'),
-            'blue': ('ansiblue', '\33[34m'),
-            'magenta': ('ansimagenta', '\33[35m'),
-            'cyan': ('ansicyan', '\33[36m'),
-            'gray': ('ansigray', '\33[37m'),
-            'brightblack': ('ansibrightblack', '\33[90m'),
-            'brightred': ('ansibrightred', '\33[91m'),
-            'brightgreen': ('ansibrightgreen', '\33[92m'),
-            'brightyellow': ('ansibrightyellow', '\33[93m'),
-            'brightblue': ('ansibrightblue', '\33[94m'),
-            'brightmagenta': ('ansibrightmagenta', '\33[95m'),
-            'brightcyan': ('ansibrightcyan', '\33[96m'),
-            'white': ('ansiwhite', '\33[97m'),
-        }
+    color_map = {
+        'black': ('ansiblack', '\33[30m'),
+        'red': ('ansired', '\33[31m'),
+        'green': ('ansigreen', '\33[32m'),
+        'yellow': ('ansiyellow', '\33[33m'),
+        'blue': ('ansiblue', '\33[34m'),
+        'magenta': ('ansimagenta', '\33[35m'),
+        'cyan': ('ansicyan', '\33[36m'),
+        'gray': ('ansigray', '\33[37m'),
+        'brightblack': ('ansibrightblack', '\33[90m'),
+        'brightred': ('ansibrightred', '\33[91m'),
+        'brightgreen': ('ansibrightgreen', '\33[92m'),
+        'brightyellow': ('ansibrightyellow', '\33[93m'),
+        'brightblue': ('ansibrightblue', '\33[94m'),
+        'brightmagenta': ('ansibrightmagenta', '\33[95m'),
+        'brightcyan': ('ansibrightcyan', '\33[96m'),
+        'white': ('ansiwhite', '\33[97m'),
+    }
 
     def set_colors(self):
         """
