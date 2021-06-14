@@ -64,7 +64,7 @@ def print_error(message):
     sys.exit(1)
 
 
-def print_exception(e=None, list_dict_data='', query='', response='', output='', ex_type=''):
+def print_exception(e=None, list_dict_data='', query='', response='', output='', ex_type='Runtime'):
     list_dict_data = str(list_dict_data).replace('\n', '\\n')
     query = str(query).replace('\n', '\\n')
     response = str(response).replace('\n', '\\n')
@@ -86,9 +86,7 @@ def print_exception(e=None, list_dict_data='', query='', response='', output='',
     if len(str(output)) > 70:
         output = str(output)[0:34] + ' ... ' + str(output)[-34:]
 
-    ex_type = ex_type + ' ' or ''
-
-    exception_message = f'jello:  {ex_type}Exception:  {e.__class__.__name__}\n'
+    exception_message = f'jello:  {ex_type} Exception:  {e.__class__.__name__}\n'
 
     ex_map = {
         'query': query,
@@ -193,16 +191,12 @@ def main(data=None, query='_'):
         except Exception as e:
             print_exception(e, list_dict_data, query, ex_type='Query')
 
-        # Read environment variables and set colors to be used by Schema and JelloStyle
-        theme = JelloTheme()
-        theme.set_colors()
-
         # Create schema or JSON/JSON-Lines/Lines
         output = ''
         try:
             if opts.schema:
                 schema = Schema()
-                schema.colors = theme.colors
+                schema.set_colors()
 
                 if not sys.stdout.isatty() or not PYGMENTS_INSTALLED:
                     opts.mono = True
@@ -222,6 +216,9 @@ def main(data=None, query='_'):
 
             else:
                 if not opts.mono and not opts.raw and sys.stdout.isatty() and PYGMENTS_INSTALLED:
+                    theme = JelloTheme()
+                    theme.set_colors()
+
                     class JelloStyle(Style):
                         styles = {
                             Name.Tag: f'bold {theme.colors["key_name"][0]}',   # key names

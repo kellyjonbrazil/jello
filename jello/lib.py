@@ -118,20 +118,17 @@ class JelloTheme:
         }
 
 
-class Schema:
+class Schema(JelloTheme):
+    '''Inherits colors and set_colors from JelloTheme'''
     def __init__(self):
         self.schema_list = []
-
-        # default colors
-        self.colors = JelloTheme.colors
 
     def create_schema(self, src, path=''):
         """
         Creates a grep-able schema representation of the JSON.
 
-        This function is recursive, so output is stored within the schema_list list. Make sure to
-        initialize schema_list to a blank list and set colors by calling set_env_colors() before
-        calling this function.
+        This function is recursive, so output is stored within self.schema_list list. Default colors are
+        used unles set_colors() is called to change them.
         """
         if not opts.mono:
             CEND = '\33[0m'
