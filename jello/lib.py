@@ -119,7 +119,7 @@ class JelloTheme:
 
 
 class Schema(JelloTheme):
-    '''Inherits colors and set_colors from JelloTheme'''
+    '''Inherits colors and set_colors() from JelloTheme'''
 
     def __init__(self):
         self.schema_list = []
@@ -134,8 +134,8 @@ class Schema(JelloTheme):
         """
         Creates a grep-able schema representation of the JSON.
 
-        This function is recursive, so output is stored within self.schema_list list. Default colors are
-        used unles set_colors() is called to change them.
+        This method is recursive, so output is stored within self.schema_list (list). Default colors are
+        used unless set_colors() is called to change them.
         """
         if not opts.mono:
             CEND = '\33[0m'
@@ -285,7 +285,7 @@ def load_json(data):
     try:
         json_dict = json.loads(data)
     except Exception:
-        # if json.loads fails, assume the data is json lines and parse
+        # if json.loads fails, try loading as json lines
         json_dict = [json.loads(i) for i in data.splitlines()]
 
     return json_dict
