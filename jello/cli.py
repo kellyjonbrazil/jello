@@ -177,7 +177,6 @@ def main(data=None, query='_'):
             list_dict_data = load_json(data)
 
         except Exception as e:
-            # can't parse the data. Throw an error and quit
             msg = f'''JSON Load Exception: Cannot parse the data (Not valid JSON or JSON Lines)
         {e}
         '''
@@ -202,7 +201,7 @@ def main(data=None, query='_'):
                     opts.mono = True
 
                 schema.create_schema(response)
-                output = '\n'.join(schema.schema_list)
+                output = schema.schema_text()
             else:
                 output = create_json(response)
 

@@ -120,8 +120,15 @@ class JelloTheme:
 
 class Schema(JelloTheme):
     '''Inherits colors and set_colors from JelloTheme'''
+
     def __init__(self):
         self.schema_list = []
+
+    def schema_text(self):
+        return '\n'.join(self.schema_list)
+
+    def schema_html(self):
+        return '<br>'.join(self.schema_list)
 
     def create_schema(self, src, path=''):
         """
