@@ -32,7 +32,7 @@ def get_stdin():
         return sys.stdin.read()
 
 
-def helptext():
+def print_help():
     print(textwrap.dedent('''\
         jello:  query JSON at the command line with python syntax
 
@@ -137,7 +137,7 @@ def main(data=None, query='_'):
                 k, v = arg[2:].split('=')
                 long_options[k] = int(v)
             except Exception:
-                helptext()
+                print_help()
 
         else:
             query = arg
@@ -153,7 +153,7 @@ def main(data=None, query='_'):
     opts.helpme = opts.helpme or 'h' in options
 
     if opts.helpme:
-        helptext()
+        print_help()
 
     if opts.version_info:
         print(textwrap.dedent(f'''\
@@ -175,7 +175,6 @@ def main(data=None, query='_'):
         list_dict_data = None
         try:
             list_dict_data = load_json(data)
-
         except Exception as e:
             msg = f'''JSON Load Exception: Cannot parse the data (Not valid JSON or JSON Lines)
         {e}
@@ -186,7 +185,6 @@ def main(data=None, query='_'):
         response = ''
         try:
             response = pyquery(list_dict_data, query)
-
         except Exception as e:
             print_exception(e, list_dict_data, query, ex_type='Query')
 
@@ -195,13 +193,15 @@ def main(data=None, query='_'):
         try:
             if opts.schema:
                 schema = Schema()
-                schema.set_colors()
 
                 if not sys.stdout.isatty() or not PYGMENTS_INSTALLED:
                     opts.mono = True
+                else:
+                    schema.set_colors()
 
                 schema.create_schema(response)
                 output = schema.schema_text()
+
             else:
                 output = create_json(response)
 
