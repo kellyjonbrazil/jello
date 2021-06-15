@@ -13,6 +13,7 @@ try:
     from pygments.token import (Name, Number, String, Keyword)
     from pygments.lexers import JsonLexer
     from pygments.formatters import Terminal256Formatter
+    from pygments.formatters import HtmlFormatter
     PYGMENTS_INSTALLED = True
 except Exception:
     PYGMENTS_INSTALLED = False
@@ -232,6 +233,9 @@ class Json(JelloTheme):
 
         else:
             return data
+
+    def html_output(self, data):
+        return highlight(data, JsonLexer(), HtmlFormatter(noclasses=True))
 
     def create_json(self, data):
         separators = None
