@@ -393,3 +393,7 @@ def pyquery(data, query):
         raise ValueError('Reserved key name. Use bracket notation to access this key.')
 
     return output
+
+
+if __name__ == '__main__':
+    pass
