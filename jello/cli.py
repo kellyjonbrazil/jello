@@ -53,35 +53,30 @@ def print_error(message):
     sys.exit(1)
 
 
-def print_exception(e=None, list_dict_data='', query='', response='', output='', ex_type='Runtime'):
+def print_exception(e=None, list_dict_data='', query='', response='', ex_type='Runtime'):
     list_dict_data = str(list_dict_data).replace('\n', '\\n')
     query = str(query).replace('\n', '\\n')
     response = str(response).replace('\n', '\\n')
-    output = str(output).replace('\n', '\\n')
     e_text = ''
 
     if hasattr(e, 'text'):
         e_text = e.text.replace('\n', '')
 
-    if len(str(list_dict_data)) > 70:
-        list_dict_data = str(list_dict_data)[:34] + ' ... ' + str(list_dict_data)[-34:]
+    if len(list_dict_data) > 70:
+        list_dict_data = list_dict_data[:34] + ' ... ' + list_dict_data[-34:]
 
-    if len(str(query)) > 70:
-        query = str(query)[:34] + ' ... ' + str(query)[-34:]
+    if len(query) > 70:
+        query = query[:34] + ' ... ' + query[-34:]
 
-    if len(str(response)) > 70:
-        response = str(response)[:34] + ' ... ' + str(response)[-34:]
-
-    if len(str(output)) > 70:
-        output = str(output)[0:34] + ' ... ' + str(output)[-34:]
+    if len(response) > 70:
+        response = response[:34] + ' ... ' + response[-34:]
 
     exception_message = f'jello:  {ex_type} Exception:  {e.__class__.__name__}\n'
 
     ex_map = {
         'query': query,
         'data': list_dict_data,
-        'response': response,
-        'output': output
+        'response': response
     }
 
     exception_message += f'        {e}\n'
@@ -177,7 +172,7 @@ def main(data=None, query='_'):
         except Exception as e:
             print_exception(e, list_dict_data, query, ex_type='Query')
 
-        # Create schema or JSON/JSON-Lines/Lines
+        # Create and print schema or JSON/JSON-Lines/Lines
         output = ''
         try:
             if opts.schema:
@@ -199,15 +194,10 @@ def main(data=None, query='_'):
                     json_out.set_colors()
                     output = json_out.color_output(output)
 
-        except Exception as e:
-            print_exception(e, list_dict_data, query, response, ex_type='Formatting')
-
-        # Print colorized or mono Schema or JSON/JSON-Lines/Lines to STDOUT
-        try:
             print(output)
 
         except Exception as e:
-            print_exception(e, list_dict_data, query, response, output, ex_type='Output')
+            print_exception(e, list_dict_data, query, response, ex_type='Formatting')
 
 
 if __name__ == '__main__':
