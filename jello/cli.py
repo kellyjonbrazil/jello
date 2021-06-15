@@ -202,7 +202,7 @@ def main(data=None, query='_'):
         except Exception as e:
             print_exception(e, list_dict_data, query, response, ex_type='Formatting')
 
-        # Print colorized or mono Schema or JSON to STDOUT
+        # Print colorized or mono Schema or JSON/JSON-Lines/Lines to STDOUT
         try:
             print(output)
 
