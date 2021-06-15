@@ -12,6 +12,7 @@ try:
     from pygments.style import Style
     from pygments.token import (Name, Number, String, Keyword)
     from pygments.lexers import JsonLexer
+    from pygments.lexers.javascript import JavascriptLexer
     from pygments.formatters import Terminal256Formatter
     from pygments.formatters import HtmlFormatter
     PYGMENTS_INSTALLED = True
@@ -33,28 +34,26 @@ class opts:
     keyword_color = None
     number_color = None
     string_color = None
-    arrayid_color = None
-    arraybracket_color = None
 
 
 class JelloTheme:
     color_map = {
-        'black': ('ansiblack', '\33[30m'),
-        'red': ('ansired', '\33[31m'),
-        'green': ('ansigreen', '\33[32m'),
-        'yellow': ('ansiyellow', '\33[33m'),
-        'blue': ('ansiblue', '\33[34m'),
-        'magenta': ('ansimagenta', '\33[35m'),
-        'cyan': ('ansicyan', '\33[36m'),
-        'gray': ('ansigray', '\33[37m'),
-        'brightblack': ('ansibrightblack', '\33[90m'),
-        'brightred': ('ansibrightred', '\33[91m'),
-        'brightgreen': ('ansibrightgreen', '\33[92m'),
-        'brightyellow': ('ansibrightyellow', '\33[93m'),
-        'brightblue': ('ansibrightblue', '\33[94m'),
-        'brightmagenta': ('ansibrightmagenta', '\33[95m'),
-        'brightcyan': ('ansibrightcyan', '\33[96m'),
-        'white': ('ansiwhite', '\33[97m'),
+        'black': 'ansiblack',
+        'red': 'ansired',
+        'green': 'ansigreen',
+        'yellow': 'ansiyellow',
+        'blue': 'ansiblue',
+        'magenta': 'ansimagenta',
+        'cyan': 'ansicyan',
+        'gray': 'ansigray',
+        'brightblack': 'ansibrightblack',
+        'brightred': 'ansibrightred',
+        'brightgreen': 'ansibrightgreen',
+        'brightyellow': 'ansibrightyellow',
+        'brightblue': 'ansibrightblue',
+        'brightmagenta': 'ansibrightmagenta',
+        'brightcyan': 'ansibrightcyan',
+        'white': 'ansiwhite',
     }
 
     # default colors
@@ -62,9 +61,7 @@ class JelloTheme:
         'key_name': color_map['blue'],
         'keyword': color_map['brightblack'],
         'number': color_map['magenta'],
-        'string': color_map['green'],
-        'array_id': color_map['red'],
-        'array_bracket': color_map['magenta']
+        'string': color_map['green']
     }
 
     def set_colors(self):
@@ -75,17 +72,17 @@ class JelloTheme:
         Individual colors from JELLO_COLORS take precedence over .jelloconf.py. Individual colors from
         JELLO_COLORS will fall back to .jelloconf.py or default if the env variable color is set to 'default'
 
-        JELLO_COLORS env variable takes 6 comma separated string values and should be in the format of:
+        JELLO_COLORS env variable takes 4 comma separated string values and should be in the format of:
 
-        JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+        JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>
 
         Where colors are: black, red, green, yellow, blue, magenta, cyan, gray, brightblack, brightred,
                           brightgreen, brightyellow, brightblue, brightmagenta, brightcyan, white, default
 
         Default colors:
-            JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+            JELLO_COLORS=blue,brightblack,magenta,green
             or
-            JELLO_COLORS=default,default,default,default,default,default
+            JELLO_COLORS=default,default,default,default
         """
         env_colors = os.getenv('JELLO_COLORS')
         input_error = False
@@ -93,7 +90,7 @@ class JelloTheme:
         if env_colors:
             color_list = env_colors.split(',')
 
-        if env_colors and len(color_list) != 6:
+        if env_colors and len(color_list) != 4:
             input_error = True
 
         if env_colors:
@@ -102,21 +99,19 @@ class JelloTheme:
                                  'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white', 'default']:
                     input_error = True
         else:
-            color_list = ['default', 'default', 'default', 'default', 'default', 'default']
+            color_list = ['default', 'default', 'default', 'default']
 
         # if there is an issue with the env variable, just set all colors to default and move on
         if input_error:
             print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
-            color_list = ['default', 'default', 'default', 'default', 'default', 'default']
+            color_list = ['default', 'default', 'default', 'default']
 
         # first set colors from opts class or fallback to defaults
         self.colors = {
             'key_name': self.color_map[opts.keyname_color] if opts.keyname_color else self.colors['key_name'],
             'keyword': self.color_map[opts.keyword_color] if opts.keyword_color else self.colors['keyword'],
             'number': self.color_map[opts.number_color] if opts.number_color else self.colors['number'],
-            'string': self.color_map[opts.string_color] if opts.string_color else self.colors['string'],
-            'array_id': self.color_map[opts.arrayid_color] if opts.arrayid_color else self.colors['array_id'],
-            'array_bracket': self.color_map[opts.arraybracket_color] if opts.arraybracket_color else self.colors['array_bracket']
+            'string': self.color_map[opts.string_color] if opts.string_color else self.colors['string']
         }
 
         # then set colors from JELLO_COLORS env variable or fallback to existing colors
@@ -124,9 +119,7 @@ class JelloTheme:
             'key_name': self.color_map[color_list[0]] if not color_list[0] == 'default' else self.colors['key_name'],
             'keyword': self.color_map[color_list[1]] if not color_list[1] == 'default' else self.colors['keyword'],
             'number': self.color_map[color_list[2]] if not color_list[2] == 'default' else self.colors['number'],
-            'string': self.color_map[color_list[3]] if not color_list[3] == 'default' else self.colors['string'],
-            'array_id': self.color_map[color_list[4]] if not color_list[4] == 'default' else self.colors['array_id'],
-            'array_bracket': self.color_map[color_list[5]] if not color_list[5] == 'default' else self.colors['array_bracket']
+            'string': self.color_map[color_list[3]] if not color_list[3] == 'default' else self.colors['string']
         }
 
 
@@ -136,78 +129,76 @@ class Schema(JelloTheme):
     def __init__(self):
         self.schema_list = []
 
-    def schema_text(self):
+    def mono_output(self):
         return '\n'.join(self.schema_list)
 
-    def schema_html(self):
-        return '<br>'.join(self.schema_list)
+    def color_output(self):
+        data_string = '\n'.join(self.schema_list)
+
+        if not opts.mono and PYGMENTS_INSTALLED:
+            class JelloStyle(Style):
+                styles = {
+                    Name: f'bold {self.colors["key_name"]}',       # key names
+                    Keyword: f'{self.colors["keyword"]}',          # true, false, null
+                    Number: f'{self.colors["number"]}',            # int, float
+                    String: f'{self.colors["string"]}'             # string
+                }
+
+            lexer = JavascriptLexer()
+            formatter = Terminal256Formatter(style=JelloStyle)
+            return highlight(data_string, lexer, formatter)[0:-1]
+
+        else:
+            return data_string
+
+    def html_output(self):
+        data_string = '\n'.join(self.schema_list)
+        return highlight(data_string, JavascriptLexer(), HtmlFormatter(noclasses=True))
 
     def create_schema(self, src, path=''):
         """
         Creates a grep-able schema representation of the JSON.
-
-        This method is recursive, so output is stored within self.schema_list (list). Default colors are
-        used unless set_colors() is called to change them.
+        This method is recursive, and output is stored within self.schema_list (list).
         """
-        if not opts.mono and PYGMENTS_INSTALLED:
-            CEND = '\33[0m'
-            CBOLD = '\33[1m'
-            CKEYNAME = f'{self.colors["key_name"][1]}'
-            CKEYWORD = f'{self.colors["keyword"][1]}'
-            CNUMBER = f'{self.colors["number"][1]}'
-            CSTRING = f'{self.colors["string"][1]}'
-            CARRAYID = f'{self.colors["array_id"][1]}'
-            CARRAYBRACKET = f'{self.colors["array_bracket"][1]}'
-
-        else:
-            CEND = ''
-            CBOLD = ''
-            CKEYNAME = ''
-            CKEYWORD = ''
-            CNUMBER = ''
-            CSTRING = ''
-            CARRAYID = ''
-            CARRAYBRACKET = ''
-
         if isinstance(src, list) and path == '':
             for i, item in enumerate(src):
-                self.create_schema(item, path=f'.{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
+                self.create_schema(item, path=f'.[{i}]')
 
         elif isinstance(src, list):
             for i, item in enumerate(src):
-                self.create_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{src}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
+                self.create_schema(item, path=f'{path}.{src}[{i}]')
 
         elif isinstance(src, dict):
             for k, v in src.items():
                 if isinstance(v, list):
                     for i, item in enumerate(v):
-                        self.create_schema(item, path=f'{path}.{CBOLD}{CKEYNAME}{k}{CEND}{CARRAYBRACKET}[{CEND}{CARRAYID}{i}{CEND}{CARRAYBRACKET}]{CEND}')
+                        self.create_schema(item, path=f'{path}.{k}[{i}]')
 
                 elif isinstance(v, dict):
                     if not opts.mono:
-                        k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
+                        k = f'{k}'
                     self.create_schema(v, path=f'{path}.{k}')
 
                 else:
-                    k = f'{CBOLD}{CKEYNAME}{k}{CEND}'
+                    k = f'{k}'
                     val = json.dumps(v, ensure_ascii=False)
                     if val == 'true' or val == 'false' or val == 'null':
-                        val = f'{CKEYWORD}{val}{CEND}'
+                        val = f'{val}'
                     elif val.replace('.', '', 1).isdigit():
-                        val = f'{CNUMBER}{val}{CEND}'
+                        val = f'{val}'
                     else:
-                        val = f'{CSTRING}{val}{CEND}'
+                        val = f'{val}'
 
                     self.schema_list.append(f'{path}.{k} = {val};')
 
         else:
             val = json.dumps(src, ensure_ascii=False)
             if val == 'true' or val == 'false' or val == 'null':
-                val = f'{CKEYWORD}{val}{CEND}'
+                val = f'{val}'
             elif val.replace('.', '', 1).isdigit():
-                val = f'{CNUMBER}{val}{CEND}'
+                val = f'{val}'
             else:
-                val = f'{CSTRING}{val}{CEND}'
+                val = f'{val}'
 
             path = path or '.'
 
@@ -221,10 +212,10 @@ class Json(JelloTheme):
         if not opts.mono and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
                 styles = {
-                    Name.Tag: f'bold {self.colors["key_name"][0]}',   # key names
-                    Keyword: f'{self.colors["keyword"][0]}',          # true, false, null
-                    Number: f'{self.colors["number"][0]}',            # int, float
-                    String: f'{self.colors["string"][0]}'             # string
+                    Name: f'bold {self.colors["key_name"]}',       # key names
+                    Keyword: f'{self.colors["keyword"]}',          # true, false, null
+                    Number: f'{self.colors["number"]}',            # int, float
+                    String: f'{self.colors["string"]}'             # string
                 }
 
             lexer = JsonLexer()
@@ -363,13 +354,12 @@ def pyquery(data, query):
             opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = False
             warn_options = True
 
-    for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color,
-                         opts.string_color, opts.arrayid_color, opts.arraybracket_color]:
+    for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color, opts.string_color]:
         valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack', 'brightred',
                         'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan', 'white']
 
         if color_config not in valid_colors and color_config is not None:
-            opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = opts.arrayid_color = opts.arraybracket_color = None
+            opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = None
             warn_colors = True
 
     if warn_options:

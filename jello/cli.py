@@ -177,14 +177,13 @@ def main(data=None, query='_'):
         try:
             if opts.schema:
                 schema = Schema()
-
-                if not sys.stdout.isatty():
-                    opts.mono = True
-                elif not opts.mono:
-                    schema.set_colors()
-
                 schema.create_schema(response)
-                output = schema.schema_text()
+
+                if not opts.mono and sys.stdout.isatty():
+                    schema.set_colors()
+                    output = schema.color_output()
+                else:
+                    output = schema.mono_output()
 
             else:
                 json_out = Json()
