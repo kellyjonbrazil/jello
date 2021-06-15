@@ -231,7 +231,7 @@ class Json(JelloTheme):
             return highlight(data, lexer, formatter)[0:-1]
 
         else:
-            return self.output
+            return data
 
     def create_json(self, data):
         separators = None
