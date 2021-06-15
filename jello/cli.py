@@ -183,9 +183,9 @@ def main(data=None, query='_'):
             if opts.schema:
                 schema = Schema()
 
-                if opts.mono or not sys.stdout.isatty():
+                if not sys.stdout.isatty():
                     opts.mono = True
-                else:
+                elif not opts.mono:
                     schema.set_colors()
 
                 schema.create_schema(response)
@@ -193,12 +193,10 @@ def main(data=None, query='_'):
 
             else:
                 json_out = Json()
+                output = json_out.create_json(response)
 
-                if opts.mono or opts.raw or not sys.stdout.isatty():
-                    output = json_out.create_json(response)
-                else:
+                if not opts.mono and not opts.raw and sys.stdout.isatty():
                     json_out.set_colors()
-                    output = json_out.create_json(response)
                     output = json_out.color_output(output)
 
         except Exception as e:
