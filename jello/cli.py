@@ -5,18 +5,7 @@ import sys
 import textwrap
 import signal
 import jello
-from jello.lib import opts, JelloTheme, Schema, pyquery, load_json, create_json
-
-# make pygments import optional
-try:
-    from pygments import highlight
-    from pygments.style import Style
-    from pygments.token import (Name, Number, String, Keyword)
-    from pygments.lexers import JsonLexer
-    from pygments.formatters import Terminal256Formatter
-    PYGMENTS_INSTALLED = True
-except Exception:
-    PYGMENTS_INSTALLED = False
+from jello.lib import opts, load_json, pyquery, Schema, Json
 
 
 def ctrlc(signum, frame):
@@ -194,7 +183,7 @@ def main(data=None, query='_'):
             if opts.schema:
                 schema = Schema()
 
-                if not sys.stdout.isatty() or not PYGMENTS_INSTALLED:
+                if not sys.stdout.isatty():
                     opts.mono = True
                 else:
                     schema.set_colors()
@@ -203,36 +192,21 @@ def main(data=None, query='_'):
                 output = schema.schema_text()
 
             else:
-                output = create_json(response)
+                json_out = Json()
+
+                if opts.mono or opts.raw or not sys.stdout.isatty():
+                    output = json_out.create_json(response)
+                else:
+                    json_out.set_colors()
+                    output = json_out.create_json(response)
+                    output = json_out.color_output(output)
 
         except Exception as e:
             print_exception(e, list_dict_data, query, response, ex_type='Formatting')
 
         # Print colorized or mono Schema or JSON to STDOUT
         try:
-            if opts.schema:
-                print(output)
-
-            else:
-                if not opts.mono and not opts.raw and sys.stdout.isatty() and PYGMENTS_INSTALLED:
-                    theme = JelloTheme()
-                    theme.set_colors()
-
-                    class JelloStyle(Style):
-                        styles = {
-                            Name.Tag: f'bold {theme.colors["key_name"][0]}',   # key names
-                            Keyword: f'{theme.colors["keyword"][0]}',          # true, false, null
-                            Number: f'{theme.colors["number"][0]}',            # int, float
-                            String: f'{theme.colors["string"][0]}'             # string
-                        }
-
-                    lexer = JsonLexer()
-                    formatter = Terminal256Formatter(style=JelloStyle)
-                    highlighted_json = highlight(output, lexer, formatter)
-                    print(highlighted_json[0:-1])
-
-                else:
-                    print(output)
+            print(output)
 
         except Exception as e:
             print_exception(e, list_dict_data, query, response, output, ex_type='Output')

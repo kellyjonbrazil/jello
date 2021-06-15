@@ -6,6 +6,17 @@ import ast
 import json
 from jello.dotmap import DotMap
 
+# make pygments import optional
+try:
+    from pygments import highlight
+    from pygments.style import Style
+    from pygments.token import (Name, Number, String, Keyword)
+    from pygments.lexers import JsonLexer
+    from pygments.formatters import Terminal256Formatter
+    PYGMENTS_INSTALLED = True
+except Exception:
+    PYGMENTS_INSTALLED = False
+
 
 class opts:
     initialize = None
@@ -137,7 +148,7 @@ class Schema(JelloTheme):
         This method is recursive, so output is stored within self.schema_list (list). Default colors are
         used unless set_colors() is called to change them.
         """
-        if not opts.mono:
+        if not opts.mono and PYGMENTS_INSTALLED:
             CEND = '\33[0m'
             CBOLD = '\33[1m'
             CKEYNAME = f'{self.colors["key_name"][1]}'
@@ -200,6 +211,109 @@ class Schema(JelloTheme):
             path = path or '.'
 
             self.schema_list.append(f'{path} = {val};')
+
+
+class Json(JelloTheme):
+    '''Inherits colors and set_colors() from JelloTheme'''
+
+    def color_output(self, data):
+        if not opts.mono and PYGMENTS_INSTALLED:
+            class JelloStyle(Style):
+                styles = {
+                    Name.Tag: f'bold {self.colors["key_name"][0]}',   # key names
+                    Keyword: f'{self.colors["keyword"][0]}',          # true, false, null
+                    Number: f'{self.colors["number"][0]}',            # int, float
+                    String: f'{self.colors["string"][0]}'             # string
+                }
+
+            lexer = JsonLexer()
+            formatter = Terminal256Formatter(style=JelloStyle)
+            return highlight(data, lexer, formatter)[0:-1]
+
+        else:
+            return self.output
+
+    def create_json(self, data):
+        separators = None
+        indent = 2
+
+        if opts.compact or opts.lines:
+            separators = (',', ':')
+            indent = None
+
+        if isinstance(data, dict):
+            return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
+
+        if isinstance(data, list):
+            if not opts.lines:
+                return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
+
+            # check if this list includes lists
+            list_includes_list = False
+            for item in data:
+                if isinstance(item, list):
+                    list_includes_list = True
+                    break
+
+            if opts.lines and list_includes_list:
+                raise ValueError('Cannot print list of lists as lines. Try normal JSON output.')
+
+            # print lines for a flat list
+            else:
+                flat_list = ''
+                for entry in data:
+                    if entry is None:
+                        if opts.nulls:
+                            flat_list += 'null\n'
+                        else:
+                            flat_list += '\n'
+
+                    elif isinstance(entry, (dict, bool, int, float)):
+                        flat_list += json.dumps(entry, separators=separators, ensure_ascii=False) + '\n'
+
+                    elif isinstance(entry, str):
+                        # replace \n with \\n here so lines with newlines literally print the \n char
+                        entry = entry.replace('\n', '\\n')
+                        if opts.raw:
+                            flat_list += f'{entry}' + '\n'
+                        else:
+                            flat_list += f'"{entry}"' + '\n'
+
+                return flat_list.rstrip()
+
+        # naked single item return case
+        elif data is None:
+            if opts.nulls:
+                return 'null'
+            else:
+                return ''
+
+        elif isinstance(data, (bool, int, float)):
+            return json.dumps(data, ensure_ascii=False)
+
+        elif isinstance(data, str):
+            # replace \n with \\n here so lines with newlines literally print the \n char
+            data = data.replace('\n', '\\n')
+            if opts.raw:
+                return f'{data}'
+            else:
+                return f'"{data}"'
+
+        # only non-serializable types are left. Force an exception from json.dumps()
+        else:
+            json.dumps(data)
+            # this code should not run, but just in case something slips by above
+            raise TypeError(f'Object is not JSON serializable')
+
+
+def load_json(data):
+    try:
+        json_dict = json.loads(data)
+    except Exception:
+        # if json.loads fails, try loading as json lines
+        json_dict = [json.loads(i) for i in data.splitlines()]
+
+    return json_dict
 
 
 def pyquery(data, query):
@@ -279,86 +393,3 @@ def pyquery(data, query):
         raise ValueError('Reserved key name. Use bracket notation to access this key.')
 
     return output
-
-
-def load_json(data):
-    try:
-        json_dict = json.loads(data)
-    except Exception:
-        # if json.loads fails, try loading as json lines
-        json_dict = [json.loads(i) for i in data.splitlines()]
-
-    return json_dict
-
-
-def create_json(data):
-    separators = None
-    indent = 2
-
-    if opts.compact or opts.lines:
-        separators = (',', ':')
-        indent = None
-
-    if isinstance(data, dict):
-        return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
-
-    if isinstance(data, list):
-        if not opts.lines:
-            return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
-
-        # check if this list includes lists
-        list_includes_list = False
-        for item in data:
-            if isinstance(item, list):
-                list_includes_list = True
-                break
-
-        if opts.lines and list_includes_list:
-            raise ValueError('Cannot print list of lists as lines. Try normal JSON output.')
-
-        # print lines for a flat list
-        else:
-            flat_list = ''
-            for entry in data:
-                if entry is None:
-                    if opts.nulls:
-                        flat_list += 'null\n'
-                    else:
-                        flat_list += '\n'
-
-                elif isinstance(entry, (dict, bool, int, float)):
-                    flat_list += json.dumps(entry, separators=separators, ensure_ascii=False) + '\n'
-
-                elif isinstance(entry, str):
-                    # replace \n with \\n here so lines with newlines literally print the \n char
-                    entry = entry.replace('\n', '\\n')
-                    if opts.raw:
-                        flat_list += f'{entry}' + '\n'
-                    else:
-                        flat_list += f'"{entry}"' + '\n'
-
-            return flat_list.rstrip()
-
-    # naked single item return case
-    elif data is None:
-        if opts.nulls:
-            return 'null'
-        else:
-            return ''
-
-    elif isinstance(data, (bool, int, float)):
-        return json.dumps(data, ensure_ascii=False)
-
-    elif isinstance(data, str):
-        # replace \n with \\n here so lines with newlines literally print the \n char
-        data = data.replace('\n', '\\n')
-        if opts.raw:
-            return f'{data}'
-        else:
-            return f'"{data}"'
-
-    # only non-serializable types are left. Force an exception from json.dumps()
-    else:
-        json.dumps(data)
-        # this code should not run, but just in case something slips by above
-        raise TypeError(f'Object is not JSON serializable')

@@ -2,7 +2,7 @@
 
 import unittest
 import os
-from jello.lib import opts, JelloTheme, Schema
+from jello.lib import opts, Schema
 
 
 class MyTests(unittest.TestCase):
@@ -24,15 +24,14 @@ class MyTests(unittest.TestCase):
         opts.arrayid_color = None
         opts.arraybracket_color = None
 
-        # initialize schema_list
+        # initialize schema_lists
         self.schema = Schema()
 
         # initialize JELLO_COLORS env variable
         os.environ['JELLO_COLORS'] = 'default,default,default,default,default,default'
 
         # set the colors
-        self.jello_theme = JelloTheme()
-        self.jello_theme.set_colors()
+        self.schema.set_colors()
 
         # create samples
         self.dict_sample = {
@@ -128,7 +127,7 @@ class MyTests(unittest.TestCase):
         self.data_in = True
         self.expected = '. = \x1b[90mtrue\x1b[0m;'
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     def test_true_m(self):
         """
@@ -138,7 +137,7 @@ class MyTests(unittest.TestCase):
         self.expected = '. = true;'
         opts.mono = True
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     #
     # Naked False
@@ -151,7 +150,7 @@ class MyTests(unittest.TestCase):
         self.data_in = False
         self.expected = '. = \x1b[90mfalse\x1b[0m;'
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     def test_false_m(self):
         """
@@ -161,7 +160,7 @@ class MyTests(unittest.TestCase):
         self.expected = '. = false;'
         opts.mono = True
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     #
     # Naked null
@@ -174,7 +173,7 @@ class MyTests(unittest.TestCase):
         self.data_in = None
         self.expected = '. = \x1b[90mnull\x1b[0m;'
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     def test_null_m(self):
         """
@@ -184,7 +183,7 @@ class MyTests(unittest.TestCase):
         self.expected = '. = null;'
         opts.mono = True
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     #
     # naked int
@@ -197,7 +196,7 @@ class MyTests(unittest.TestCase):
         self.data_in = 42
         self.expected = '. = \x1b[35m42\x1b[0m;'
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     def test_int_m(self):
         """
@@ -207,7 +206,7 @@ class MyTests(unittest.TestCase):
         self.expected = '. = 42;'
         opts.mono = True
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     #
     # naked float
@@ -220,7 +219,7 @@ class MyTests(unittest.TestCase):
         self.data_in = 3.14
         self.expected = '. = \x1b[35m3.14\x1b[0m;'
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     def test_float_m(self):
         """
@@ -230,7 +229,7 @@ class MyTests(unittest.TestCase):
         self.expected = '. = 3.14;'
         opts.mono = True
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     #
     # naked string
@@ -243,7 +242,7 @@ class MyTests(unittest.TestCase):
         self.data_in = '"string with\\nnewline char"'
         self.expected = '. = \x1b[32m"\\"string with\\\\nnewline char\\""\x1b[0m;'
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     def test_string_m(self):
         """
@@ -253,7 +252,7 @@ class MyTests(unittest.TestCase):
         self.expected = '. = "\\"string with\\\\nnewline char\\"";'
         opts.mono = True
         self.schema.create_schema(self.data_in)
-        self.assertEqual('\n'.join(self.schema.schema_list), self.expected)
+        self.assertEqual(self.schema.schema_text(), self.expected)
 
     #
     # Naked Dict
