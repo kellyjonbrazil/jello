@@ -183,7 +183,7 @@ def main(data=None, query='_'):
             if opts.schema:
                 schema = Schema()
 
-                if not sys.stdout.isatty():
+                if opts.mono or not sys.stdout.isatty():
                     opts.mono = True
                 else:
                     schema.set_colors()
