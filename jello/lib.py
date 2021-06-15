@@ -38,16 +38,6 @@ class opts:
 
 
 class JelloTheme:
-    # default colors
-    colors = {
-        'key_name': ('ansiblue', '\33[34m'),
-        'keyword': ('ansibrightblack', '\33[90m'),
-        'number': ('ansimagenta', '\33[35m'),
-        'string': ('ansigreen', '\33[32m'),
-        'array_id': ('ansired', '\33[31m'),
-        'array_bracket': ('ansimagenta', '\33[35m')
-    }
-
     color_map = {
         'black': ('ansiblack', '\33[30m'),
         'red': ('ansired', '\33[31m'),
@@ -65,6 +55,16 @@ class JelloTheme:
         'brightmagenta': ('ansibrightmagenta', '\33[95m'),
         'brightcyan': ('ansibrightcyan', '\33[96m'),
         'white': ('ansiwhite', '\33[97m'),
+    }
+
+    # default colors
+    colors = {
+        'key_name': color_map['blue'],
+        'keyword': color_map['brightblack'],
+        'number': color_map['magenta'],
+        'string': color_map['green'],
+        'array_id': color_map['red'],
+        'array_bracket': color_map['magenta']
     }
 
     def set_colors(self):
