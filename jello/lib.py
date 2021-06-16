@@ -96,8 +96,8 @@ class JelloTheme:
             print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
             color_list = ['default', 'default', 'default', 'default']
 
-        # first set theme from opts class or fallback to defaults
         if PYGMENTS_INSTALLED:
+            # first set theme from opts class or fallback to defaults
             self.theme = {
                 Name: f'bold ansi{opts.keyname_color}' if opts.keyname_color else f"bold ansi{self.colors['key_name']}",
                 Keyword: f'ansi{opts.keyword_color}' if opts.keyword_color else f"ansi{self.colors['keyword']}",
