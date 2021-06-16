@@ -107,7 +107,7 @@ class JelloTheme:
 
 
 class Schema(JelloTheme):
-    '''Inherits colors and set_colors() from JelloTheme'''
+    """Inherits colors and set_colors() from JelloTheme"""
 
     def __init__(self):
         self.schema_list = []
@@ -198,7 +198,7 @@ class Schema(JelloTheme):
 
 
 class Json(JelloTheme):
-    '''Inherits colors and set_colors() from JelloTheme'''
+    """Inherits colors and set_colors() from JelloTheme"""
 
     def color_output(self, data):
         if not opts.mono and PYGMENTS_INSTALLED:
@@ -304,7 +304,7 @@ def load_json(data):
 
 
 def pyquery(data, query):
-    '''Sets options and runs the user's query'''
+    """Sets options and runs the user's query"""
     output = None
 
     # read data into '_' variable
