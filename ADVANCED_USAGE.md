@@ -18,6 +18,7 @@ opts.lines = True           # -l option
 opts.raw = True             # -r option
 opts.nulls = True           # -n option
 opts.schema = True          # -s option
+opts.types = True           # -t option
 ```
 ##### Setting Colors
 You can customize the colors by importing the `jello.lib.opts` class and setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
@@ -27,8 +28,6 @@ opts.keyname_color = 'blue'            # Key names
 opts.keyword_color = 'brightblack'     # true, false, null
 opts.number_color = 'magenta'          # integers, floats
 opts.string_color = 'green'            # strings
-opts.arrayid_color = 'red'             # array IDs in Schema view
-opts.arraybracket_color = 'magenta'    # array brackets in Schema view
 ```
 > Note: Any colors set via the `JELLO_COLORS` environment variable will take precedence over any color values set in the `.jelloconf.py` configuration file
 
