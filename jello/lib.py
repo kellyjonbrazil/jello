@@ -112,56 +112,53 @@ class Schema(JelloTheme):
     def __init__(self):
         self.schema_list = []
 
-    def mono_output(self):
-        return '\n'.join(self.schema_list)
-
-    def color_output(self):
-        data_string = '\n'.join(self.schema_list)
-
+    def color_output(self, data):
         if not opts.mono and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
                 styles = self.theme
 
             lexer = JavascriptLexer()
             formatter = Terminal256Formatter(style=JelloStyle)
-            return highlight(data_string, lexer, formatter)[0:-1]
+            return highlight(data, lexer, formatter)[0:-1]
 
         else:
-            return data_string
+            return data
 
-    def html_output(self):
-        data_string = '\n'.join(self.schema_list)
-
+    def html_output(self, data):
         class JelloStyle(Style):
             styles = self.theme
 
         lexer = JavascriptLexer()
         formatter = HtmlFormatter(style=JelloStyle, noclasses=True)
-        return highlight(data_string, lexer, formatter)
+        return highlight(data, lexer, formatter)
 
-    def create_schema(self, src, path=''):
+    def create_schema(self, data):
+        self._schema_gen(data)
+        return '\n'.join(self.schema_list)
+
+    def _schema_gen(self, src, path=''):
         """
         Creates a grep-able schema representation of the JSON.
         This method is recursive, and output is stored within self.schema_list (list).
         """
         if isinstance(src, list) and path == '':
             for i, item in enumerate(src):
-                self.create_schema(item, path=f'.[{i}]')
+                self._schema_gen(item, path=f'.[{i}]')
 
         elif isinstance(src, list):
             for i, item in enumerate(src):
-                self.create_schema(item, path=f'{path}.{src}[{i}]')
+                self._schema_gen(item, path=f'{path}.{src}[{i}]')
 
         elif isinstance(src, dict):
             for k, v in src.items():
                 if isinstance(v, list):
                     for i, item in enumerate(v):
-                        self.create_schema(item, path=f'{path}.{k}[{i}]')
+                        self._schema_gen(item, path=f'{path}.{k}[{i}]')
 
                 elif isinstance(v, dict):
                     if not opts.mono:
                         k = f'{k}'
-                    self.create_schema(v, path=f'{path}.{k}')
+                    self._schema_gen(v, path=f'{path}.{k}')
 
                 else:
                     k = f'{k}'

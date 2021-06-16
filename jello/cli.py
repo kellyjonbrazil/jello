@@ -179,13 +179,11 @@ def main(data=None, query='_'):
         try:
             if opts.schema:
                 schema = Schema()
-                schema.create_schema(response)
+                output = schema.create_schema(response)
 
                 if not opts.mono and sys.stdout.isatty():
                     schema.set_colors()
-                    output = schema.color_output()
-                else:
-                    output = schema.mono_output()
+                    output = schema.color_output(output)
 
             else:
                 json_out = Json()
