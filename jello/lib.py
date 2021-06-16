@@ -38,39 +38,20 @@ class opts:
 
 
 class JelloTheme:
-    color_map = {
-        'black': 'ansiblack',
-        'red': 'ansired',
-        'green': 'ansigreen',
-        'yellow': 'ansiyellow',
-        'blue': 'ansiblue',
-        'magenta': 'ansimagenta',
-        'cyan': 'ansicyan',
-        'gray': 'ansigray',
-        'brightblack': 'ansibrightblack',
-        'brightred': 'ansibrightred',
-        'brightgreen': 'ansibrightgreen',
-        'brightyellow': 'ansibrightyellow',
-        'brightblue': 'ansibrightblue',
-        'brightmagenta': 'ansibrightmagenta',
-        'brightcyan': 'ansibrightcyan',
-        'white': 'ansiwhite',
-    }
-
     # default colors
     colors = {
-        'key_name': color_map['blue'],
-        'keyword': color_map['brightblack'],
-        'number': color_map['magenta'],
-        'string': color_map['green']
+        'key_name': 'blue',
+        'keyword': 'brightblack',
+        'number': 'magenta',
+        'string': 'green'
     }
 
     if PYGMENTS_INSTALLED:
         theme = {
-            Name: f'bold {colors["key_name"]}',
-            Keyword: colors['keyword'],
-            Number: colors['number'],
-            String: colors['string']
+            Name: f'bold ansi{colors["key_name"]}',
+            Keyword: f"ansi{colors['keyword']}",
+            Number: f"ansi{colors['number']}",
+            String: f"ansi{colors['string']}"
         }
 
     def set_colors(self):
@@ -118,18 +99,18 @@ class JelloTheme:
         # first set theme from opts class or fallback to defaults
         if PYGMENTS_INSTALLED:
             self.theme = {
-                Name: f'bold {self.color_map[opts.keyname_color]}' if opts.keyname_color else f"bold {self.colors['key_name']}",
-                Keyword: self.color_map[opts.keyword_color] if opts.keyword_color else self.colors['keyword'],
-                Number: self.color_map[opts.number_color] if opts.number_color else self.colors['number'],
-                String: self.color_map[opts.string_color] if opts.string_color else self.colors['string']
+                Name: f'bold ansi{opts.keyname_color}' if opts.keyname_color else f"bold ansi{self.colors['key_name']}",
+                Keyword: f'ansi{opts.keyword_color}' if opts.keyword_color else f"ansi{self.colors['keyword']}",
+                Number: f'ansi{opts.number_color}' if opts.number_color else f"ansi{self.colors['number']}",
+                String: f'ansi{opts.string_color}' if opts.string_color else f"ansi{self.colors['string']}"
             }
 
             # then set theme from JELLO_COLORS env variable or fallback to existing colors
             self.theme = {
-                Name: f'bold {self.color_map[color_list[0]]}' if not color_list[0] == 'default' else self.theme[Name],
-                Keyword: self.color_map[color_list[1]] if not color_list[1] == 'default' else self.theme[Keyword],
-                Number: self.color_map[color_list[2]] if not color_list[2] == 'default' else self.theme[Number],
-                String: self.color_map[color_list[3]] if not color_list[3] == 'default' else self.theme[String]
+                Name: f'bold ansi{color_list[0]}' if not color_list[0] == 'default' else self.theme[Name],
+                Keyword: f'ansi{color_list[1]}' if not color_list[1] == 'default' else self.theme[Keyword],
+                Number: f'ansi{color_list[2]}' if not color_list[2] == 'default' else self.theme[Number],
+                String: f'ansi{color_list[3]}' if not color_list[3] == 'default' else self.theme[String]
             }
 
 
