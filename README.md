@@ -55,6 +55,7 @@ cat data.json | jello '_["foo"]'
 - `-n` print selected `null` values
 - `-r` raw output of selected strings (no quotes)
 - `-s` print the JSON schema in grep-able format
+- `-t` print type annotations in schema view
 - `-h` help
 - `-v` version info
 
@@ -127,19 +128,19 @@ done < <(cat data.json | jello -rl _.foo)
 ### Setting Custom Colors via Environment Variable
 Custom colors can be set via the `JELLO_COLORS` environment variable. Any colors set in the environment variable will take precedence over any colors set in the initialization file. (see [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md))
 
-The `JELLO_COLORS` environment variable takes six comma separated string values in the following format:
+The `JELLO_COLORS` environment variable takes four comma separated string values in the following format:
 ```
-JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>
 ```
 Where colors are: `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan`, `gray`, `brightblack`, `brightred`, `brightgreen`, `brightyellow`, `brightblue`, `brightmagenta`, `brightcyan`, `white`, or  `default`
 
 For example, to set to the default colors:
 ```
-JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+JELLO_COLORS=blue,brightblack,magenta,green
 ```
 or
 ```
-JELLO_COLORS=default,default,default,default,default,default
+JELLO_COLORS=default,default,default,default
 ```
 
 Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md) information.

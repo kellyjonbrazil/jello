@@ -30,6 +30,7 @@ class opts:
     lines = None
     mono = None
     schema = None
+    types = None
     keyname_color = None
     keyword_color = None
     number_color = None
@@ -64,9 +65,17 @@ class JelloTheme:
         'string': color_map['green']
     }
 
+    if PYGMENTS_INSTALLED:
+        theme = {
+            Name: f'bold {colors["key_name"]}',
+            Keyword: colors['keyword'],
+            Number: colors['number'],
+            String: colors['string']
+        }
+
     def set_colors(self):
         """
-        Updates the JelloTheme.colors dictionary used by the JelloStyle class.
+        Updates the JelloTheme.theme dictionary used by the JelloStyle class.
 
         Grab custom colors from JELLO_COLORS environment variable and opts class set by .jelloconf.py file.
         Individual colors from JELLO_COLORS take precedence over .jelloconf.py. Individual colors from
@@ -106,21 +115,22 @@ class JelloTheme:
             print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
             color_list = ['default', 'default', 'default', 'default']
 
-        # first set colors from opts class or fallback to defaults
-        self.colors = {
-            'key_name': self.color_map[opts.keyname_color] if opts.keyname_color else self.colors['key_name'],
-            'keyword': self.color_map[opts.keyword_color] if opts.keyword_color else self.colors['keyword'],
-            'number': self.color_map[opts.number_color] if opts.number_color else self.colors['number'],
-            'string': self.color_map[opts.string_color] if opts.string_color else self.colors['string']
-        }
+        # first set theme from opts class or fallback to defaults
+        if PYGMENTS_INSTALLED:
+            self.theme = {
+                Name: f'bold {self.color_map[opts.keyname_color]}' if opts.keyname_color else f"bold {self.colors['key_name']}",
+                Keyword: self.color_map[opts.keyword_color] if opts.keyword_color else self.colors['keyword'],
+                Number: self.color_map[opts.number_color] if opts.number_color else self.colors['number'],
+                String: self.color_map[opts.string_color] if opts.string_color else self.colors['string']
+            }
 
-        # then set colors from JELLO_COLORS env variable or fallback to existing colors
-        self.colors = {
-            'key_name': self.color_map[color_list[0]] if not color_list[0] == 'default' else self.colors['key_name'],
-            'keyword': self.color_map[color_list[1]] if not color_list[1] == 'default' else self.colors['keyword'],
-            'number': self.color_map[color_list[2]] if not color_list[2] == 'default' else self.colors['number'],
-            'string': self.color_map[color_list[3]] if not color_list[3] == 'default' else self.colors['string']
-        }
+            # then set theme from JELLO_COLORS env variable or fallback to existing colors
+            self.theme = {
+                Name: f'bold {self.color_map[color_list[0]]}' if not color_list[0] == 'default' else self.theme[Name],
+                Keyword: self.color_map[color_list[1]] if not color_list[1] == 'default' else self.theme[Keyword],
+                Number: self.color_map[color_list[2]] if not color_list[2] == 'default' else self.theme[Number],
+                String: self.color_map[color_list[3]] if not color_list[3] == 'default' else self.theme[String]
+            }
 
 
 class Schema(JelloTheme):
@@ -137,12 +147,7 @@ class Schema(JelloTheme):
 
         if not opts.mono and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
-                styles = {
-                    Name: f'bold {self.colors["key_name"]}',       # key names
-                    Keyword: f'{self.colors["keyword"]}',          # true, false, null
-                    Number: f'{self.colors["number"]}',            # int, float
-                    String: f'{self.colors["string"]}'             # string
-                }
+                styles = self.theme
 
             lexer = JavascriptLexer()
             formatter = Terminal256Formatter(style=JelloStyle)
@@ -153,7 +158,13 @@ class Schema(JelloTheme):
 
     def html_output(self):
         data_string = '\n'.join(self.schema_list)
-        return highlight(data_string, JavascriptLexer(), HtmlFormatter(noclasses=True))
+
+        class JelloStyle(Style):
+            styles = self.theme
+
+        lexer = JavascriptLexer()
+        formatter = HtmlFormatter(style=JelloStyle, noclasses=True)
+        return highlight(data_string, lexer, formatter)
 
     def create_schema(self, src, path=''):
         """
@@ -182,27 +193,35 @@ class Schema(JelloTheme):
                 else:
                     k = f'{k}'
                     val = json.dumps(v, ensure_ascii=False)
-                    if val == 'true' or val == 'false' or val == 'null':
-                        val = f'{val}'
-                    elif val.replace('.', '', 1).isdigit():
-                        val = f'{val}'
-                    else:
-                        val = f'{val}'
+                    val_type = ''
+                    if opts.types:
+                        if val == 'true' or val == 'false':
+                            val_type = '        // (boolean)'
+                        elif val == 'null':
+                            val_type = '        // (null)'
+                        elif val.replace('.', '', 1).isdigit():
+                            val_type = '        // (number)'
+                        else:
+                            val_type = '        // (string)'
 
-                    self.schema_list.append(f'{path}.{k} = {val};')
+                    self.schema_list.append(f'{path}.{k} = {val};{val_type}')
 
         else:
             val = json.dumps(src, ensure_ascii=False)
-            if val == 'true' or val == 'false' or val == 'null':
-                val = f'{val}'
-            elif val.replace('.', '', 1).isdigit():
-                val = f'{val}'
-            else:
-                val = f'{val}'
+            val_type = ''
+            if opts.types:
+                if val == 'true' or val == 'false':
+                    val_type = '        // (boolean)'
+                elif val == 'null':
+                    val_type = '        // (null)'
+                elif val.replace('.', '', 1).isdigit():
+                    val_type = '        // (number)'
+                else:
+                    val_type = '        // (string)'
 
             path = path or '.'
 
-            self.schema_list.append(f'{path} = {val};')
+            self.schema_list.append(f'{path} = {val};{val_type}')
 
 
 class Json(JelloTheme):
@@ -211,12 +230,7 @@ class Json(JelloTheme):
     def color_output(self, data):
         if not opts.mono and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
-                styles = {
-                    Name: f'bold {self.colors["key_name"]}',       # key names
-                    Keyword: f'{self.colors["keyword"]}',          # true, false, null
-                    Number: f'{self.colors["number"]}',            # int, float
-                    String: f'{self.colors["string"]}'             # string
-                }
+                styles = self.theme
 
             lexer = JsonLexer()
             formatter = Terminal256Formatter(style=JelloStyle)
@@ -226,7 +240,12 @@ class Json(JelloTheme):
             return data
 
     def html_output(self, data):
-        return highlight(data, JsonLexer(), HtmlFormatter(noclasses=True))
+        class JelloStyle(Style):
+            styles = self.theme
+
+        lexer = JsonLexer()
+        formatter = HtmlFormatter(style=JelloStyle, noclasses=True)
+        return highlight(data, lexer, formatter)
 
     def create_json(self, data):
         separators = None

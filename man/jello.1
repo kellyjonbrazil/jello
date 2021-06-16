@@ -1,4 +1,4 @@
-.TH jello 1 2021-06-13 1.4.0 "Jello JSON Filter"
+.TH jello 1 2021-06-15 1.4.0 "Jello JSON Filter"
 .SH NAME
 Jello \- Filter JSON and JSON Lines data with Python syntax
 .SH SYNOPSIS
@@ -65,6 +65,8 @@ $ cat data.json | jello \[aq]_[\[dq]foo\[dq]]\[aq]
 \fB-r\fP raw output of selected strings (no quotes)
 .IP
 \fB-s\fP print the JSON schema in grep-able format
+.IP
+\fB-t\fP print type annotations in schema view
 .IP
 \fB-h\fP help
 .IP
@@ -330,6 +332,7 @@ opts.lines = True           # -l option
 opts.raw = True             # -r option
 opts.nulls = True           # -n option
 opts.schema = True          # -s option
+opts.types = True           # -t option
 .fi
 .SS Setting Colors
 .PP
@@ -342,8 +345,6 @@ opts.keyname_color = \[aq]blue\[aq]            # Key names
 opts.keyword_color = \[aq]brightblack\[aq]     # true, false, null
 opts.number_color = \[aq]magenta\[aq]          # integers, floats
 opts.string_color = \[aq]green\[aq]            # strings
-opts.arrayid_color = \[aq]red\[aq]             # array IDs in Schema view
-opts.arraybracket_color = \[aq]magenta\[aq]    # array brackets in Schema view
 \f[R]
 .fi
 .RS
@@ -400,11 +401,11 @@ $ jc -a | jello -i \[aq]g(\[dq]parsers.6.compatible\[dq])\[aq]
 In addition to setting custom colors in the \fB.jelloconf.py\fP intialization file, you can also set them via the \fBJELLO_COLORS\fP environment variable. Any colors set in the environment variable will take precedence over any
 colors set in the initialization file.
 .PP
-The \fBJELLO_COLORS\fP environment variable takes six comma separated string values in the following format:
+The \fBJELLO_COLORS\fP environment variable takes four comma separated string values in the following format:
 .IP
 .nf
 \f[C]
-JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>
 \f[R]
 .fi
 .PP
@@ -419,7 +420,7 @@ For example, to set to the default colors:
 .IP
 .nf
 \f[C]
-JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+JELLO_COLORS=blue,brightblack,magenta,green
 \f[R]
 .fi
 .PP
@@ -427,7 +428,7 @@ or
 .IP
 .nf
 \f[C]
-JELLO_COLORS=default,default,default,default,default,default
+JELLO_COLORS=default,default,default,default
 \f[R]
 .fi
 

@@ -17,12 +17,11 @@ class MyTests(unittest.TestCase):
         opts.lines = None
         opts.mono = None
         opts.schema = None
+        opts.types = None
         opts.keyname_color = None
         opts.keyword_color = None
         opts.number_color = None
         opts.string_color = None
-        opts.arrayid_color = None
-        opts.arraybracket_color = None
 
         # create samples
         self.dict_sample = {

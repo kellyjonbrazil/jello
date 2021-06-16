@@ -34,6 +34,7 @@ def print_help():
                 -n   print selected null values
                 -r   raw string output (no quotes)
                 -s   print the JSON schema in grep-able format
+                -t   print type annotations in schema view
                 -v   version info
                 -h   help
 
@@ -133,6 +134,7 @@ def main(data=None, query='_'):
     opts.nulls = opts.nulls or 'n' in options
     opts.raw = opts.raw or 'r' in options
     opts.schema = opts.schema or 's' in options
+    opts.types = opts.types or 't' in options
     opts.version_info = opts.version_info or 'v' in options
     opts.helpme = opts.helpme or 'h' in options
 
