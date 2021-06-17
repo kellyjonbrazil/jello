@@ -135,8 +135,8 @@ class Schema(JelloTheme):
     def create_schema(self, data):
         self._schema_gen(data)
         myschema = '\n'.join(self._schema_list)
-        # unsure if this is helpful, but trying to reduce memory footprint
-        del self._schema_list
+        # unsure if this is helpful, but trying to reduce memory footprint by clearing the list
+        self._schema_list *= 0
         return myschema
 
     def _schema_gen(self, src, path=''):
