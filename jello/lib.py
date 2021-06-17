@@ -110,7 +110,7 @@ class Schema(JelloTheme):
     """Inherits theme and set_colors() from JelloTheme"""
 
     def __init__(self):
-        self.schema_list = []
+        self._schema_list = []
 
     def color_output(self, data):
         if not opts.mono and PYGMENTS_INSTALLED:
@@ -134,12 +134,15 @@ class Schema(JelloTheme):
 
     def create_schema(self, data):
         self._schema_gen(data)
-        return '\n'.join(self.schema_list)
+        myschema = '\n'.join(self._schema_list)
+        # unsure if this is helpful, but trying to reduce memory footprint
+        del self._schema_list
+        return myschema
 
     def _schema_gen(self, src, path=''):
         """
         Creates a grep-able schema representation of the JSON.
-        This method is recursive, and output is stored within self.schema_list (list).
+        This method is recursive, and output is stored within self._schema_list (list).
         """
         if isinstance(src, list) and path == '':
             for i, item in enumerate(src):
@@ -174,7 +177,7 @@ class Schema(JelloTheme):
                         else:
                             val_type = '        // (string)'
 
-                    self.schema_list.append(f'{path}.{k} = {val};{val_type}')
+                    self._schema_list.append(f'{path}.{k} = {val};{val_type}')
 
         else:
             val = json.dumps(src, ensure_ascii=False)
@@ -191,7 +194,7 @@ class Schema(JelloTheme):
 
             path = path or '.'
 
-            self.schema_list.append(f'{path} = {val};{val_type}')
+            self._schema_list.append(f'{path} = {val};{val_type}')
 
 
 class Json(JelloTheme):
