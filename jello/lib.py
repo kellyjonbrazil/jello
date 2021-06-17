@@ -167,34 +167,44 @@ class Schema(JelloTheme):
                     k = f'{k}'
                     val = json.dumps(v, ensure_ascii=False)
                     val_type = ''
+                    padding = ''
                     if opts.types:
                         if val == 'true' or val == 'false':
-                            val_type = '        // (boolean)'
+                            val_type = '// (boolean)'
                         elif val == 'null':
-                            val_type = '        // (null)'
+                            val_type = '// (null)'
                         elif val.replace('.', '', 1).isdigit():
-                            val_type = '        // (number)'
+                            val_type = '// (number)'
                         else:
-                            val_type = '        // (string)'
+                            val_type = '// (string)'
 
-                    self._schema_list.append(f'{path}.{k} = {val};{val_type}')
+                        padding = '  '
+                        if len(path) + len(k) + len(val) + len(val_type) < 60:
+                            padding = ' ' * (59 - (len(path) + len(k) + len(val) + len(val_type)))
+
+                    self._schema_list.append(f'{path}.{k} = {val};{padding}{val_type}')
 
         else:
             val = json.dumps(src, ensure_ascii=False)
             val_type = ''
+            padding = ''
             if opts.types:
                 if val == 'true' or val == 'false':
-                    val_type = '        // (boolean)'
+                    val_type = '// (boolean)'
                 elif val == 'null':
-                    val_type = '        // (null)'
+                    val_type = '// (null)'
                 elif val.replace('.', '', 1).isdigit():
-                    val_type = '        // (number)'
+                    val_type = '// (number)'
                 else:
-                    val_type = '        // (string)'
+                    val_type = '// (string)'
 
             path = path or '.'
 
-            self._schema_list.append(f'{path} = {val};{val_type}')
+            padding = '  '
+            if len(path) + len(val) + len(val_type) < 60:
+                padding = ' ' * (60 - (len(path) + len(val) + len(val_type)))
+
+            self._schema_list.append(f'{path} = {val};{padding}{val_type}')
 
 
 class Json(JelloTheme):
