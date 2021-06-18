@@ -198,11 +198,11 @@ class Schema(JelloTheme):
                 else:
                     val_type = '// (string)'
 
-            path = path or '.'
+                padding = '  '
+                if len(path) + len(val) + len(val_type) < 70:
+                    padding = ' ' * (70 - (len(path) + len(val) + len(val_type)))
 
-            padding = '  '
-            if len(path) + len(val) + len(val_type) < 70:
-                padding = ' ' * (70 - (len(path) + len(val) + len(val_type)))
+            path = path or '.'
 
             self._schema_list.append(f'{path} = {val};{padding}{val_type}')
 
