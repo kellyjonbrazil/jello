@@ -440,6 +440,24 @@ class MyTests(unittest.TestCase):
         opts.lines = True
         self.assertEqual(self.json_out.create_json(self.data_in), self.expected)
 
+    def test_dict_html(self):
+        """
+        Test self.dict_sample html output
+        """
+        self.data_in = self.dict_sample
+        self.expected = '<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%;"><span></span>{\n  <span style="color: #00007f; font-weight: bold">&quot;string&quot;</span>: <span style="color: #007f00">&quot;string\\nwith newline\\ncharacters in it&quot;</span>,\n  <span style="color: #00007f; font-weight: bold">&quot;true&quot;</span>: <span style="color: #555555">true</span>,\n  <span style="color: #00007f; font-weight: bold">&quot;false&quot;</span>: <span style="color: #555555">false</span>,\n  <span style="color: #00007f; font-weight: bold">&quot;null&quot;</span>: <span style="color: #555555">null</span>,\n  <span style="color: #00007f; font-weight: bold">&quot;int&quot;</span>: <span style="color: #7f007f">42</span>,\n  <span style="color: #00007f; font-weight: bold">&quot;float&quot;</span>: <span style="color: #7f007f">3.14</span>,\n  <span style="color: #00007f; font-weight: bold">&quot;array&quot;</span>: [\n    <span style="color: #007f00">&quot;string\\nwith newline\\ncharacters in it&quot;</span>,\n    <span style="color: #555555">true</span>,\n    <span style="color: #555555">false</span>,\n    <span style="color: #555555">null</span>,\n    <span style="color: #7f007f">42</span>,\n    <span style="color: #7f007f">3.14</span>\n  ]\n}\n</pre></div>\n'
+        output = self.json_out.create_json(self.data_in)
+        self.assertEqual(self.json_out.html_output(output), self.expected)
+
+    def test_dict_color(self):
+        """
+        Test self.dict_sample color output
+        """
+        self.data_in = self.dict_sample
+        self.expected = '{\n  \x1b[34;01m"string"\x1b[39;00m: \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m,\n  \x1b[34;01m"true"\x1b[39;00m: \x1b[90mtrue\x1b[39m,\n  \x1b[34;01m"false"\x1b[39;00m: \x1b[90mfalse\x1b[39m,\n  \x1b[34;01m"null"\x1b[39;00m: \x1b[90mnull\x1b[39m,\n  \x1b[34;01m"int"\x1b[39;00m: \x1b[35m42\x1b[39m,\n  \x1b[34;01m"float"\x1b[39;00m: \x1b[35m3.14\x1b[39m,\n  \x1b[34;01m"array"\x1b[39;00m: [\n    \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m,\n    \x1b[90mtrue\x1b[39m,\n    \x1b[90mfalse\x1b[39m,\n    \x1b[90mnull\x1b[39m,\n    \x1b[35m42\x1b[39m,\n    \x1b[35m3.14\x1b[39m\n  ]\n}'
+        output = self.json_out.create_json(self.data_in)
+        self.assertEqual(self.json_out.color_output(output), self.expected)
+
     #
     # true in a list
     #

@@ -254,12 +254,31 @@ class MyTests(unittest.TestCase):
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
+    def test_dict_t(self):
+        """
+        Test self.dict_sample -t
+        """
+        opts.types = True
+        self.data_in = self.dict_sample
+        self.expected = '.\x1b[34;01mstring\x1b[39;00m = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;           //  (string)\n.\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;                                                 // (boolean)\n.\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;                                               // (boolean)\n.\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;                                                 //    (null)\n.\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;                                                    //  (number)\n.\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;                                                //  (number)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;         //  (string)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;                                             // (boolean)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;                                            // (boolean)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;                                             //    (null)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;                                               //  (number)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;                                             //  (number)'
+        output = self.schema.create_schema(self.data_in)
+        self.assertEqual(self.schema.color_output(output), self.expected)
+
     def test_dict_m(self):
         """
         Test self.dict_sample -m
         """
         self.data_in = self.dict_sample
         self.expected = '.string = "string\\nwith newline\\ncharacters in it";\n.true = true;\n.false = false;\n.null = null;\n.int = 42;\n.float = 3.14;\n.array[0] = "string\\nwith newline\\ncharacters in it";\n.array[1] = true;\n.array[2] = false;\n.array[3] = null;\n.array[4] = 42;\n.array[5] = 3.14;'
+        self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
+
+    def test_dict_mt(self):
+        """
+        Test self.dict_sample -mt
+        """
+        opts.types = True
+        self.data_in = self.dict_sample
+        self.expected = '.string = "string\\nwith newline\\ncharacters in it";           //  (string)\n.true = true;                                                 // (boolean)\n.false = false;                                               // (boolean)\n.null = null;                                                 //    (null)\n.int = 42;                                                    //  (number)\n.float = 3.14;                                                //  (number)\n.array[0] = "string\\nwith newline\\ncharacters in it";         //  (string)\n.array[1] = true;                                             // (boolean)\n.array[2] = false;                                            // (boolean)\n.array[3] = null;                                             //    (null)\n.array[4] = 42;                                               //  (number)\n.array[5] = 3.14;                                             //  (number)'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
