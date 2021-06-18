@@ -172,11 +172,11 @@ class Schema(JelloTheme):
                         if val == 'true' or val == 'false':
                             val_type = '// (boolean)'
                         elif val == 'null':
-                            val_type = '// (null)'
+                            val_type = '//    (null)'
                         elif val.replace('.', '', 1).isdigit():
-                            val_type = '// (number)'
+                            val_type = '//  (number)'
                         else:
-                            val_type = '// (string)'
+                            val_type = '//  (string)'
 
                         padding = '  '
                         if len(path) + len(k) + len(val) + len(val_type) < 70:
@@ -192,11 +192,11 @@ class Schema(JelloTheme):
                 if val == 'true' or val == 'false':
                     val_type = '// (boolean)'
                 elif val == 'null':
-                    val_type = '// (null)'
+                    val_type = '//    (null)'
                 elif val.replace('.', '', 1).isdigit():
-                    val_type = '// (number)'
+                    val_type = '//  (number)'
                 else:
-                    val_type = '// (string)'
+                    val_type = '//  (string)'
 
                 padding = '  '
                 if len(path) + len(val) + len(val_type) < 70:
