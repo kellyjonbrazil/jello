@@ -185,6 +185,7 @@ class Schema(JelloTheme):
                     self._schema_list.append(f'{path}.{k} = {val};{padding}{val_type}')
 
         else:
+            path = path or '.'
             val = json.dumps(src, ensure_ascii=False)
             val_type = ''
             padding = ''
@@ -201,8 +202,6 @@ class Schema(JelloTheme):
                 padding = '  '
                 if len(path) + len(val) + len(val_type) < 70:
                     padding = ' ' * (70 - (len(path) + len(val) + len(val_type)))
-
-            path = path or '.'
 
             self._schema_list.append(f'{path} = {val};{padding}{val_type}')
 
