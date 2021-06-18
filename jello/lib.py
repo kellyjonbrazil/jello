@@ -179,8 +179,8 @@ class Schema(JelloTheme):
                             val_type = '// (string)'
 
                         padding = '  '
-                        if len(path) + len(k) + len(val) + len(val_type) < 60:
-                            padding = ' ' * (59 - (len(path) + len(k) + len(val) + len(val_type)))
+                        if len(path) + len(k) + len(val) + len(val_type) < 70:
+                            padding = ' ' * (69 - (len(path) + len(k) + len(val) + len(val_type)))
 
                     self._schema_list.append(f'{path}.{k} = {val};{padding}{val_type}')
 
@@ -201,8 +201,8 @@ class Schema(JelloTheme):
             path = path or '.'
 
             padding = '  '
-            if len(path) + len(val) + len(val_type) < 60:
-                padding = ' ' * (60 - (len(path) + len(val) + len(val_type)))
+            if len(path) + len(val) + len(val_type) < 70:
+                padding = ' ' * (70 - (len(path) + len(val) + len(val_type)))
 
             self._schema_list.append(f'{path} = {val};{padding}{val_type}')
 
