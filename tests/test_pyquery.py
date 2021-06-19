@@ -17,12 +17,11 @@ class MyTests(unittest.TestCase):
         opts.lines = None
         opts.mono = None
         opts.schema = None
+        opts.types = None
         opts.keyname_color = None
         opts.keyword_color = None
         opts.number_color = None
         opts.string_color = None
-        opts.arrayid_color = None
-        opts.arraybracket_color = None
 
         # create samples
         self.dict_sample = {
@@ -119,7 +118,7 @@ class MyTests(unittest.TestCase):
         """
         Test _.foo[99] (IndexError)
         """
-        self.data_in = [1,2,3]
+        self.data_in = [1, 2, 3]
         self.query = '_[9]'
         self.assertRaises(IndexError, jello.cli.pyquery, self.data_in, self.query)
 
@@ -127,7 +126,7 @@ class MyTests(unittest.TestCase):
         """
         Test % (SyntaxError)
         """
-        self.data_in = [1,2,3]
+        self.data_in = [1, 2, 3]
         self.query = '%'
         self.assertRaises(SyntaxError, jello.cli.pyquery, self.data_in, self.query)
 
@@ -143,7 +142,7 @@ class MyTests(unittest.TestCase):
         """
         Test _.items() on list (AttributeError)
         """
-        self.data_in = [1,2,3]
+        self.data_in = [1, 2, 3]
         self.query = '_.items()'
         self.assertRaises(AttributeError, jello.cli.pyquery, self.data_in, self.query)
 
@@ -154,6 +153,14 @@ class MyTests(unittest.TestCase):
         self.data_in = {"foo": "bar"}
         self.query = 'variable'
         self.assertRaises(NameError, jello.cli.pyquery, self.data_in, self.query)
+
+    def test_ValueError(self):
+        """
+        Test _.get (ValueError)
+        """
+        self.data_in = {"foo": "bar"}
+        self.query = '_.get'
+        self.assertRaises(ValueError, jello.cli.pyquery, self.data_in, self.query)
 
 
 if __name__ == '__main__':

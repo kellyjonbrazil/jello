@@ -1,4 +1,4 @@
-.TH jello 1 2021-06-10 1.3.6 "Jello JSON Filter"
+.TH jello 1 2021-06-15 1.4.0 "Jello JSON Filter"
 .SH NAME
 Jello \- Filter JSON and JSON Lines data with Python syntax
 .SH SYNOPSIS
@@ -66,6 +66,8 @@ $ cat data.json | jello \[aq]_[\[dq]foo\[dq]]\[aq]
 .IP
 \fB-s\fP print the JSON schema in grep-able format
 .IP
+\fB-t\fP print type annotations in schema view
+.IP
 \fB-h\fP help
 .IP
 \fB-v\fP version info
@@ -109,17 +111,17 @@ $ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -l 
 
 .fi
 .PP
-Create JSON Lines by combining the \fB-c\fP and \fB-l\fP options:
+The \fB-l\fP option also allows you to create JSON Lines:
 .IP
 .nf
 
-$ echo \[aq][{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]},{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}]\[aq] | jello -cl
+$ echo \[aq][{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]},{\[dq]fiz\[dq]:\[dq]boo\[dq],\[dq]buz\[dq]:[4,5,6]}]\[aq] | jello -l
 {\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}
-{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}
+{\[dq]fiz\[dq]:\[dq]boo\[dq],\[dq]buz\[dq]:[4,5,6]}
 
 .fi
 .PP
-You can also print a grep-able schema by using the \fB-s\fP option:
+You can print a grep-able schema by using the \fB-s\fP option:
 .IP
 .nf
 
@@ -133,7 +135,7 @@ $ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -s
 .SS Assigning Results to a Bash Array
 .PP
 Use the \fB-l\fP option to print JSON array output in a manner suitable to be assigned to a bash array.
-The \fB-r\fP option can be used to remove quotation marks around strings. If you want null values to be printed as null, use the \fB-n\fP option, otherwise they are blank lines.
+The \fB-r\fP option can be used to remove quotation marks around strings. If you want null values to be printed as null, use the \fB-n\fP option, otherwise they are printed as blank lines.
 .PP
 Bash variable:
 .IP
@@ -320,28 +322,29 @@ Linux, unix, macOS: \fB\[ti]/\fP
 Windows: \fB%appdata%/\fP
 .SS Setting Options
 .PP
-To set jello options in the \fB.jelloconf.py\fP file, add any of the following and set to \fBTrue\fP or \fBFalse\fP:
+To set jello options in the \fB.jelloconf.py\fP file, import the \fBjello.lib.opts\fP class, add any of the following and set to \fBTrue\fP or \fBFalse\fP:
 .IP
 .nf
-mono = True            # -m option
-compact = True         # -c option
-lines = True           # -l option
-raw = True             # -r option
-nulls = True           # -n option
-schema = True          # -s option
+from jello.lib import opts
+opts.mono = True            # -m option
+opts.compact = True         # -c option
+opts.lines = True           # -l option
+opts.raw = True             # -r option
+opts.nulls = True           # -n option
+opts.schema = True          # -s option
+opts.types = True           # -t option
 .fi
 .SS Setting Colors
 .PP
-You can customize the colors by setting the following variables to one of the following string values: \fBblack\fP, \fBred\fP, \fBgreen\fP, \fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP, \fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP, \fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP, \fBbrightmagenta\fP, \fBbrightcyan\fP, or \fBwhite\fP.
+You can customize the colors by importing the \fBjello.lib.opts\fP class and setting the following variables to one of the following string values: \fBblack\fP, \fBred\fP, \fBgreen\fP, \fByellow\fP, \fBblue\fP, \fBmagenta\fP, \fBcyan\fP, \fBgray\fP, \fBbrightblack\fP, \fBbrightred\fP, \fBbrightgreen\fP, \fBbrightyellow\fP, \fBbrightblue\fP, \fBbrightmagenta\fP, \fBbrightcyan\fP, or \fBwhite\fP.
 .IP
 .nf
 \f[C]
-keyname_color = \[aq]blue\[aq]            # Key names
-keyword_color = \[aq]brightblack\[aq]     # true, false, null
-number_color = \[aq]magenta\[aq]          # integers, floats
-string_color = \[aq]green\[aq]            # strings
-arrayid_color = \[aq]red\[aq]             # array IDs in Schema view
-arraybracket_color = \[aq]magenta\[aq]    # array brackets in Schema view
+from jello.lib import opts
+opts.keyname_color = \[aq]blue\[aq]            # Key names
+opts.keyword_color = \[aq]brightblack\[aq]     # true, false, null
+opts.number_color = \[aq]magenta\[aq]          # integers, floats
+opts.string_color = \[aq]green\[aq]            # strings
 \f[R]
 .fi
 .RS
@@ -398,11 +401,11 @@ $ jc -a | jello -i \[aq]g(\[dq]parsers.6.compatible\[dq])\[aq]
 In addition to setting custom colors in the \fB.jelloconf.py\fP intialization file, you can also set them via the \fBJELLO_COLORS\fP environment variable. Any colors set in the environment variable will take precedence over any
 colors set in the initialization file.
 .PP
-The \fBJELLO_COLORS\fP environment variable takes six comma separated string values in the following format:
+The \fBJELLO_COLORS\fP environment variable takes four comma separated string values in the following format:
 .IP
 .nf
 \f[C]
-JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>,<arrayid_color>,<arraybracket_color>
+JELLO_COLORS=<keyname_color>,<keyword_color>,<number_color>,<string_color>
 \f[R]
 .fi
 .PP
@@ -417,7 +420,7 @@ For example, to set to the default colors:
 .IP
 .nf
 \f[C]
-JELLO_COLORS=blue,brightblack,magenta,green,red,magenta
+JELLO_COLORS=blue,brightblack,magenta,green
 \f[R]
 .fi
 .PP
@@ -425,7 +428,7 @@ or
 .IP
 .nf
 \f[C]
-JELLO_COLORS=default,default,default,default,default,default
+JELLO_COLORS=default,default,default,default
 \f[R]
 .fi
 

@@ -26,7 +26,6 @@ except ImportError:
     from collections import MutableMapping, Iterable
 from json import dumps
 from pprint import pprint
-from sys import version_info
 from inspect import ismethod
 
 

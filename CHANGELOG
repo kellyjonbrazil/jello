@@ -1,5 +1,12 @@
 jello changelog
 
+20210614 v1.4.0
+- Add type annotation option for Schema view
+- Enhance error handling when a dict method is accessed (e.g. .get)
+- Enhance exception error messages
+- Pygments library dependency is now optional
+- Code refactor to split cli from lib
+
 20210609 v1.3.6
 - Documentation fixes for packages and binaries hosting
 
