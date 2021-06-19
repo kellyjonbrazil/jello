@@ -149,6 +149,7 @@ Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/maste
 ### Printing the Grep-able Schema
 ```bash
 jc -a | jello -s
+
 .name = "jc";
 .version = "1.15.5";
 .description = "JSON CLI output utility";
@@ -174,6 +175,7 @@ jc -a | jello -s
 ### Printing the Grep-able Schema with type annotations (useful for grepping types)
 ```bash
 jc -a | jello -st
+
 .name = "jc";                                                       //  (string)
 .version = "1.15.5";                                                //  (string)
 .description = "JSON CLI output utility";                           //  (string)
