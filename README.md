@@ -149,24 +149,51 @@ Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/maste
 ### Printing the Grep-able Schema
 ```bash
 jc -a | jello -s
-
 .name = "jc";
-.version = "1.10.2";
-.description = "jc cli output JSON conversion tool";
+.version = "1.15.5";
+.description = "JSON CLI output utility";
 .author = "Kelly Brazil";
 .author_email = "kellyjonbrazil@gmail.com";
-.parser_count = 50;
-.parsers[0].name = "airport";
-.parsers[0].argument = "--airport";
-.parsers[0].version = "1.0";
-.parsers[0].description = "airport -I command parser";
+.website = "https://github.com/kellyjonbrazil/jc";
+.copyright = "© 2019-2021 Kelly Brazil";
+.license = "MIT License";
+.parser_count = 73;
+.parsers[0].name = "acpi";
+.parsers[0].argument = "--acpi";
+.parsers[0].version = "1.2";
+.parsers[0].description = "`acpi` command parser";
 .parsers[0].author = "Kelly Brazil";
 .parsers[0].author_email = "kellyjonbrazil@gmail.com";
-.parsers[0].compatible[0] = "darwin";
-.parsers[0].magic_commands[0] = "airport -I";
-.parsers[1].name = "airport_s";
-.parsers[1].argument = "--airport-s";
-.parsers[1].version = "1.0";
+.parsers[0].compatible[0] = "linux";
+.parsers[0].magic_commands[0] = "acpi";
+.parsers[1].name = "airport";
+.parsers[1].argument = "--airport";
+.parsers[1].version = "1.3";
+...
+```
+### Printing the Grep-able Schema with type annotations (useful for grepping types)
+```bash
+jc -a | jello -st
+.name = "jc";                                                       //  (string)
+.version = "1.15.5";                                                //  (string)
+.description = "JSON CLI output utility";                           //  (string)
+.author = "Kelly Brazil";                                           //  (string)
+.author_email = "kellyjonbrazil@gmail.com";                         //  (string)
+.website = "https://github.com/kellyjonbrazil/jc";                  //  (string)
+.copyright = "© 2019-2021 Kelly Brazil";                            //  (string)
+.license = "MIT License";                                           //  (string)
+.parser_count = 73;                                                 //  (number)
+.parsers[0].name = "acpi";                                          //  (string)
+.parsers[0].argument = "--acpi";                                    //  (string)
+.parsers[0].version = "1.2";                                        //  (string)
+.parsers[0].description = "`acpi` command parser";                  //  (string)
+.parsers[0].author = "Kelly Brazil";                                //  (string)
+.parsers[0].author_email = "kellyjonbrazil@gmail.com";              //  (string)
+.parsers[0].compatible[0] = "linux";                                //  (string)
+.parsers[0].magic_commands[0] = "acpi";                             //  (string)
+.parsers[1].name = "airport";                                       //  (string)
+.parsers[1].argument = "--airport";                                 //  (string)
+.parsers[1].version = "1.3";                                        //  (string)
 ...
 ```
 ### Lambda Functions and Math
