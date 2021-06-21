@@ -350,9 +350,9 @@ def pyquery(data, query):
     i_block = ast.parse(jelloconf, mode='exec')
     exec(compile(i_block, '<string>', mode='exec'))
 
-    for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema]:
+    for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema, opts.types]:
         if not isinstance(option, bool) and option is not None:
-            opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = False
+            opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = opts.types = False
             warn_options = True
 
     for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color, opts.string_color]:
