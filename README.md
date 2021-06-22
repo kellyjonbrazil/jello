@@ -27,6 +27,12 @@ pip3 install jello
 ```
 
 ### Packages and Binaries
+
+| OS                    | Command                                                                       | 
+|-----------------------|-------------------------------------------------------------------------------|
+| Arch linux            | `pacman -S jello`                                                             |
+| MacOS                 | `brew install jello`                                                          |
+
 See the [Jello Packaging](https://kellyjonbrazil.github.io/jello-packaging/) site for MSI packages and binaries.
 
 ### Usage
