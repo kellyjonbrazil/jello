@@ -1,5 +1,8 @@
 jello changelog
 
+20210622 v1.4.2
+- Add MANIFEST.in file to project root to add man page to source
+
 20210621 v1.4.1
 - Add validation for type annotation option in initialization file
 
