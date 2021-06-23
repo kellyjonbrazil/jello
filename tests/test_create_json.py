@@ -2,6 +2,7 @@
 
 import unittest
 from collections import OrderedDict
+import pygments
 from jello.lib import opts, Json
 
 
@@ -440,6 +441,8 @@ class MyTests(unittest.TestCase):
         opts.lines = True
         self.assertEqual(self.json_out.create_json(self.data_in), self.expected)
 
+    # only run this test if using pygments 2.9.0
+    @unittest.skipIf(pygments.__version__ != '2.9.0', "Skip if Pygments 2.9.0 is not installed")
     def test_dict_html(self):
         """
         Test self.dict_sample html output
