@@ -2,6 +2,7 @@ jello changelog
 
 20210623 v1.4.3 (in progress)
 - Update html formatting tests to only run if Pygments v2.9.0 is installed
+- Fix typo in man page
 
 20210622 v1.4.2
 - Add MANIFEST.in file to project root to add man page to source
