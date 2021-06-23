@@ -3224,7 +3224,7 @@ user_ids = set()
 result = []
 for tweet in _:
     user_ids.add(tweet["user"]["id"])
-for user in user_ids:
+for user in sorted(user_ids):
     user_profile = {}
     tweet_ids = []
     for tweet in _:
@@ -3273,7 +3273,7 @@ user_ids = set()
 result = []
 for tweet in _:
     user_ids.add(tweet["user"]["id"])
-for user in user_ids:
+for user in sorted(user_ids):
     user_profile = {}
     tweet_ids = []
     for tweet in _:
@@ -3322,7 +3322,7 @@ user_ids = set()
 result = []
 for tweet in _:
   user_ids.add(tweet.user.id)
-for user in user_ids:
+for user in sorted(user_ids):
   user_profile = {}
   tweet_ids = []
   for tweet in _:
