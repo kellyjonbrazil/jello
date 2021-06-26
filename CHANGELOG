@@ -1,5 +1,9 @@
 jello changelog
 
+20210626 v1.4.4
+- Rename internal variables so they don't collide with user defined names
+- Clean up user runtime environment of unused varialbles
+
 20210623 v1.4.3
 - Update html formatting tests to only run if Pygments v2.9.0 is installed
 - Fix typo in man page
