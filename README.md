@@ -43,8 +43,7 @@ cat data.json | jello [OPTIONS] [QUERY]
 ``` 
 `QUERY` is optional and can be most any valid python code. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. If `QUERY` is omitted then the original JSON input will simply be pretty printed. You can use dot notation or traditional python bracket notation to access key names.
 
-> Note: Reserved key names that cannot be accessed using dot notation can be accessed via standard python dictionary notation. (e.g. _.foo["get"] instead of _.foo.get)
-
+> Note: Reserved key names that cannot be accessed using dot notation can be accessed via standard python dictionary notation. (e.g. `_.foo["get"]` instead of `_.foo.get`)
 
 A simple query:
 ```bash
