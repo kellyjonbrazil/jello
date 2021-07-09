@@ -1,9 +1,9 @@
 ![Tests](https://github.com/kellyjonbrazil/jello/workflows/Tests/badge.svg?branch=master)
 ![Pypi](https://img.shields.io/pypi/v/jello.svg)
 
-> Try the new `jello` [web demo](https://jello-web-demo.herokuapp.com/)!
-
-> `jello` now supports dot notation!
+>Built on `jello`:
+>- [Jello Explorer](https://github.com/kellyjonbrazil/jellex), the interactive TUI app built on `jello` 
+>- `jello` [web demo](https://jello-web-demo.herokuapp.com/)
 
 # jello
 Filter JSON and JSON Lines data with Python syntax
