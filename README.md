@@ -2,7 +2,7 @@
 ![Pypi](https://img.shields.io/pypi/v/jello.svg)
 
 >Built on `jello`:
->- [Jello Explorer](https://github.com/kellyjonbrazil/jellex), the interactive TUI app built on `jello` 
+>- [Jello Explorer](https://github.com/kellyjonbrazil/jellex) aka `jellex` 
 >- `jello` [web demo](https://jello-web-demo.herokuapp.com/)
 
 # jello
