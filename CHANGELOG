@@ -1,7 +1,8 @@
 jello changelog
 
 202107xx v1.4.5 (in progress)
-- include CHANGELOG in source distribution
+- Unclude CHANGELOG in source distribution
+- Fix JSON load exception message to be more helpful
 
 20210626 v1.4.4
 - Rename internal variables so they don't collide with user defined names

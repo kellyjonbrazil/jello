@@ -305,9 +305,13 @@ class Json(JelloTheme):
 def load_json(data):
     try:
         json_dict = json.loads(data)
-    except Exception:
-        # if json.loads fails, try loading as json lines
-        json_dict = [json.loads(i) for i in data.splitlines()]
+    except Exception as e:
+        try:
+            # if json.loads fails, try loading as json lines
+            json_dict = [json.loads(i) for i in data.splitlines()]
+        except Exception:
+            # raise original JSON exception instead of JSON Lines exception
+            raise e
 
     return json_dict
 
