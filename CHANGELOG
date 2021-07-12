@@ -1,5 +1,8 @@
 jello changelog
 
+202107xx v1.4.5 (in progress)
+- include CHANGELOG in source distribution
+
 20210626 v1.4.4
 - Rename internal variables so they don't collide with user defined names
 - Clean up user runtime environment of unused variables
