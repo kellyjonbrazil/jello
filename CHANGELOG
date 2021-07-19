@@ -1,7 +1,14 @@
 jello changelog
 
 202107xx v1.4.5 (in progress)
-- Unclude CHANGELOG in source distribution
+- Note to Package Maintainers:
+    TLDR: `/jello/man/jello.1` is deprecated and only `/man/jello.1` should be used.
+    
+    The Man page in the PyPi source packages will be moving from `/jello/man/jello.1` to `/man/jello.1`
+    in version 1.5.0. For now the Man page will be available in both locations, but be aware that
+    the Man page at `/jello/man/jello.1` is now considered deprecated.
+- Include CHANGELOG in source distribution
+- Fix Man page location in source packages
 - Fix JSON load exception message to be more helpful
 
 20210626 v1.4.4
