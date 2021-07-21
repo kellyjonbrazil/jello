@@ -31,7 +31,7 @@ pip3 install jello
 | OS                    | Command                                                                       | 
 |-----------------------|-------------------------------------------------------------------------------|
 | Arch linux            | `pacman -S jello`                                                             |
-| MacOS                 | `brew install jello`                                                          |
+| macOS                 | `brew install jello`                                                          |
 
 > Debian and Fedora packages are currently in process. Stay tuned!
 
