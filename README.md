@@ -152,6 +152,8 @@ JELLO_COLORS=default,default,default,default
 
 Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md) information.
 
+> To accelerate filter development and testing, try `[jellex]`(https://github.com/kellyjonbrazil/jellex). `jellex` is an interactive front-end TUI built on `jello` that allows you to see your filter results in real-time along with any errors.
+
 ## Examples:
 ### Printing the Grep-able Schema
 ```bash
