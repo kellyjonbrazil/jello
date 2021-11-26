@@ -150,7 +150,7 @@ class Schema(JelloTheme):
 
         elif isinstance(src, list):
             for i, item in enumerate(src):
-                self._schema_gen(item, path=f'{path}.{src}[{i}]')
+                self._schema_gen(item, path=f'{path}[{i}]')
 
         elif isinstance(src, dict):
             for k, v in src.items():
