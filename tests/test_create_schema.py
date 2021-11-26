@@ -113,6 +113,8 @@ class MyTests(unittest.TestCase):
             ]
         ]
 
+        self.deep_nest_sample = [[[[{"foo":[[[[1,2,3]]]]}]]]]
+
     # ------------ Tests ------------
 
     #
@@ -470,6 +472,26 @@ class MyTests(unittest.TestCase):
         self.expected = '. = [];\n.[0] = [];\n.[0][0] = "string\\nwith newline\\ncharacters in it";\n.[0][1] = true;\n.[0][2] = false;\n.[0][3] = null;\n.[0][4] = 42;\n.[0][5] = 3.14;\n.[1] = [];\n.[1][0] = "another string\\nwith newline\\ncharacters in it";\n.[1][1] = true;\n.[1][2] = false;\n.[1][3] = null;\n.[1][4] = 42001;\n.[1][5] = -3.14;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
+    #
+    # deep nest
+    #
+
+    def test_deep_nest(self):
+        """
+        Test self.deep_nest_sample
+        """
+        self.data_in = self.deep_nest_sample
+        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = {};\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = \x1b[35m1\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m1\x1b[39m] = \x1b[35m2\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m2\x1b[39m] = \x1b[35m3\x1b[39m;'
+        output = self.schema.create_schema(self.data_in)
+        self.assertEqual(self.schema.color_output(output), self.expected)
+
+    def test_deep_nest_m(self):
+        """
+        Test self.deep_nest_sample -m
+        """
+        self.data_in = self.deep_nest_sample
+        self.expected = '. = [];\n.[0] = [];\n.[0][0] = [];\n.[0][0][0] = [];\n.[0][0][0][0] = {};\n.[0][0][0][0].foo = [];\n.[0][0][0][0].foo[0] = [];\n.[0][0][0][0].foo[0][0] = [];\n.[0][0][0][0].foo[0][0][0] = [];\n.[0][0][0][0].foo[0][0][0][0] = 1;\n.[0][0][0][0].foo[0][0][0][1] = 2;\n.[0][0][0][0].foo[0][0][0][2] = 3;'
+        self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
 if __name__ == '__main__':
     unittest.main()
