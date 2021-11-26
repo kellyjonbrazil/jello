@@ -1,6 +1,6 @@
 jello changelog
 
-202111xx v1.4.5 (in progress)
+20211126 v1.4.5
 - Note to Package Maintainers:
     TLDR: `/jello/man/jello.1` is deprecated and only `/man/jello.1` should be used.
 
