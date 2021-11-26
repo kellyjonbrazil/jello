@@ -145,16 +145,68 @@ class Schema(JelloTheme):
         This method is recursive, and output is stored within self._schema_list (list).
         """
         if isinstance(src, list) and path == '':
+            # print empty brackets as first list definition
+            val = '[]'
+            val_type = ''
+            padding = ''
+            if opts.types:
+                val_type = '//   (array)'
+                padding = '  '
+                if len(path) + len(val) + len(val_type) < 76:
+                    padding = ' ' * (75 - (len(path) + len(val) + len(val_type)))
+
+            self._schema_list.append(f'. = {val};{padding}{val_type}')
+
             for i, item in enumerate(src):
                 self._schema_gen(item, path=f'.[{i}]')
 
         elif isinstance(src, list):
+            # print empty brackets as first list definition
+            val = '[]'
+            val_type = ''
+            padding = ''
+            if opts.types:
+                val_type = '//   (array)'
+                padding = '  '
+                if len(path) + len(val) + len(val_type) < 76:
+                    padding = ' ' * (76 - (len(path) + len(val) + len(val_type)))
+
+            self._schema_list.append(f'{path} = {val};{padding}{val_type}')
+
             for i, item in enumerate(src):
                 self._schema_gen(item, path=f'{path}[{i}]')
 
         elif isinstance(src, dict):
+            # print empty curly brackets as first object definition
+            path = path or '.'
+            val = '{}'
+            val_type = ''
+            padding = ''
+            if opts.types:
+                val_type = '//  (object)'
+                padding = '  '
+                if len(path) + len(val) + len(val_type) < 76:
+                    padding = ' ' * (76 - (len(path) + len(val) + len(val_type)))
+
+            self._schema_list.append(f'{path} = {val};{padding}{val_type}')
+            if path == '.':
+                path = ''
+
             for k, v in src.items():
                 if isinstance(v, list):
+
+                    # print empty brackets as first list definition
+                    val = '[]'
+                    val_type = ''
+                    padding = ''
+                    if opts.types:
+                        val_type = '//   (array)'
+                        padding = '  '
+                        if len(path) + len(val) + len(val_type) < 76:
+                            padding = ' ' * (76 - (len(f'{path}.{k}') + len(val) + len(val_type)))
+
+                    self._schema_list.append(f'{path}.{k} = {val};{padding}{val_type}')
+
                     for i, item in enumerate(v):
                         self._schema_gen(item, path=f'{path}.{k}[{i}]')
 
