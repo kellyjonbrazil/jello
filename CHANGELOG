@@ -11,6 +11,7 @@ jello changelog
 - Fix Man page location in source packages
 - Fix JSON load exception message to be more helpful
 - Fix schema view for nested lists
+- Add object and array initiation lines to schema view
 
 20210626 v1.4.4
 - Rename internal variables so they don't collide with user defined names
