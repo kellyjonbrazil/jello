@@ -1,4 +1,4 @@
-.TH jello 1 2021-06-15 1.4.0 "Jello JSON Filter"
+.TH jello 1 2021-11-26 1.4.5 "Jello JSON Filter"
 .SH NAME
 Jello \- Filter JSON and JSON Lines data with Python syntax
 .SH SYNOPSIS
@@ -179,6 +179,42 @@ $ jc -a | jello -s
 \&.parsers[1].name = \[dq]airport_s\[dq];
 \&.parsers[1].argument = \[dq]--airport-s\[dq];
 \&.parsers[1].version = \[dq]1.0\[dq];
+\&...
+
+.fi
+.SS Printing the Grep-able Schema with Type Annotations
+.IP
+.nf
+
+$ jc -a | jello -st
+\&. = {};                                                             //  (object)
+\&.name = "jc";                                                       //  (string)
+\&.version = "1.17.2";                                                //  (string)
+\&.description = "JSON CLI output utility";                           //  (string)
+\&.author = "Kelly Brazil";                                           //  (string)
+\&.author_email = "kellyjonbrazil@gmail.com";                         //  (string)
+\&.website = "https://github.com/kellyjonbrazil/jc";                  //  (string)
+\&.copyright = "(C) 2019-2021 Kelly Brazil";                          //  (string)
+\&.license = "MIT License";                                           //  (string)
+\&.parser_count = 80;                                                 //  (number)
+\&.parsers = [];                                                      //   (array)
+\&...
+
+.fi
+.SS Printing the JSON Structure
+.IP
+.nf
+
+$ jc dig example.com | jello -st | grep '(object)\e|(array)'
+\&. = [];                                                             //   (array)
+\&.[0] = {};                                                          //  (object)
+\&.[0].flags = [];                                                    //   (array)
+\&.[0].opt_pseudosection = {};                                        //  (object)
+\&.[0].opt_pseudosection.edns = {};                                   //  (object)
+\&.[0].opt_pseudosection.edns.flags = [];                             //   (array)
+\&.[0].question = {};                                                 //  (object)
+\&.[0].answer = [];                                                   //   (array)
+\&.[0].answer[0] = {};                                                //  (object)
 \&...
 
 .fi

@@ -158,25 +158,31 @@ Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/maste
 ## Examples:
 ### Printing the Grep-able Schema
 ```bash
-jc -a | jello -s
+$ jc -a | jello -s
 
+. = {};
 .name = "jc";
-.version = "1.15.5";
+.version = "1.17.2";
 .description = "JSON CLI output utility";
 .author = "Kelly Brazil";
 .author_email = "kellyjonbrazil@gmail.com";
 .website = "https://github.com/kellyjonbrazil/jc";
 .copyright = "© 2019-2021 Kelly Brazil";
 .license = "MIT License";
-.parser_count = 73;
+.parser_count = 80;
+.parsers = [];
+.parsers[0] = {};
 .parsers[0].name = "acpi";
 .parsers[0].argument = "--acpi";
 .parsers[0].version = "1.2";
 .parsers[0].description = "`acpi` command parser";
 .parsers[0].author = "Kelly Brazil";
 .parsers[0].author_email = "kellyjonbrazil@gmail.com";
+.parsers[0].compatible = [];
 .parsers[0].compatible[0] = "linux";
+.parsers[0].magic_commands = [];
 .parsers[0].magic_commands[0] = "acpi";
+.parsers[1] = {};
 .parsers[1].name = "airport";
 .parsers[1].argument = "--airport";
 .parsers[1].version = "1.3";
@@ -186,9 +192,12 @@ jc -a | jello -s
 ```bash
 jc dig example.com | jello -st
 
-.[0].id = 4337;                                                     //  (number)
+. = [];                                                             //   (array)
+.[0] = {};                                                          //  (object)
+.[0].id = 55316;                                                    //  (number)
 .[0].opcode = "QUERY";                                              //  (string)
 .[0].status = "NOERROR";                                            //  (string)
+.[0].flags = [];                                                    //   (array)
 .[0].flags[0] = "qr";                                               //  (string)
 .[0].flags[1] = "rd";                                               //  (string)
 .[0].flags[2] = "ra";                                               //  (string)
@@ -196,22 +205,42 @@ jc dig example.com | jello -st
 .[0].answer_num = 1;                                                //  (number)
 .[0].authority_num = 0;                                             //  (number)
 .[0].additional_num = 1;                                            //  (number)
+.[0].opt_pseudosection = {};                                        //  (object)
+.[0].opt_pseudosection.edns = {};                                   //  (object)
 .[0].opt_pseudosection.edns.version = 0;                            //  (number)
+.[0].opt_pseudosection.edns.flags = [];                             //   (array)
 .[0].opt_pseudosection.edns.udp = 4096;                             //  (number)
+.[0].question = {};                                                 //  (object)
 .[0].question.name = "example.com.";                                //  (string)
 .[0].question.class = "IN";                                         //  (string)
 .[0].question.type = "A";                                           //  (string)
+.[0].answer = [];                                                   //   (array)
+.[0].answer[0] = {};                                                //  (object)
 .[0].answer[0].name = "example.com.";                               //  (string)
 .[0].answer[0].class = "IN";                                        //  (string)
 .[0].answer[0].type = "A";                                          //  (string)
-.[0].answer[0].ttl = 42696;                                         //  (number)
+.[0].answer[0].ttl = 46950;                                         //  (number)
 .[0].answer[0].data = "93.184.216.34";                              //  (string)
-.[0].query_time = 53;                                               //  (number)
-.[0].server = "2600:1700:bab0:d40::1#53(2600:1700:bab0:d40::1)";    //  (string)
-.[0].when = "Wed Jun 23 14:10:35 PDT 2021";                         //  (string)
+.[0].query_time = 33;                                               //  (number)
+.[0].server = "192.168.1.254#53(192.168.1.254)";                    //  (string)
+.[0].when = "Fri Nov 26 13:17:38 PST 2021";                         //  (string)
 .[0].rcvd = 56;                                                     //  (number)
-.[0].when_epoch = 1624482635;                                       //  (number)
+.[0].when_epoch = 1637961458;                                       //  (number)
 .[0].when_epoch_utc = null;                                         //    (null)
+```
+### Printing the Structure of the JSON
+```bash
+jc dig example.com | jello -st | grep '(object)\|(array)'
+
+. = [];                                                             //   (array)
+.[0] = {};                                                          //  (object)
+.[0].flags = [];                                                    //   (array)
+.[0].opt_pseudosection = {};                                        //  (object)
+.[0].opt_pseudosection.edns = {};                                   //  (object)
+.[0].opt_pseudosection.edns.flags = [];                             //   (array)
+.[0].question = {};                                                 //  (object)
+.[0].answer = [];                                                   //   (array)
+.[0].answer[0] = {};                                                //  (object)
 ```
 ### Lambda Functions and Math
 ```bash
