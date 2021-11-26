@@ -473,7 +473,7 @@ class MyTests(unittest.TestCase):
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
-    # deep nest 
+    # deep nest
     #
 
     def test_deep_nest(self):
