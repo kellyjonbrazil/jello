@@ -1,5 +1,31 @@
 jello changelog
 
+20211126 v1.4.5
+- Note to Package Maintainers:
+    TLDR: `/jello/man/jello.1` is deprecated and only `/man/jello.1` should be used.
+
+    The Man page in the PyPi source packages will be moving from `/jello/man/jello.1` to `/man/jello.1`
+    in version 1.5.0. For now the Man page will be available in both locations, but be aware that
+    the Man page at `/jello/man/jello.1` is now considered deprecated.
+- Include CHANGELOG in source distribution
+- Fix Man page location in source packages
+- Fix JSON load exception message to be more helpful
+- Fix schema view for nested lists
+- Add object and array initiation lines to schema view
+- Add Python 3.10 tests
+
+20210626 v1.4.4
+- Rename internal variables so they don't collide with user defined names
+- Clean up user runtime environment of unused variables
+
+20210623 v1.4.3
+- Update html formatting tests to only run if Pygments v2.9.0 is installed
+- Fix typo in man page
+- Fix tests failing on non-AMD64 architectures due to non-sorted set
+
+20210622 v1.4.2
+- Add MANIFEST.in file to project root to add man page to source
+
 20210621 v1.4.1
 - Add validation for type annotation option in initialization file
 

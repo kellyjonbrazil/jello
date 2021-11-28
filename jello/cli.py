@@ -61,7 +61,7 @@ def print_exception(e=None, list_dict_data='', query='', response='', ex_type='R
     e_text = ''
 
     if hasattr(e, 'text'):
-        e_text = e.text.replace('\n', '')
+        e_text = str(e.text).replace('\n', '')
 
     if len(list_dict_data) > 70:
         list_dict_data = list_dict_data[:34] + ' ... ' + list_dict_data[-34:]
