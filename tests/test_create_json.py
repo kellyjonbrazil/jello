@@ -1200,8 +1200,9 @@ class MyTests(unittest.TestCase):
         Test self.list_of_lists_sample -l
         """
         self.data_in = self.list_of_lists_sample
+        self.expected = '["string\\nwith newline\\ncharacters in it",true,false,null,42,3.14]\n["another string\\nwith newline\\ncharacters in it",true,false,null,42001,-3.14]'
         opts.lines = True
-        self.assertRaises(ValueError, self.json_out.create_json, self.data_in)
+        self.assertEqual(self.json_out.create_json(self.data_in), self.expected)
 
     def test_list_list_cr(self):
         """
@@ -1218,28 +1219,31 @@ class MyTests(unittest.TestCase):
         Test self.list_of_lists_sample -cl
         """
         self.data_in = self.list_of_lists_sample
+        self.expected = '["string\\nwith newline\\ncharacters in it",true,false,null,42,3.14]\n["another string\\nwith newline\\ncharacters in it",true,false,null,42001,-3.14]'
         opts.compact = True
         opts.lines = True
-        self.assertRaises(ValueError, self.json_out.create_json, self.data_in)
+        self.assertEqual(self.json_out.create_json(self.data_in), self.expected)
 
     def test_list_list_rl(self):
         """
         Test self.list_of_lists_sample -rl
         """
         self.data_in = self.list_of_lists_sample
+        self.expected = '["string\\nwith newline\\ncharacters in it",true,false,null,42,3.14]\n["another string\\nwith newline\\ncharacters in it",true,false,null,42001,-3.14]'
         opts.raw = True
         opts.lines = True
-        self.assertRaises(ValueError, self.json_out.create_json, self.data_in)
+        self.assertEqual(self.json_out.create_json(self.data_in), self.expected)
 
     def test_list_list_crl(self):
         """
         Test self.list_of_lists_sample -crl
         """
         self.data_in = self.list_of_lists_sample
+        self.expected = '["string\\nwith newline\\ncharacters in it",true,false,null,42,3.14]\n["another string\\nwith newline\\ncharacters in it",true,false,null,42001,-3.14]'
         opts.compact = True
         opts.raw = True
         opts.lines = True
-        self.assertRaises(ValueError, self.json_out.create_json, self.data_in)
+        self.assertEqual(self.json_out.create_json(self.data_in), self.expected)
 
     def test_non_serializable(self):
         """
