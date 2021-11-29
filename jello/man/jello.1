@@ -1,4 +1,4 @@
-.TH jello 1 2021-11-26 1.4.5 "Jello JSON Filter"
+.TH jello 1 2021-11-29 1.4.6 "Jello JSON Filter"
 .SH NAME
 Jello \- Filter JSON and JSON Lines data with Python syntax
 .SH SYNOPSIS
@@ -126,10 +126,12 @@ You can print a grep-able schema by using the \fB-s\fP option:
 .nf
 
 $ echo \[aq]{\[dq]foo\[dq]:\[dq]bar\[dq],\[dq]baz\[dq]:[1,2,3]}\[aq] | jello -s
-\&.foo = \[dq]bar\[dq];
-\&.baz[0] = 1;
-\&.baz[1] = 2;
-\&.baz[2] = 3;
+\&_ = {};
+\&_.foo = \[dq]bar\[dq];
+\&_.baz = [];
+\&_.baz[0] = 1;
+\&_.baz[1] = 2;
+\&_.baz[2] = 3;
 
 .fi
 .SS Assigning Results to a Bash Array
@@ -162,23 +164,17 @@ done < <(cat data.json | jello -rl _.foo)
 .nf
 
 $ jc -a | jello -s
-\&.name = \[dq]jc\[dq];
-\&.version = \[dq]1.10.2\[dq];
-\&.description = \[dq]jc cli output JSON conversion tool\[dq];
-\&.author = \[dq]Kelly Brazil\[dq];
-\&.author_email = \[dq]kellyjonbrazil\[at]gmail.com\[dq];
-\&.parser_count = 50;
-\&.parsers[0].name = \[dq]airport\[dq];
-\&.parsers[0].argument = \[dq]--airport\[dq];
-\&.parsers[0].version = \[dq]1.0\[dq];
-\&.parsers[0].description = \[dq]airport -I command parser\[dq];
-\&.parsers[0].author = \[dq]Kelly Brazil\[dq];
-\&.parsers[0].author_email = \[dq]kellyjonbrazil\[at]gmail.com\[dq];
-\&.parsers[0].compatible[0] = \[dq]darwin\[dq];
-\&.parsers[0].magic_commands[0] = \[dq]airport -I\[dq];
-\&.parsers[1].name = \[dq]airport_s\[dq];
-\&.parsers[1].argument = \[dq]--airport-s\[dq];
-\&.parsers[1].version = \[dq]1.0\[dq];
+\&_ = {};
+\&_.name = "jc";
+\&_.version = "1.17.2";
+\&_.description = "JSON CLI output utility";
+\&_.author = "Kelly Brazil";
+\&_.author_email = "kellyjonbrazil@gmail.com";
+\&_.website = "https://github.com/kellyjonbrazil/jc";
+\&_.copyright = "(C) 2019-2021 Kelly Brazil";
+\&_.license = "MIT License";
+\&_.parser_count = 80;
+\&_.parsers = [];
 \&...
 
 .fi
@@ -187,17 +183,17 @@ $ jc -a | jello -s
 .nf
 
 $ jc -a | jello -st
-\&. = {};                                                             //  (object)
-\&.name = "jc";                                                       //  (string)
-\&.version = "1.17.2";                                                //  (string)
-\&.description = "JSON CLI output utility";                           //  (string)
-\&.author = "Kelly Brazil";                                           //  (string)
-\&.author_email = "kellyjonbrazil@gmail.com";                         //  (string)
-\&.website = "https://github.com/kellyjonbrazil/jc";                  //  (string)
-\&.copyright = "(C) 2019-2021 Kelly Brazil";                          //  (string)
-\&.license = "MIT License";                                           //  (string)
-\&.parser_count = 80;                                                 //  (number)
-\&.parsers = [];                                                      //   (array)
+\&_ = {};                                               //  (object)
+\&_.name = "jc";                                        //  (string)
+\&_.version = "1.17.2";                                 //  (string)
+\&_.description = "JSON CLI output utility";            //  (string)
+\&_.author = "Kelly Brazil";                            //  (string)
+\&_.author_email = "kellyjonbrazil@gmail.com";          //  (string)
+\&_.website = "https://github.com/kellyjonbrazil/jc";   //  (string)
+\&_.copyright = "(C) 2019-2021 Kelly Brazil";           //  (string)
+\&_.license = "MIT License";                            //  (string)
+\&_.parser_count = 80;                                  //  (number)
+\&_.parsers = [];                                       //   (array)
 \&...
 
 .fi
@@ -206,15 +202,15 @@ $ jc -a | jello -st
 .nf
 
 $ jc dig example.com | jello -st | grep '(object)\e|(array)'
-\&. = [];                                                             //   (array)
-\&.[0] = {};                                                          //  (object)
-\&.[0].flags = [];                                                    //   (array)
-\&.[0].opt_pseudosection = {};                                        //  (object)
-\&.[0].opt_pseudosection.edns = {};                                   //  (object)
-\&.[0].opt_pseudosection.edns.flags = [];                             //   (array)
-\&.[0].question = {};                                                 //  (object)
-\&.[0].answer = [];                                                   //   (array)
-\&.[0].answer[0] = {};                                                //  (object)
+\&_ = [];                                               //   (array)
+\&_[0] = {};                                            //  (object)
+\&_[0].flags = [];                                      //   (array)
+\&_[0].opt_pseudosection = {};                          //  (object)
+\&_[0].opt_pseudosection.edns = {};                     //  (object)
+\&_[0].opt_pseudosection.edns.flags = [];               //   (array)
+\&_[0].question = {};                                   //  (object)
+\&_[0].answer = [];                                     //   (array)
+\&_[0].answer[0] = {};                                  //  (object)
 \&...
 
 .fi
