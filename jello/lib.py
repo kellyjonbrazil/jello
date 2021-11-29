@@ -276,17 +276,7 @@ class Json(JelloTheme):
             if not opts.lines:
                 return json.dumps(data, separators=separators, indent=indent, ensure_ascii=False)
 
-            # check if this list includes lists
-            list_includes_list = False
-            for item in data:
-                if isinstance(item, list):
-                    list_includes_list = True
-                    break
-
-            if opts.lines and list_includes_list:
-                raise ValueError('Cannot print list of lists as lines. Try normal JSON output.')
-
-            # print lines for a flat list
+            # print lines
             else:
                 flat_list = ''
                 for entry in data:
@@ -296,7 +286,7 @@ class Json(JelloTheme):
                         else:
                             flat_list += '\n'
 
-                    elif isinstance(entry, (dict, bool, int, float)):
+                    elif isinstance(entry, (dict, list, bool, int, float)):
                         flat_list += json.dumps(entry, separators=separators, ensure_ascii=False) + '\n'
 
                     elif isinstance(entry, str):
