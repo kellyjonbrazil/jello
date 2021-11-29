@@ -41,7 +41,7 @@ See the [Jello Packaging](https://kellyjonbrazil.github.io/jello-packaging/) sit
 ### Usage
 ```
 cat data.json | jello [OPTIONS] [QUERY]
-``` 
+```
 `QUERY` is optional and can be most any valid python code. `_` is the sanitized JSON from STDIN presented as a python dict or list of dicts. If `QUERY` is omitted then the original JSON input will simply be pretty printed. You can use dot notation or traditional python bracket notation to access key names.
 
 > Note: Reserved key names that cannot be accessed using dot notation can be accessed via standard python dictionary notation. (e.g. `_.foo["get"]` instead of `_.foo.get`)
@@ -110,10 +110,12 @@ You can print a grep-able schema by using the `-s` option:
 ```bash
 echo '{"foo":"bar","baz":[1,2,3]}' | jello -s
 
-.foo = "bar";
-.baz[0] = 1;
-.baz[1] = 2;
-.baz[2] = 3;
+_ = {};
+_.foo = "bar";
+_.baz = [];
+_.baz[0] = 1;
+_.baz[1] = 2;
+_.baz[2] = 3;
 ```
 
 #### Assigning Results to a Bash Array
@@ -160,87 +162,87 @@ Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/maste
 ```bash
 $ jc -a | jello -s
 
-. = {};
-.name = "jc";
-.version = "1.17.2";
-.description = "JSON CLI output utility";
-.author = "Kelly Brazil";
-.author_email = "kellyjonbrazil@gmail.com";
-.website = "https://github.com/kellyjonbrazil/jc";
-.copyright = "© 2019-2021 Kelly Brazil";
-.license = "MIT License";
-.parser_count = 80;
-.parsers = [];
-.parsers[0] = {};
-.parsers[0].name = "acpi";
-.parsers[0].argument = "--acpi";
-.parsers[0].version = "1.2";
-.parsers[0].description = "`acpi` command parser";
-.parsers[0].author = "Kelly Brazil";
-.parsers[0].author_email = "kellyjonbrazil@gmail.com";
-.parsers[0].compatible = [];
-.parsers[0].compatible[0] = "linux";
-.parsers[0].magic_commands = [];
-.parsers[0].magic_commands[0] = "acpi";
-.parsers[1] = {};
-.parsers[1].name = "airport";
-.parsers[1].argument = "--airport";
-.parsers[1].version = "1.3";
+_ = {};
+_.name = "jc";
+_.version = "1.17.2";
+_.description = "JSON CLI output utility";
+_.author = "Kelly Brazil";
+_.author_email = "kellyjonbrazil@gmail.com";
+_.website = "https://github.com/kellyjonbrazil/jc";
+_.copyright = "© 2019-2021 Kelly Brazil";
+_.license = "MIT License";
+_.parser_count = 80;
+_.parsers = [];
+_.parsers[0] = {};
+_.parsers[0].name = "acpi";
+_.parsers[0].argument = "--acpi";
+_.parsers[0].version = "1.2";
+_.parsers[0].description = "`acpi` command parser";
+_.parsers[0].author = "Kelly Brazil";
+_.parsers[0].author_email = "kellyjonbrazil@gmail.com";
+_.parsers[0].compatible = [];
+_.parsers[0].compatible[0] = "linux";
+_.parsers[0].magic_commands = [];
+_.parsers[0].magic_commands[0] = "acpi";
+_.parsers[1] = {};
+_.parsers[1].name = "airport";
+_.parsers[1].argument = "--airport";
+_.parsers[1].version = "1.3";
 ...
 ```
 ### Printing the Grep-able Schema with type annotations (useful for grepping types)
 ```bash
 jc dig example.com | jello -st
 
-. = [];                                                             //   (array)
-.[0] = {};                                                          //  (object)
-.[0].id = 55316;                                                    //  (number)
-.[0].opcode = "QUERY";                                              //  (string)
-.[0].status = "NOERROR";                                            //  (string)
-.[0].flags = [];                                                    //   (array)
-.[0].flags[0] = "qr";                                               //  (string)
-.[0].flags[1] = "rd";                                               //  (string)
-.[0].flags[2] = "ra";                                               //  (string)
-.[0].query_num = 1;                                                 //  (number)
-.[0].answer_num = 1;                                                //  (number)
-.[0].authority_num = 0;                                             //  (number)
-.[0].additional_num = 1;                                            //  (number)
-.[0].opt_pseudosection = {};                                        //  (object)
-.[0].opt_pseudosection.edns = {};                                   //  (object)
-.[0].opt_pseudosection.edns.version = 0;                            //  (number)
-.[0].opt_pseudosection.edns.flags = [];                             //   (array)
-.[0].opt_pseudosection.edns.udp = 4096;                             //  (number)
-.[0].question = {};                                                 //  (object)
-.[0].question.name = "example.com.";                                //  (string)
-.[0].question.class = "IN";                                         //  (string)
-.[0].question.type = "A";                                           //  (string)
-.[0].answer = [];                                                   //   (array)
-.[0].answer[0] = {};                                                //  (object)
-.[0].answer[0].name = "example.com.";                               //  (string)
-.[0].answer[0].class = "IN";                                        //  (string)
-.[0].answer[0].type = "A";                                          //  (string)
-.[0].answer[0].ttl = 46950;                                         //  (number)
-.[0].answer[0].data = "93.184.216.34";                              //  (string)
-.[0].query_time = 33;                                               //  (number)
-.[0].server = "192.168.1.254#53(192.168.1.254)";                    //  (string)
-.[0].when = "Fri Nov 26 13:17:38 PST 2021";                         //  (string)
-.[0].rcvd = 56;                                                     //  (number)
-.[0].when_epoch = 1637961458;                                       //  (number)
-.[0].when_epoch_utc = null;                                         //    (null)
+_ = [];                                                             //   (array)
+_[0] = {};                                                          //  (object)
+_[0].id = 23819;                                                    //  (number)
+_[0].opcode = "QUERY";                                              //  (string)
+_[0].status = "NOERROR";                                            //  (string)
+_[0].flags = [];                                                    //   (array)
+_[0].flags[0] = "qr";                                               //  (string)
+_[0].flags[1] = "rd";                                               //  (string)
+_[0].flags[2] = "ra";                                               //  (string)
+_[0].query_num = 1;                                                 //  (number)
+_[0].answer_num = 1;                                                //  (number)
+_[0].authority_num = 0;                                             //  (number)
+_[0].additional_num = 1;                                            //  (number)
+_[0].opt_pseudosection = {};                                        //  (object)
+_[0].opt_pseudosection.edns = {};                                   //  (object)
+_[0].opt_pseudosection.edns.version = 0;                            //  (number)
+_[0].opt_pseudosection.edns.flags = [];                             //   (array)
+_[0].opt_pseudosection.edns.udp = 4096;                             //  (number)
+_[0].question = {};                                                 //  (object)
+_[0].question.name = "example.com.";                                //  (string)
+_[0].question.class = "IN";                                         //  (string)
+_[0].question.type = "A";                                           //  (string)
+_[0].answer = [];                                                   //   (array)
+_[0].answer[0] = {};                                                //  (object)
+_[0].answer[0].name = "example.com.";                               //  (string)
+_[0].answer[0].class = "IN";                                        //  (string)
+_[0].answer[0].type = "A";                                          //  (string)
+_[0].answer[0].ttl = 48358;                                         //  (number)
+_[0].answer[0].data = "93.184.216.34";                              //  (string)
+_[0].query_time = 46;                                               //  (number)
+_[0].server = "2600:1700:bab0:d40::1#53(2600:1700:bab0:d40::1)";    //  (string)
+_[0].when = "Mon Nov 29 09:41:11 PST 2021";                         //  (string)
+_[0].rcvd = 56;                                                     //  (number)
+_[0].when_epoch = 1638207671;                                       //  (number)
+_[0].when_epoch_utc = null;                                         //    (null)
 ```
 ### Printing the Structure of the JSON
 ```bash
 jc dig example.com | jello -st | grep '(object)\|(array)'
 
-. = [];                                                             //   (array)
-.[0] = {};                                                          //  (object)
-.[0].flags = [];                                                    //   (array)
-.[0].opt_pseudosection = {};                                        //  (object)
-.[0].opt_pseudosection.edns = {};                                   //  (object)
-.[0].opt_pseudosection.edns.flags = [];                             //   (array)
-.[0].question = {};                                                 //  (object)
-.[0].answer = [];                                                   //   (array)
-.[0].answer[0] = {};                                                //  (object)
+_ = [];                                                             //   (array)
+_[0] = {};                                                          //  (object)
+_[0].flags = [];                                                    //   (array)
+_[0].opt_pseudosection = {};                                        //  (object)
+_[0].opt_pseudosection.edns = {};                                   //  (object)
+_[0].opt_pseudosection.edns.flags = [];                             //   (array)
+_[0].question = {};                                                 //  (object)
+_[0].answer = [];                                                   //   (array)
+_[0].answer[0] = {};                                                //  (object)
 ```
 ### Lambda Functions and Math
 ```bash
