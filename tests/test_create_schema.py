@@ -126,7 +126,7 @@ class MyTests(unittest.TestCase):
         Test True
         """
         self.data_in = True
-        self.expected = '. = \x1b[90mtrue\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = \x1b[90mtrue\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -135,7 +135,7 @@ class MyTests(unittest.TestCase):
         Test True -m
         """
         self.data_in = True
-        self.expected = '. = true;'
+        self.expected = '_ = true;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -147,7 +147,7 @@ class MyTests(unittest.TestCase):
         Test False
         """
         self.data_in = False
-        self.expected = '. = \x1b[90mfalse\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = \x1b[90mfalse\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -156,7 +156,7 @@ class MyTests(unittest.TestCase):
         Test False -m
         """
         self.data_in = False
-        self.expected = '. = false;'
+        self.expected = '_ = false;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -168,7 +168,7 @@ class MyTests(unittest.TestCase):
         Test None
         """
         self.data_in = None
-        self.expected = '. = \x1b[90mnull\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = \x1b[90mnull\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -177,7 +177,7 @@ class MyTests(unittest.TestCase):
         Test None -m
         """
         self.data_in = None
-        self.expected = '. = null;'
+        self.expected = '_ = null;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -189,7 +189,7 @@ class MyTests(unittest.TestCase):
         Test int
         """
         self.data_in = 42
-        self.expected = '. = \x1b[35m42\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = \x1b[35m42\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -198,7 +198,7 @@ class MyTests(unittest.TestCase):
         Test int -m
         """
         self.data_in = 42
-        self.expected = '. = 42;'
+        self.expected = '_ = 42;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -210,7 +210,7 @@ class MyTests(unittest.TestCase):
         Test float
         """
         self.data_in = 3.14
-        self.expected = '. = \x1b[35m3.14\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = \x1b[35m3.14\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -219,7 +219,7 @@ class MyTests(unittest.TestCase):
         Test float -m
         """
         self.data_in = 3.14
-        self.expected = '. = 3.14;'
+        self.expected = '_ = 3.14;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -231,7 +231,7 @@ class MyTests(unittest.TestCase):
         Test string
         """
         self.data_in = '"string with\\nnewline char"'
-        self.expected = '. = \x1b[32m"\\"string with\\\\nnewline char\\""\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = \x1b[32m"\\"string with\\\\nnewline char\\""\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -240,7 +240,7 @@ class MyTests(unittest.TestCase):
         Test string -m
         """
         self.data_in = '"string with\\nnewline char"'
-        self.expected = '. = "\\"string with\\\\nnewline char\\"";'
+        self.expected = '_ = "\\"string with\\\\nnewline char\\"";'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -252,7 +252,7 @@ class MyTests(unittest.TestCase):
         Test self.dict_sample
         """
         self.data_in = self.dict_sample
-        self.expected = '. = {};\n.\x1b[34;01mstring\x1b[39;00m = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n.\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;\n.\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;\n.\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;\n.\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;\n.\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;\n.\x1b[34;01marray\x1b[39;00m = [];\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = {};\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01mstring\x1b[39;00m = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -262,7 +262,7 @@ class MyTests(unittest.TestCase):
         """
         opts.types = True
         self.data_in = self.dict_sample
-        self.expected = '. = {};                                                             //  (object)\n.\x1b[34;01mstring\x1b[39;00m = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;                 //  (string)\n.\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;                                                       // (boolean)\n.\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;                                                     // (boolean)\n.\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;                                                       //    (null)\n.\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;                                                          //  (number)\n.\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;                                                      //  (number)\n.\x1b[34;01marray\x1b[39;00m = [];                                                        //   (array)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;               //  (string)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;                                                   // (boolean)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;                                                  // (boolean)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;                                                   //    (null)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;                                                     //  (number)\n.\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;                                                   //  (number)'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = {};                                                             //  (object)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01mstring\x1b[39;00m = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;                //  (string)\n\x1b[34;01m_\x1b[39;00m.\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;                                                      // (boolean)\n\x1b[34;01m_\x1b[39;00m.\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;                                                    // (boolean)\n\x1b[34;01m_\x1b[39;00m.\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;                                                      //    (null)\n\x1b[34;01m_\x1b[39;00m.\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;                                                         //  (number)\n\x1b[34;01m_\x1b[39;00m.\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;                                                     //  (number)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m = [];                                                       //   (array)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;              //  (string)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;                                                  // (boolean)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;                                                 // (boolean)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;                                                  //    (null)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;                                                    //  (number)\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;                                                  //  (number)'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -271,7 +271,7 @@ class MyTests(unittest.TestCase):
         Test self.dict_sample -m
         """
         self.data_in = self.dict_sample
-        self.expected = '. = {};\n.string = "string\\nwith newline\\ncharacters in it";\n.true = true;\n.false = false;\n.null = null;\n.int = 42;\n.float = 3.14;\n.array = [];\n.array[0] = "string\\nwith newline\\ncharacters in it";\n.array[1] = true;\n.array[2] = false;\n.array[3] = null;\n.array[4] = 42;\n.array[5] = 3.14;'
+        self.expected = '_ = {};\n_.string = "string\\nwith newline\\ncharacters in it";\n_.true = true;\n_.false = false;\n_.null = null;\n_.int = 42;\n_.float = 3.14;\n_.array = [];\n_.array[0] = "string\\nwith newline\\ncharacters in it";\n_.array[1] = true;\n_.array[2] = false;\n_.array[3] = null;\n_.array[4] = 42;\n_.array[5] = 3.14;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     def test_dict_mt(self):
@@ -280,7 +280,7 @@ class MyTests(unittest.TestCase):
         """
         opts.types = True
         self.data_in = self.dict_sample
-        self.expected = '. = {};                                                             //  (object)\n.string = "string\\nwith newline\\ncharacters in it";                 //  (string)\n.true = true;                                                       // (boolean)\n.false = false;                                                     // (boolean)\n.null = null;                                                       //    (null)\n.int = 42;                                                          //  (number)\n.float = 3.14;                                                      //  (number)\n.array = [];                                                        //   (array)\n.array[0] = "string\\nwith newline\\ncharacters in it";               //  (string)\n.array[1] = true;                                                   // (boolean)\n.array[2] = false;                                                  // (boolean)\n.array[3] = null;                                                   //    (null)\n.array[4] = 42;                                                     //  (number)\n.array[5] = 3.14;                                                   //  (number)'
+        self.expected = '_ = {};                                                             //  (object)\n_.string = "string\\nwith newline\\ncharacters in it";                //  (string)\n_.true = true;                                                      // (boolean)\n_.false = false;                                                    // (boolean)\n_.null = null;                                                      //    (null)\n_.int = 42;                                                         //  (number)\n_.float = 3.14;                                                     //  (number)\n_.array = [];                                                       //   (array)\n_.array[0] = "string\\nwith newline\\ncharacters in it";              //  (string)\n_.array[1] = true;                                                  // (boolean)\n_.array[2] = false;                                                 // (boolean)\n_.array[3] = null;                                                  //    (null)\n_.array[4] = 42;                                                    //  (number)\n_.array[5] = 3.14;                                                  //  (number)'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -292,7 +292,7 @@ class MyTests(unittest.TestCase):
         Test [True]
         """
         self.data_in = [True]
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = \x1b[90mtrue\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[90mtrue\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -301,7 +301,7 @@ class MyTests(unittest.TestCase):
         Test [True] -m
         """
         self.data_in = [True]
-        self.expected = '. = [];\n.[0] = true;'
+        self.expected = '_ = [];\n_[0] = true;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -313,7 +313,7 @@ class MyTests(unittest.TestCase):
         Test [False]
         """
         self.data_in = [False]
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = \x1b[90mfalse\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[90mfalse\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -322,7 +322,7 @@ class MyTests(unittest.TestCase):
         Test [False] -m
         """
         self.data_in = [False]
-        self.expected = '. = [];\n.[0] = false;'
+        self.expected = '_ = [];\n_[0] = false;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -334,7 +334,7 @@ class MyTests(unittest.TestCase):
         Test [None]
         """
         self.data_in = [None]
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = \x1b[90mnull\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[90mnull\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -343,7 +343,7 @@ class MyTests(unittest.TestCase):
         Test [None] -m
         """
         self.data_in = [None]
-        self.expected = '. = [];\n.[0] = null;'
+        self.expected = '_ = [];\n_[0] = null;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -355,7 +355,7 @@ class MyTests(unittest.TestCase):
         Test [42]
         """
         self.data_in = [42]
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = \x1b[35m42\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[35m42\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -364,7 +364,7 @@ class MyTests(unittest.TestCase):
         Test [42] -m
         """
         self.data_in = [42]
-        self.expected = '. = [];\n.[0] = 42;'
+        self.expected = '_ = [];\n_[0] = 42;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -376,7 +376,7 @@ class MyTests(unittest.TestCase):
         Test [3.14]
         """
         self.data_in = [3.14]
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = \x1b[35m3.14\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[35m3.14\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -385,7 +385,7 @@ class MyTests(unittest.TestCase):
         Test [3.14] -m
         """
         self.data_in = [3.14]
-        self.expected = '. = [];\n.[0] = 3.14;'
+        self.expected = '_ = [];\n_[0] = 3.14;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -397,7 +397,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters']
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = \x1b[32m"string with spaces\\nand newline\\ncharacters"\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string with spaces\\nand newline\\ncharacters"\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -406,7 +406,7 @@ class MyTests(unittest.TestCase):
         Test ['string with spaces\nand newline\ncharacters'] -m
         """
         self.data_in = ['string with spaces\nand newline\ncharacters']
-        self.expected = '. = [];\n.[0] = "string with spaces\\nand newline\\ncharacters";'
+        self.expected = '_ = [];\n_[0] = "string with spaces\\nand newline\\ncharacters";'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -418,7 +418,7 @@ class MyTests(unittest.TestCase):
         Test self.list_sample
         """
         self.data_in = self.list_sample
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n.[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n.[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n.[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n.[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n.[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -427,7 +427,7 @@ class MyTests(unittest.TestCase):
         Test self.list_sample -m
         """
         self.data_in = self.list_sample
-        self.expected = '. = [];\n.[0] = "string\\nwith newline\\ncharacters in it";\n.[1] = true;\n.[2] = false;\n.[3] = null;\n.[4] = 42;\n.[5] = 3.14;'
+        self.expected = '_ = [];\n_[0] = "string\\nwith newline\\ncharacters in it";\n_[1] = true;\n_[2] = false;\n_[3] = null;\n_[4] = 42;\n_[5] = 3.14;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -439,7 +439,7 @@ class MyTests(unittest.TestCase):
         Test self.list_of_dicts_sample
         """
         self.data_in = self.list_of_dicts_sample
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = {};\n.[\x1b[35m0\x1b[39m].\x1b[34;01mstring\x1b[39;00m = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m = [];\n.[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n.[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;\n.[\x1b[35m1\x1b[39m] = {};\n.[\x1b[35m1\x1b[39m].\x1b[34;01mstring\x1b[39;00m = \x1b[32m"another string\\nwith newline\\ncharacters in it"\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[90mint\x1b[39m = \x1b[35m10001\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[90mfloat\x1b[39m = -\x1b[35m400.45\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m = [];\n.[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = -\x1b[35m6000034\x1b[39m;\n.[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m999999.854321\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = {};\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01mstring\x1b[39;00m = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m] = {};\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01mstring\x1b[39;00m = \x1b[32m"another string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[90mint\x1b[39m = \x1b[35m10001\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[90mfloat\x1b[39m = -\x1b[35m400.45\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = -\x1b[35m6000034\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m].\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m999999.854321\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -448,7 +448,7 @@ class MyTests(unittest.TestCase):
         Test self.list_of_dicts_sample -m
         """
         self.data_in = self.list_of_dicts_sample
-        self.expected = '. = [];\n.[0] = {};\n.[0].string = "string\\nwith newline\\ncharacters in it";\n.[0].true = true;\n.[0].false = false;\n.[0].null = null;\n.[0].int = 42;\n.[0].float = 3.14;\n.[0].array = [];\n.[0].array[0] = "string\\nwith newline\\ncharacters in it";\n.[0].array[1] = true;\n.[0].array[2] = false;\n.[0].array[3] = null;\n.[0].array[4] = 42;\n.[0].array[5] = 3.14;\n.[1] = {};\n.[1].string = "another string\\nwith newline\\ncharacters in it";\n.[1].true = true;\n.[1].false = false;\n.[1].null = null;\n.[1].int = 10001;\n.[1].float = -400.45;\n.[1].array = [];\n.[1].array[0] = "string\\nwith newline\\ncharacters in it";\n.[1].array[1] = true;\n.[1].array[2] = false;\n.[1].array[3] = null;\n.[1].array[4] = -6000034;\n.[1].array[5] = 999999.854321;'
+        self.expected = '_ = [];\n_[0] = {};\n_[0].string = "string\\nwith newline\\ncharacters in it";\n_[0].true = true;\n_[0].false = false;\n_[0].null = null;\n_[0].int = 42;\n_[0].float = 3.14;\n_[0].array = [];\n_[0].array[0] = "string\\nwith newline\\ncharacters in it";\n_[0].array[1] = true;\n_[0].array[2] = false;\n_[0].array[3] = null;\n_[0].array[4] = 42;\n_[0].array[5] = 3.14;\n_[1] = {};\n_[1].string = "another string\\nwith newline\\ncharacters in it";\n_[1].true = true;\n_[1].false = false;\n_[1].null = null;\n_[1].int = 10001;\n_[1].float = -400.45;\n_[1].array = [];\n_[1].array[0] = "string\\nwith newline\\ncharacters in it";\n_[1].array[1] = true;\n_[1].array[2] = false;\n_[1].array[3] = null;\n_[1].array[4] = -6000034;\n_[1].array[5] = 999999.854321;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -460,7 +460,7 @@ class MyTests(unittest.TestCase):
         Test self.list_of_lists_sample
         """
         self.data_in = self.list_of_lists_sample
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;\n.[\x1b[35m1\x1b[39m] = [];\n.[\x1b[35m1\x1b[39m][\x1b[35m0\x1b[39m] = \x1b[32m"another string\\nwith newline\\ncharacters in it"\x1b[39m;\n.[\x1b[35m1\x1b[39m][\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n.[\x1b[35m1\x1b[39m][\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n.[\x1b[35m1\x1b[39m][\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n.[\x1b[35m1\x1b[39m][\x1b[35m4\x1b[39m] = \x1b[35m42001\x1b[39m;\n.[\x1b[35m1\x1b[39m][\x1b[35m5\x1b[39m] = -\x1b[35m3.14\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m][\x1b[35m0\x1b[39m] = \x1b[32m"another string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m][\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m][\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m][\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m][\x1b[35m4\x1b[39m] = \x1b[35m42001\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m1\x1b[39m][\x1b[35m5\x1b[39m] = -\x1b[35m3.14\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -469,7 +469,7 @@ class MyTests(unittest.TestCase):
         Test self.list_of_lists_sample -m
         """
         self.data_in = self.list_of_lists_sample
-        self.expected = '. = [];\n.[0] = [];\n.[0][0] = "string\\nwith newline\\ncharacters in it";\n.[0][1] = true;\n.[0][2] = false;\n.[0][3] = null;\n.[0][4] = 42;\n.[0][5] = 3.14;\n.[1] = [];\n.[1][0] = "another string\\nwith newline\\ncharacters in it";\n.[1][1] = true;\n.[1][2] = false;\n.[1][3] = null;\n.[1][4] = 42001;\n.[1][5] = -3.14;'
+        self.expected = '_ = [];\n_[0] = [];\n_[0][0] = "string\\nwith newline\\ncharacters in it";\n_[0][1] = true;\n_[0][2] = false;\n_[0][3] = null;\n_[0][4] = 42;\n_[0][5] = 3.14;\n_[1] = [];\n_[1][0] = "another string\\nwith newline\\ncharacters in it";\n_[1][1] = true;\n_[1][2] = false;\n_[1][3] = null;\n_[1][4] = 42001;\n_[1][5] = -3.14;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     #
@@ -481,7 +481,7 @@ class MyTests(unittest.TestCase):
         Test self.deep_nest_sample
         """
         self.data_in = self.deep_nest_sample
-        self.expected = '. = [];\n.[\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = {};\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = \x1b[35m1\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m1\x1b[39m] = \x1b[35m2\x1b[39m;\n.[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m2\x1b[39m] = \x1b[35m3\x1b[39m;'
+        self.expected = '\x1b[34;01m_\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = {};\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = [];\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m] = \x1b[35m1\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m1\x1b[39m] = \x1b[35m2\x1b[39m;\n\x1b[34;01m_\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m].\x1b[34;01mfoo\x1b[39;00m[\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m0\x1b[39m][\x1b[35m2\x1b[39m] = \x1b[35m3\x1b[39m;'
         output = self.schema.create_schema(self.data_in)
         self.assertEqual(self.schema.color_output(output), self.expected)
 
@@ -490,7 +490,7 @@ class MyTests(unittest.TestCase):
         Test self.deep_nest_sample -m
         """
         self.data_in = self.deep_nest_sample
-        self.expected = '. = [];\n.[0] = [];\n.[0][0] = [];\n.[0][0][0] = [];\n.[0][0][0][0] = {};\n.[0][0][0][0].foo = [];\n.[0][0][0][0].foo[0] = [];\n.[0][0][0][0].foo[0][0] = [];\n.[0][0][0][0].foo[0][0][0] = [];\n.[0][0][0][0].foo[0][0][0][0] = 1;\n.[0][0][0][0].foo[0][0][0][1] = 2;\n.[0][0][0][0].foo[0][0][0][2] = 3;'
+        self.expected = '_ = [];\n_[0] = [];\n_[0][0] = [];\n_[0][0][0] = [];\n_[0][0][0][0] = {};\n_[0][0][0][0].foo = [];\n_[0][0][0][0].foo[0] = [];\n_[0][0][0][0].foo[0][0] = [];\n_[0][0][0][0].foo[0][0][0] = [];\n_[0][0][0][0].foo[0][0][0][0] = 1;\n_[0][0][0][0].foo[0][0][0][1] = 2;\n_[0][0][0][0].foo[0][0][0][2] = 3;'
         self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
 if __name__ == '__main__':
