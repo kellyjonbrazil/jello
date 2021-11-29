@@ -5,6 +5,7 @@ jello changelog
     TLDR: `/jello/man/jello.1` is deprecated and only `/man/jello.1` should be used.
     See the note at 20211126 v1.4.5
 - Change schema output to include the base name of _
+- Allow arrays to be printed as JSON Lines
 
 20211126 v1.4.5
 - Note to Package Maintainers:
