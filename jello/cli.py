@@ -130,7 +130,7 @@ def main(data=None, query='_'):
     opts.compact = opts.compact or 'c' in options
     opts.initialize = opts.initialize or 'i' in options
     opts.lines = opts.lines or 'l' in options
-    opts.mono = opts.mono or 'm' in options
+    opts.mono = opts.mono or 'm' in options or bool(os.getenv('NO_COLOR'))
     opts.nulls = opts.nulls or 'n' in options
     opts.raw = opts.raw or 'r' in options
     opts.schema = opts.schema or 's' in options
