@@ -40,10 +40,10 @@ class opts:
 class JelloTheme:
     if PYGMENTS_INSTALLED:
         theme = {
-            Name: f'bold ansiblue',
-            Keyword: f'ansibrightblack',
-            Number: f'ansimagenta',
-            String: f'ansigreen'
+            Name: 'bold ansiblue',
+            Keyword: 'ansibrightblack',
+            Number: 'ansimagenta',
+            String: 'ansigreen'
         }
 
     def set_colors(self):
