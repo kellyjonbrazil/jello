@@ -1,5 +1,9 @@
 jello changelog
 
+20211207 v1.5.0
+- Note to Package Maintainers: `/jello/man/jello.1` no longer exists. Please use `/man/jello.1`
+- Add support for the NO_COLOR environment variable to force mono
+
 20211129 v1.4.6
 - Note to Package Maintainers:
     TLDR: `/jello/man/jello.1` is deprecated and only `/man/jello.1` should be used.
