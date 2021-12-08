@@ -24,6 +24,7 @@ class MyTests(unittest.TestCase):
         opts.nulls = None
         opts.raw = None
         opts.lines = None
+        opts.force_color = None
         opts.mono = None
         opts.schema = None
         opts.types = None
