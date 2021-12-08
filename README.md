@@ -30,11 +30,11 @@ pip3 install jello
 
 | OS                    | Command                                                                       | 
 |-----------------------|-------------------------------------------------------------------------------|
-| Debian linux          | `apt-get install jello`                                                       |
+| Debian/Ubuntu linux   | `apt-get install jello`                                                       |
 | Arch linux            | `pacman -S jello`                                                             |
 | macOS                 | `brew install jello`                                                          |
 
-> Fedora package is currently in process. Stay tuned!
+> If you can help with getting `jello` packaged on Fedora, let me know!
 
 See the [Jello Packaging](https://kellyjonbrazil.github.io/jello-packaging/) site for MSI packages and binaries.
 
