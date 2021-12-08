@@ -178,6 +178,8 @@ def main(data=None, query='_'):
 
         # Create and print schema or JSON/JSON-Lines/Lines
         output = ''
+        if opts.force_color:
+            opts.mono = False
         try:
             if opts.schema:
                 schema = Schema()
@@ -191,7 +193,7 @@ def main(data=None, query='_'):
                 json_out = Json()
                 output = json_out.create_json(response)
 
-                if not opts.mono and not opts.raw and (sys.stdout.isatty() or opts.force_color):
+                if (not opts.mono and not opts.raw) and (sys.stdout.isatty() or opts.force_color):
                     json_out.set_colors()
                     output = json_out.color_output(output)
 
@@ -202,4 +204,4 @@ def main(data=None, query='_'):
 
 
 if __name__ == '__main__':
-    main()
+    pass
