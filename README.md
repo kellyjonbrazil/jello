@@ -57,6 +57,7 @@ cat data.json | jello '_["foo"]'
 
 #### Options
 - `-c` compact print JSON output instead of pretty printing
+- `-C` force color output even when using pipes (overrides `-m` and the `NO_COLOR` env variable)
 - `-i` initialize environment with a custom config file
 - `-l` lines output (suitable for bash array assignment)
 - `-m` monochrome output
@@ -153,6 +154,10 @@ or
 JELLO_COLORS=default,default,default,default
 ```
 
+### Disable Colors via Environment Variable
+You can set the [`NO_COLOR`](http://no-color.org/) environment variable to any value to disable color output in `jello`. Note that using the `-C` option to force color output will override both the `NO_COLOR` environment variable and the `-m` option.
+
+### Advanced Usage
 Here is more [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md) information.
 
 > To accelerate filter development and testing, try [`jellex`](https://github.com/kellyjonbrazil/jellex). `jellex` is an interactive front-end TUI built on `jello` that allows you to see your filter results in real-time along with any errors.

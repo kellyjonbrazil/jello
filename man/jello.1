@@ -1,4 +1,4 @@
-.TH jello 1 2021-11-29 1.4.6 "Jello JSON Filter"
+.TH jello 1 2021-11-29 1.4.7 "Jello JSON Filter"
 .SH NAME
 Jello \- Filter JSON and JSON Lines data with Python syntax
 .SH SYNOPSIS
@@ -53,6 +53,8 @@ $ cat data.json | jello \[aq]_[\[dq]foo\[dq]]\[aq]
 .SS Options
 .IP
 \fB-c\fP compact print JSON output instead of pretty printing
+.IP
+\fB-C\fP force color output even when using pipes (overrides \fB-m\fP and the \fBNO_COLOR\fP env variable)
 .IP
 \fB-i\fP initialize environment with a custom config file
 .IP
@@ -362,6 +364,7 @@ opts.mono = True            # -m option
 opts.compact = True         # -c option
 opts.lines = True           # -l option
 opts.raw = True             # -r option
+opts.force_color = True     # -C option
 opts.nulls = True           # -n option
 opts.schema = True          # -s option
 opts.types = True           # -t option
@@ -463,6 +466,10 @@ or
 JELLO_COLORS=default,default,default,default
 \f[R]
 .fi
+
+.SS Disable Colors via Environment Variable
+.PP
+You can set the \fBNO_COLOR\fP environment variable to any value to disable color output in \fBjello\fP. Note that using the \fB-C\fP option to force color output will override both the \fBNO_COLOR\fP environment variable and the \fB-m\fP option.
 
 .SH AUTHOR
 Kelly Brazil (kellyjonbrazil@gmail.com)
