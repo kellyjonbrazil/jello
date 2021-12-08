@@ -30,6 +30,7 @@ class opts:
     nulls = None
     raw = None
     lines = None
+    force_color = None
     mono = None
     schema = None
     types = None
@@ -414,9 +415,9 @@ def pyquery(_θ_data, _θ_query):
     _θ_i_block = ast.parse(_θ_jelloconf, mode='exec')
     exec(compile(_θ_i_block, '<string>', mode='exec'))
 
-    for _θ_option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema, opts.types]:
+    for _θ_option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.force_color, opts.mono, opts.schema, opts.types]:
         if not isinstance(_θ_option, bool) and _θ_option is not None:
-            opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = opts.types = False
+            opts.compact = opts.raw = opts.lines = opts.nulls = opts.force_color = opts.mono = opts.schema = opts.types = False
             _θ_warn_options = True
 
     for _θ_color_config in [opts.keyname_color, opts.keyword_color, opts.number_color, opts.string_color]:

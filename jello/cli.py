@@ -28,6 +28,7 @@ def print_help():
         Usage:  cat data.json | jello [OPTIONS] [QUERY]
 
                 -c   compact JSON output
+                -C   force color output even when using pipes (overrides -m)
                 -i   initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
                 -l   output as lines suitable for assignment to a bash array
                 -m   monochrome output
@@ -130,7 +131,8 @@ def main(data=None, query='_'):
     opts.compact = opts.compact or 'c' in options
     opts.initialize = opts.initialize or 'i' in options
     opts.lines = opts.lines or 'l' in options
-    opts.mono = opts.mono or 'm' in options or bool(os.getenv('NO_COLOR'))
+    opts.force_color = opts.force_color or 'C' in options
+    opts.mono = opts.mono or (('m' in options or bool(os.getenv('NO_COLOR'))) and not opts.force_color)
     opts.nulls = opts.nulls or 'n' in options
     opts.raw = opts.raw or 'r' in options
     opts.schema = opts.schema or 's' in options
@@ -181,7 +183,7 @@ def main(data=None, query='_'):
                 schema = Schema()
                 output = schema.create_schema(response)
 
-                if not opts.mono and sys.stdout.isatty():
+                if not opts.mono and (sys.stdout.isatty() or opts.force_color):
                     schema.set_colors()
                     output = schema.color_output(output)
 
@@ -189,7 +191,7 @@ def main(data=None, query='_'):
                 json_out = Json()
                 output = json_out.create_json(response)
 
-                if not opts.mono and not opts.raw and sys.stdout.isatty():
+                if not opts.mono and not opts.raw and (sys.stdout.isatty() or opts.force_color):
                     json_out.set_colors()
                     output = json_out.color_output(output)
 
