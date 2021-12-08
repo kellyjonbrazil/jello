@@ -3,6 +3,7 @@ jello changelog
 20211207 v1.5.0
 - Note to Package Maintainers: `/jello/man/jello.1` no longer exists. Please use `/man/jello.1`
 - Add support for the NO_COLOR environment variable to force mono
+- Refactor warning messages
 
 20211129 v1.4.6
 - Note to Package Maintainers:
