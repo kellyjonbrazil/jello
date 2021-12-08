@@ -116,7 +116,7 @@ class Schema(JelloTheme):
         self._schema_list = []
 
     def color_output(self, data):
-        if not opts.mono and PYGMENTS_INSTALLED:
+        if (not opts.mono or opts.force_color) and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
                 styles = self.theme
 
@@ -194,12 +194,9 @@ class Schema(JelloTheme):
                         self._schema_gen(item, path=f'{path}.{k}[{i}]')
 
                 elif isinstance(v, dict):
-                    if not opts.mono:
-                        k = f'{k}'
                     self._schema_gen(v, path=f'{path}.{k}')
 
                 else:
-                    k = f'{k}'
                     val = json.dumps(v, ensure_ascii=False)
                     val_type = ''
                     padding = ''
@@ -245,7 +242,7 @@ class Json(JelloTheme):
     """Inherits theme and set_colors() from JelloTheme"""
 
     def color_output(self, data):
-        if not opts.mono and PYGMENTS_INSTALLED:
+        if (not opts.mono or opts.force_color) and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
                 styles = self.theme
 
