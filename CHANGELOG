@@ -5,7 +5,6 @@ jello changelog
 - Wrap warning messages that exceed the terminal width
 - Add support for the NO_COLOR environment variable to set mono (http://no-color.org/)
 - Add -C option (opts.force_color) to force color output even when using pipes (overrides -m and NO_COLOR)
-- Refactor warning messages
 
 20211129 v1.4.6
 - Note to Package Maintainers:
