@@ -176,13 +176,12 @@ def main(data=None, query='_'):
         except Exception as e:
             print_exception(e, list_dict_data, query, ex_type='Query')
 
-        # Create and print schema or JSON/JSON-Lines/Lines
-        output = ''
-
         # reset opts.mono after pyquery since initialization in pyquery can change values
         if opts.force_color:
             opts.mono = False
 
+        # Create and print schema or JSON/JSON-Lines/Lines
+        output = ''
         try:
             if opts.schema:
                 schema = Schema()
