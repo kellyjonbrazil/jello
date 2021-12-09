@@ -132,7 +132,7 @@ def main(data=None, query='_'):
     opts.initialize = opts.initialize or 'i' in options
     opts.lines = opts.lines or 'l' in options
     opts.force_color = opts.force_color or 'C' in options
-    opts.mono = opts.mono or (('m' in options or bool(os.getenv('NO_COLOR'))) and not opts.force_color)
+    opts.mono = opts.mono or ('m' in options or bool(os.getenv('NO_COLOR')))
     opts.nulls = opts.nulls or 'n' in options
     opts.raw = opts.raw or 'r' in options
     opts.schema = opts.schema or 's' in options
@@ -178,8 +178,11 @@ def main(data=None, query='_'):
 
         # Create and print schema or JSON/JSON-Lines/Lines
         output = ''
+
+        # reset opts.mono after pyquery since initialization in pyquery can change values
         if opts.force_color:
             opts.mono = False
+
         try:
             if opts.schema:
                 schema = Schema()

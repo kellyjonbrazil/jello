@@ -116,7 +116,7 @@ class Schema(JelloTheme):
         self._schema_list = []
 
     def color_output(self, data):
-        if (not opts.mono or opts.force_color) and PYGMENTS_INSTALLED:
+        if not opts.mono and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
                 styles = self.theme
 
@@ -242,7 +242,7 @@ class Json(JelloTheme):
     """Inherits theme and set_colors() from JelloTheme"""
 
     def color_output(self, data):
-        if (not opts.mono or opts.force_color) and PYGMENTS_INSTALLED:
+        if not opts.mono and PYGMENTS_INSTALLED:
             class JelloStyle(Style):
                 styles = self.theme
 
