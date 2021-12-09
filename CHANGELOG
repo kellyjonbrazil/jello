@@ -1,5 +1,11 @@
 jello changelog
 
+20211208 v1.5.0
+- Note to Package Maintainers: `/jello/man/jello.1` no longer exists. Please use `/man/jello.1`
+- Wrap warning messages that exceed the terminal width
+- Add support for the NO_COLOR environment variable to set mono (http://no-color.org/)
+- Add -C option (opts.force_color) to force color output even when using pipes (overrides -m and NO_COLOR)
+
 20211129 v1.4.6
 - Note to Package Maintainers:
     TLDR: `/jello/man/jello.1` is deprecated and only `/man/jello.1` should be used.

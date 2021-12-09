@@ -4,6 +4,8 @@ import os
 import sys
 import ast
 import json
+import shutil
+from textwrap import TextWrapper
 from jello.dotmap import DotMap
 
 # make pygments import optional
@@ -28,6 +30,7 @@ class opts:
     nulls = None
     raw = None
     lines = None
+    force_color = None
     mono = None
     schema = None
     types = None
@@ -40,10 +43,10 @@ class opts:
 class JelloTheme:
     if PYGMENTS_INSTALLED:
         theme = {
-            Name: f'bold ansiblue',
-            Keyword: f'ansibrightblack',
-            Number: f'ansimagenta',
-            String: f'ansigreen'
+            Name: 'bold ansiblue',
+            Keyword: 'ansibrightblack',
+            Number: 'ansimagenta',
+            String: 'ansigreen'
         }
 
     def set_colors(self):
@@ -85,7 +88,7 @@ class JelloTheme:
 
         # if there is an issue with the env variable, just set all colors to default and move on
         if input_error:
-            print('jello:   Warning: could not parse JELLO_COLORS environment variable\n', file=sys.stderr)
+            warning_message(['could not parse JELLO_COLORS environment variable'])
             color_list = ['default', 'default', 'default', 'default']
 
         if PYGMENTS_INSTALLED:
@@ -191,12 +194,9 @@ class Schema(JelloTheme):
                         self._schema_gen(item, path=f'{path}.{k}[{i}]')
 
                 elif isinstance(v, dict):
-                    if not opts.mono:
-                        k = f'{k}'
                     self._schema_gen(v, path=f'{path}.{k}')
 
                 else:
-                    k = f'{k}'
                     val = json.dumps(v, ensure_ascii=False)
                     val_type = ''
                     padding = ''
@@ -338,6 +338,38 @@ def load_json(data):
     return json_dict
 
 
+def warning_message(message_lines):
+    """
+    Prints warning message for non-fatal issues. The first line is prepended with
+    'jello:  Warning - ' and subsequent lines are indented. Wraps text as needed
+    based on the terminal width.
+
+    Parameters:
+
+        message:   (list) list of string lines
+
+    Returns:
+
+        None - just prints output to STDERR
+    """
+    columns = shutil.get_terminal_size().columns
+
+    first_wrapper = TextWrapper(width=columns, subsequent_indent=' ' * 12)
+    next_wrapper = TextWrapper(width=columns, initial_indent=' ' * 8,
+                               subsequent_indent=' ' * 12)
+
+    first_line = message_lines.pop(0)
+    first_str = f'jello:  Warning - {first_line}'
+    first_str = first_wrapper.fill(first_str)
+    print(first_str, file=sys.stderr)
+
+    for line in message_lines:
+        if line == '':
+            continue
+        message = next_wrapper.fill(line)
+        print(message, file=sys.stderr)
+
+
 def pyquery(_θ_data, _θ_query):
     """Sets options and runs the user's query. This function uses odd variable names so they don't
     collide with user defined names."""
@@ -380,9 +412,9 @@ def pyquery(_θ_data, _θ_query):
     _θ_i_block = ast.parse(_θ_jelloconf, mode='exec')
     exec(compile(_θ_i_block, '<string>', mode='exec'))
 
-    for _θ_option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.mono, opts.schema, opts.types]:
+    for _θ_option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.force_color, opts.mono, opts.schema, opts.types]:
         if not isinstance(_θ_option, bool) and _θ_option is not None:
-            opts.compact = opts.raw = opts.lines = opts.nulls = opts.mono = opts.schema = opts.types = False
+            opts.compact = opts.raw = opts.lines = opts.nulls = opts.force_color = opts.mono = opts.schema = opts.types = False
             _θ_warn_options = True
 
     for _θ_color_config in [opts.keyname_color, opts.keyword_color, opts.number_color, opts.string_color]:
@@ -395,11 +427,17 @@ def pyquery(_θ_data, _θ_query):
             _θ_warn_colors = True
 
     if _θ_warn_options:
-        print(f'Jello:   Warning: Options must be set to True or False in {_θ_conf_file}\n         Unsetting all options.\n', file=sys.stderr)
+        warning_message([
+            f'Options must be set to True or False in {_θ_conf_file}',
+            'Unsetting all options.'
+        ])
 
     if _θ_warn_colors:
         _θ_valid_colors_string = ', '.join(_θ_valid_colors)
-        print(f'Jello:   Warning: Colors must be set to one of: {_θ_valid_colors_string} in {_θ_conf_file}\n         Unsetting all colors.\n', file=sys.stderr)
+        warning_message([
+            f'Colors must be set to one of: {_θ_valid_colors_string} in {_θ_conf_file}',
+            'Unsetting all colors.'
+        ])
 
     # clean up variables
     del _θ_color_config
