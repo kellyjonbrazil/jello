@@ -1,5 +1,8 @@
 jello changelog
 
+20211213 v1.5.1
+- Fix key names with spaces in Schema view
+
 20211208 v1.5.0
 - Note to Package Maintainers: `/jello/man/jello.1` no longer exists. Please use `/man/jello.1`
 - Wrap warning messages that exceed the terminal width
