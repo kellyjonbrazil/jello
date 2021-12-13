@@ -177,6 +177,12 @@ class Schema(JelloTheme):
             self._schema_list.append(f'{path} = {val};{padding}{val_type}')
 
             for k, v in src.items():
+                # encapsulate key in brackets if it includes spaces
+                if ' ' in k:
+                    k = f'["{k}"]'
+                else:
+                    k = f'.{k}'
+
                 if isinstance(v, list):
                     # print empty brackets as first list definition
                     val = '[]'
@@ -186,15 +192,15 @@ class Schema(JelloTheme):
                         val_type = '//   (array)'
                         padding = '  '
                         if len(path) + len(val) + len(val_type) < 76:
-                            padding = ' ' * (76 - (len(f'{path}.{k}') + len(val) + len(val_type)))
+                            padding = ' ' * (76 - (len(f'{path}{k}') + len(val) + len(val_type)))
 
-                    self._schema_list.append(f'{path}.{k} = {val};{padding}{val_type}')
+                    self._schema_list.append(f'{path}{k} = {val};{padding}{val_type}')
 
                     for i, item in enumerate(v):
-                        self._schema_gen(item, path=f'{path}.{k}[{i}]')
+                        self._schema_gen(item, path=f'{path}{k}[{i}]')
 
                 elif isinstance(v, dict):
-                    self._schema_gen(v, path=f'{path}.{k}')
+                    self._schema_gen(v, path=f'{path}{k}')
 
                 else:
                     val = json.dumps(v, ensure_ascii=False)
@@ -212,9 +218,9 @@ class Schema(JelloTheme):
 
                         padding = '  '
                         if len(path) + len(k) + len(val) + len(val_type) < 76:
-                            padding = ' ' * (75 - (len(path) + len(k) + len(val) + len(val_type)))
+                            padding = ' ' * (76 - (len(path) + len(k) + len(val) + len(val_type)))
 
-                    self._schema_list.append(f'{path}.{k} = {val};{padding}{val_type}')
+                    self._schema_list.append(f'{path}{k} = {val};{padding}{val_type}')
 
         else:
             path = path or '.'
