@@ -113,6 +113,30 @@ class MyTests(unittest.TestCase):
             ]
         ]
 
+        self.dict_space_keys_nest_sample = {
+            'string with spaces': 'string\nwith newline\ncharacters in it',
+            'foo': {
+                "another with spaces": {
+                    "nested": {
+                        "nested space": True
+                    }
+                }
+            },
+            'true': True,
+            'false': False,
+            'null': None,
+            'int': 42,
+            'float': 3.14,
+            'array': [
+                'string\nwith newline\ncharacters in it',
+                True,
+                False,
+                None,
+                42,
+                3.14
+            ]
+        }
+
         self.deep_nest_sample = [[[[{"foo":[[[[1,2,3]]]]}]]]]
 
     # ------------ Tests ------------
@@ -475,6 +499,23 @@ class MyTests(unittest.TestCase):
     #
     # deep nest
     #
+
+    def test_dict_space_keys_nest(self):
+        """
+        Test self.dict_space_keys_nest_sample
+        """
+        self.data_in = self.dict_space_keys_nest_sample
+        self.expected = '\x1b[34;01m_\x1b[39;00m = {};\n\x1b[34;01m_\x1b[39;00m[\x1b[32m"string with spaces"\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01mfoo\x1b[39;00m = {};\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01mfoo\x1b[39;00m[\x1b[32m"another with spaces"\x1b[39m] = {};\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01mfoo\x1b[39;00m[\x1b[32m"another with spaces"\x1b[39m].\x1b[34;01mnested\x1b[39;00m = {};\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01mfoo\x1b[39;00m[\x1b[32m"another with spaces"\x1b[39m].\x1b[34;01mnested\x1b[39;00m[\x1b[32m"nested space"\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mtrue\x1b[39m = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mfalse\x1b[39m = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mnull\x1b[39m = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mint\x1b[39m = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[90mfloat\x1b[39m = \x1b[35m3.14\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m = [];\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m0\x1b[39m] = \x1b[32m"string\\nwith newline\\ncharacters in it"\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m1\x1b[39m] = \x1b[90mtrue\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m2\x1b[39m] = \x1b[90mfalse\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m3\x1b[39m] = \x1b[90mnull\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m4\x1b[39m] = \x1b[35m42\x1b[39m;\n\x1b[34;01m_\x1b[39;00m.\x1b[34;01marray\x1b[39;00m[\x1b[35m5\x1b[39m] = \x1b[35m3.14\x1b[39m;'
+        output = self.schema.create_schema(self.data_in)
+        self.assertEqual(self.schema.color_output(output), self.expected)
+
+    def test_dict_space_keys_nest_m(self):
+        """
+        Test self.dict_space_keys_nest_sample -m
+        """
+        self.data_in = self.dict_space_keys_nest_sample
+        self.expected = '_ = {};\n_["string with spaces"] = "string\\nwith newline\\ncharacters in it";\n_.foo = {};\n_.foo["another with spaces"] = {};\n_.foo["another with spaces"].nested = {};\n_.foo["another with spaces"].nested["nested space"] = true;\n_.true = true;\n_.false = false;\n_.null = null;\n_.int = 42;\n_.float = 3.14;\n_.array = [];\n_.array[0] = "string\\nwith newline\\ncharacters in it";\n_.array[1] = true;\n_.array[2] = false;\n_.array[3] = null;\n_.array[4] = 42;\n_.array[5] = 3.14;'
+        self.assertEqual(self.schema.create_schema(self.data_in), self.expected)
 
     def test_deep_nest(self):
         """
