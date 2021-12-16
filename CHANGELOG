@@ -1,5 +1,8 @@
 jello changelog
 
+20211216 v1.5.2
+- Enhance error output with text wrapping
+
 20211213 v1.5.1
 - Fix key names with spaces in Schema view
 
