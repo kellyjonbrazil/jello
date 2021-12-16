@@ -60,7 +60,7 @@ def print_error(message):
 def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
     exception_message = ''
     term_width = shutil.get_terminal_size().columns or 80
-    split_length = int(term_width * .8)
+    split_length = int(term_width)
     if split_length < 10:
         split_length = 10
 
@@ -169,10 +169,7 @@ def main(data=None, query='_'):
         try:
             list_dict_data = load_json(data)
         except Exception as e:
-            msg = f'''JSON Load Exception: Cannot parse the data (Not valid JSON or JSON Lines)
-        {e}
-        '''
-            print_error(f'jello:  {msg}')
+            print_exception(e, ex_type='JSON Load')
 
         # Read .jelloconf.py (if it exists) and run the query
         response = ''
