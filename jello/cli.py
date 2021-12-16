@@ -166,7 +166,7 @@ def main(data=None, query='_'):
     # only process if there is data
     if data and not data.isspace():
 
-        # load the JSON or JSON Lines
+        # load the JSON or JSON Lines into a dict or list of dicts
         try:
             data = load_json(data)
         except Exception as e:
@@ -205,7 +205,7 @@ def main(data=None, query='_'):
             print(output)
 
         except Exception as e:
-            print_exception(e, data, query, response, ex_type='Formatting')
+            print_exception(e, data, query, response, ex_type='Output')
 
 
 if __name__ == '__main__':
