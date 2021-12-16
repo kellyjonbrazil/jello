@@ -1,4 +1,4 @@
-"""jello - query JSON at the command line with python syntax"""
+"""jello - query JSON at the command line with Python syntax"""
 
 import os
 import sys
