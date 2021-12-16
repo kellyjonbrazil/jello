@@ -165,18 +165,17 @@ def main(data=None, query='_'):
     if data and not data.isspace():
 
         # load the JSON or JSON Lines
-        list_dict_data = None
         try:
-            list_dict_data = load_json(data)
+            data = load_json(data)
         except Exception as e:
             print_exception(e, ex_type='JSON Load')
 
         # Read .jelloconf.py (if it exists) and run the query
         response = ''
         try:
-            response = pyquery(list_dict_data, query)
+            response = pyquery(data, query)
         except Exception as e:
-            print_exception(e, list_dict_data, query, ex_type='Query')
+            print_exception(e, data, query, ex_type='Query')
 
         # reset opts.mono after pyquery since initialization in pyquery can change values
         if opts.force_color:
@@ -204,7 +203,7 @@ def main(data=None, query='_'):
             print(output)
 
         except Exception as e:
-            print_exception(e, list_dict_data, query, response, ex_type='Formatting')
+            print_exception(e, data, query, response, ex_type='Formatting')
 
 
 if __name__ == '__main__':
