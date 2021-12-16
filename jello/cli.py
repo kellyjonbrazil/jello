@@ -2,8 +2,10 @@
 
 import os
 import sys
-import textwrap
 import signal
+import shutil
+import textwrap
+from textwrap import TextWrapper
 import jello
 from jello.lib import opts, load_json, pyquery, Schema, Json
 
@@ -55,40 +57,43 @@ def print_error(message):
     sys.exit(1)
 
 
-def print_exception(e=None, list_dict_data='', query='', response='', ex_type='Runtime'):
-    list_dict_data = str(list_dict_data).replace('\n', '\\n')
-    query = str(query).replace('\n', '\\n')
-    response = str(response).replace('\n', '\\n')
-    e_text = ''
+def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
+    exception_message = ''
+    term_width = shutil.get_terminal_size().columns or 80
+    split_length = int(term_width * .8)
+    if split_length < 10:
+        split_length = 10
 
+    wrapper = TextWrapper(width=term_width,
+                                initial_indent='',
+                                subsequent_indent=' ' * 12)
+    exception_message = wrapper.fill(f'jello:  {ex_type} Exception:  {e.__class__.__name__}') + '\n'
+
+    wrapper = TextWrapper(width=term_width,
+                          initial_indent=' ' * 8,
+                          subsequent_indent=' ' * 12)
+    exception_message += wrapper.fill(f'{e}') + '\n'
+
+    e_text = ''
     if hasattr(e, 'text'):
         e_text = str(e.text).replace('\n', '')
 
-    if len(list_dict_data) > 70:
-        list_dict_data = list_dict_data[:34] + ' ... ' + list_dict_data[-34:]
-
-    if len(query) > 70:
-        query = query[:34] + ' ... ' + query[-34:]
-
-    if len(response) > 70:
-        response = response[:34] + ' ... ' + response[-34:]
-
-    exception_message = f'jello:  {ex_type} Exception:  {e.__class__.__name__}\n'
-
-    ex_map = {
-        'query': query,
-        'data': list_dict_data,
-        'response': response
+    detail = {
+        f'{e.__class__.__name__}': e_text,
+        'query': str(query).replace('\n', '\\n'),
+        'data': str(data).replace('\n', '\\n'),
+        'response': str(response).replace('\n', '\\n')
     }
 
-    exception_message += f'        {e}\n'
+    for item in detail:
+        if len(detail[item]) > (split_length * 2) + 10:
+            detail[item] = f'{item}:  {detail[item][:split_length]} ... {detail[item][-split_length:]}'
+        elif detail[item]:
+            detail[item] = f'{item}:  {detail[item]}'
 
-    if e_text:
-        exception_message += f'        {e_text}\n'
-
-    for item_name, item in ex_map.items():
-        if item:
-            exception_message += f'        {item_name}: {item}\n'
+        if detail[item]:
+            detail[item] = wrapper.fill(detail[item])
+            exception_message += f'{detail[item]}' + '\n'
 
     print(exception_message, file=sys.stderr)
     sys.exit(1)
