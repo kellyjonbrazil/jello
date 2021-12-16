@@ -31,7 +31,8 @@ def print_help():
 
                 -c   compact JSON output
                 -C   force color output even when using pipes (overrides -m)
-                -i   initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
+                -i   initialize environment with .jelloconf.py
+                     located at ~ (linux) or %appdata% (Windows)
                 -l   output as lines suitable for assignment to a bash array
                 -m   monochrome output
                 -n   print selected null values
@@ -41,7 +42,8 @@ def print_help():
                 -v   version info
                 -h   help
 
-        Use '_' as the input data and use python dict and list bracket syntax or dot notation.
+        Use '_' as the input data and use python dict and list bracket syntax
+        or dot notation to filter the results and/or rebuild the output.
 
         Examples:
                 cat data.json | jello _.foo
@@ -150,11 +152,11 @@ def main(data=None, query='_'):
 
     if opts.version_info:
         print(textwrap.dedent(f'''\
-            jello:   Version: {jello.__version__}
-                     Author: {jello.AUTHOR}
-                     Website: {jello.WEBSITE}
-                     Copyright: {jello.COPYRIGHT}
-                     License: {jello.LICENSE}
+            jello:  Version: {jello.__version__}
+                    Author: {jello.AUTHOR}
+                    Website: {jello.WEBSITE}
+                    Copyright: {jello.COPYRIGHT}
+                    License: {jello.LICENSE}
         '''))
         sys.exit()
 
