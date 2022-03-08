@@ -31,7 +31,7 @@ pip3 install jello
 | OS                    | Command                                                             |
 |-----------------------|---------------------------------------------------------------------|
 | Debian/Ubuntu linux   | `apt-get install jello`                                             |
-| Fedora                | `dnf install jello` In process for Rawhide, F34, F35, F36, EPEL9... |
+| Fedora linux          | `dnf install jello` In process for Rawhide, F34, F35, F36, EPEL9... |
 | Arch linux            | `pacman -S jello`                                                   |
 | macOS                 | `brew install jello`                                                |
 
