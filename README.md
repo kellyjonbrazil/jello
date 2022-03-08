@@ -28,12 +28,12 @@ pip3 install jello
 
 ### Packages and Binaries
 
-| OS                    | Command                                                                       |
-|-----------------------|-------------------------------------------------------------------------------|
-| Debian/Ubuntu linux   | `apt-get install jello`                                                       |
-| Arch linux            | `pacman -S jello`                                                             |
-| macOS                 | `brew install jello`                                                          |
-| Fedora                | If you can help with getting `jello` packaged on Fedora, let me know!         |
+| OS                    | Command                                                             |
+|-----------------------|---------------------------------------------------------------------|
+| Debian/Ubuntu linux   | `apt-get install jello`                                             |
+| Fedora                | `dnf install jello` In process for Rawhide, F34, F35, F36, EPEL9... |
+| Arch linux            | `pacman -S jello`                                                   |
+| macOS                 | `brew install jello`                                                |
 
 > For more OS packages, see https://repology.org/project/jello/versions.
 
