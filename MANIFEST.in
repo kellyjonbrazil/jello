@@ -1,3 +1,2 @@
-include jello/man/jello.1
 include man/jello.1
 include CHANGELOG
