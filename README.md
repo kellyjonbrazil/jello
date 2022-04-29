@@ -129,7 +129,12 @@ Bash variable:
 variable=($(cat data.json | jello -rl _.foo))
 ```
 
-Bash array variable:
+Bash array variable (Bash 4+):
+```
+mapfile -t variable < <(cat data.json | jello -rl _.foo)
+```
+
+Bash array variable (older versions of Bash):
 ```
 variable=()
 while read -r value; do
