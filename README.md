@@ -1,5 +1,5 @@
-![Tests](https://github.com/kellyjonbrazil/jello/workflows/Tests/badge.svg?branch=master)
-![Pypi](https://img.shields.io/pypi/v/jello.svg)
+[![Tests](https://github.com/kellyjonbrazil/jello/workflows/Tests/badge.svg?branch=master)](https://github.com/kellyjonbrazil/jello/actions)
+[![Pypi](https://img.shields.io/pypi/v/jello.svg)](https://pypi.org/project/jello/)
 
 >Built on `jello`:
 >- [Jello Explorer](https://github.com/kellyjonbrazil/jellex) (aka `jellex`) interactive TUI
@@ -20,7 +20,7 @@ You can install `jello` via `pip`, via OS Package Repository, MSI installer for 
 ### Pip (macOS, linux, unix, Windows)
 For the most up-to-date version and the most cross-platform option, use `pip` or `pip3` to download and install `jello` directly from [PyPi](https://pypi.org/project/jello/):
 
-![Pypi](https://img.shields.io/pypi/v/jello.svg)
+[![Pypi](https://img.shields.io/pypi/v/jello.svg)](https://pypi.org/project/jello/)
 
 ```bash
 pip3 install jello
@@ -28,15 +28,16 @@ pip3 install jello
 
 ### Packages and Binaries
 
-| OS                    | Command                                                                       | 
-|-----------------------|-------------------------------------------------------------------------------|
-| Debian/Ubuntu linux   | `apt-get install jello`                                                       |
-| Arch linux            | `pacman -S jello`                                                             |
-| macOS                 | `brew install jello`                                                          |
+| OS                    | Command                  |
+|-----------------------|--------------------------|
+| Debian/Ubuntu linux   | `apt-get install jello`  |
+| Fedora linux          | `dnf install jello`      |
+| Arch linux            | `pacman -S jello`        |
+| macOS                 | `brew install jello`     |
 
-> If you can help with getting `jello` packaged on Fedora, let me know!
+> For more OS packages, see https://repology.org/project/jello/versions.
 
-See the [Jello Packaging](https://kellyjonbrazil.github.io/jello-packaging/) site for MSI packages and binaries.
+See [Releases](https://github.com/kellyjonbrazil/jello/releases) on Github for MSI packages and binaries.
 
 ### Usage
 ```
@@ -128,7 +129,12 @@ Bash variable:
 variable=($(cat data.json | jello -rl _.foo))
 ```
 
-Bash array variable:
+Bash array variable (Bash 4+):
+```
+mapfile -t variable < <(cat data.json | jello -rl _.foo)
+```
+
+Bash array variable (older versions of Bash):
 ```
 variable=()
 while read -r value; do

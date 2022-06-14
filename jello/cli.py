@@ -2,8 +2,10 @@
 
 import os
 import sys
-import textwrap
 import signal
+import shutil
+import textwrap
+from textwrap import TextWrapper
 import jello
 from jello.lib import opts, load_json, pyquery, Schema, Json
 
@@ -29,7 +31,8 @@ def print_help():
 
                 -c   compact JSON output
                 -C   force color output even when using pipes (overrides -m)
-                -i   initialize environment with .jelloconf.py in ~ (linux) or %appdata% (Windows)
+                -i   initialize environment with .jelloconf.py
+                     located at ~ (linux) or %appdata% (Windows)
                 -l   output as lines suitable for assignment to a bash array
                 -m   monochrome output
                 -n   print selected null values
@@ -39,7 +42,8 @@ def print_help():
                 -v   version info
                 -h   help
 
-        Use '_' as the input data and use python dict and list bracket syntax or dot notation.
+        Use '_' as the input data and use python dict and list bracket syntax
+        or dot notation to filter the results and/or rebuild the output.
 
         Examples:
                 cat data.json | jello _.foo
@@ -55,40 +59,43 @@ def print_error(message):
     sys.exit(1)
 
 
-def print_exception(e=None, list_dict_data='', query='', response='', ex_type='Runtime'):
-    list_dict_data = str(list_dict_data).replace('\n', '\\n')
-    query = str(query).replace('\n', '\\n')
-    response = str(response).replace('\n', '\\n')
-    e_text = ''
+def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
+    exception_message = ''
+    term_width = shutil.get_terminal_size().columns or 80
+    split_length = int(term_width)
+    if split_length < 10:
+        split_length = 10
 
+    wrapper = TextWrapper(width=term_width,
+                                initial_indent='',
+                                subsequent_indent=' ' * 12)
+    exception_message = wrapper.fill(f'jello:  {ex_type} Exception:  {e.__class__.__name__}') + '\n'
+
+    wrapper = TextWrapper(width=term_width,
+                          initial_indent=' ' * 8,
+                          subsequent_indent=' ' * 12)
+    exception_message += wrapper.fill(f'{e}') + '\n'
+
+    e_text = ''
     if hasattr(e, 'text'):
         e_text = str(e.text).replace('\n', '')
 
-    if len(list_dict_data) > 70:
-        list_dict_data = list_dict_data[:34] + ' ... ' + list_dict_data[-34:]
-
-    if len(query) > 70:
-        query = query[:34] + ' ... ' + query[-34:]
-
-    if len(response) > 70:
-        response = response[:34] + ' ... ' + response[-34:]
-
-    exception_message = f'jello:  {ex_type} Exception:  {e.__class__.__name__}\n'
-
-    ex_map = {
-        'query': query,
-        'data': list_dict_data,
-        'response': response
+    detail = {
+        f'{e.__class__.__name__}': e_text,
+        'query': str(query).replace('\n', '\\n'),
+        'data': str(data).replace('\n', '\\n'),
+        'response': str(response).replace('\n', '\\n')
     }
 
-    exception_message += f'        {e}\n'
+    for item in detail:
+        if len(detail[item]) > (split_length * 2) + 10:
+            detail[item] = f'{item}:  {detail[item][:split_length]} ... {detail[item][-split_length:]}'
+        elif detail[item]:
+            detail[item] = f'{item}:  {detail[item]}'
 
-    if e_text:
-        exception_message += f'        {e_text}\n'
-
-    for item_name, item in ex_map.items():
-        if item:
-            exception_message += f'        {item_name}: {item}\n'
+        if detail[item]:
+            detail[item] = wrapper.fill(detail[item])
+            exception_message += f'{detail[item]}' + '\n'
 
     print(exception_message, file=sys.stderr)
     sys.exit(1)
@@ -145,11 +152,11 @@ def main(data=None, query='_'):
 
     if opts.version_info:
         print(textwrap.dedent(f'''\
-            jello:   Version: {jello.__version__}
-                     Author: {jello.AUTHOR}
-                     Website: {jello.WEBSITE}
-                     Copyright: {jello.COPYRIGHT}
-                     License: {jello.LICENSE}
+            jello:  Version: {jello.__version__}
+                    Author: {jello.AUTHOR}
+                    Website: {jello.WEBSITE}
+                    Copyright: {jello.COPYRIGHT}
+                    License: {jello.LICENSE}
         '''))
         sys.exit()
 
@@ -159,22 +166,18 @@ def main(data=None, query='_'):
     # only process if there is data
     if data and not data.isspace():
 
-        # load the JSON or JSON Lines
-        list_dict_data = None
+        # load the JSON or JSON Lines into a dict or list of dicts
         try:
-            list_dict_data = load_json(data)
+            data = load_json(data)
         except Exception as e:
-            msg = f'''JSON Load Exception: Cannot parse the data (Not valid JSON or JSON Lines)
-        {e}
-        '''
-            print_error(f'jello:  {msg}')
+            print_exception(e, ex_type='JSON Load')
 
         # Read .jelloconf.py (if it exists) and run the query
         response = ''
         try:
-            response = pyquery(list_dict_data, query)
+            response = pyquery(data, query)
         except Exception as e:
-            print_exception(e, list_dict_data, query, ex_type='Query')
+            print_exception(e, data, query, ex_type='Query')
 
         # reset opts.mono after pyquery since initialization in pyquery can change values
         if opts.force_color:
@@ -202,7 +205,7 @@ def main(data=None, query='_'):
             print(output)
 
         except Exception as e:
-            print_exception(e, list_dict_data, query, response, ex_type='Formatting')
+            print_exception(e, data, query, response, ex_type='Output')
 
 
 if __name__ == '__main__':
