@@ -3503,7 +3503,7 @@ freebsd
                                           result.append(user_profile)
                                       result'
         """
-        self.query = '''\
+        query = '''\
 user_ids = set()
 result = []
 for tweet in _:
@@ -3526,7 +3526,7 @@ result
 
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
-            testargs = ['jello', '-l', self.query]
+            testargs = ['jello', '-l', query]
             with patch.object(sys, 'argv', testargs):
                 _ = jello.cli.main(data=self.twitterdata)
         self.assertEqual(f.getvalue(), expected)
@@ -3552,7 +3552,7 @@ result
                                           result.append(user_profile)
                                       result'
         """
-        self.query = '''\
+        query = '''\
 user_ids = set()
 result = []
 for tweet in _:
@@ -3575,7 +3575,7 @@ result
 
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
-            testargs = ['jello', '-s', self.query]
+            testargs = ['jello', '-s', query]
             with patch.object(sys, 'argv', testargs):
                 _ = jello.cli.main(data=self.twitterdata)
         self.assertEqual(f.getvalue(), expected)
@@ -3601,7 +3601,7 @@ result
                                           result.append(user_profile)
                                       result'
         """
-        self.query = '''\
+        query = '''\
 user_ids = set()
 result = []
 for tweet in _:
@@ -3624,9 +3624,75 @@ result
 
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
-            testargs = ['jello', '-l', self.query]
+            testargs = ['jello', '-l', query]
             with patch.object(sys, 'argv', testargs):
                 _ = jello.cli.main(data=self.twitterdata)
+        self.assertEqual(f.getvalue(), expected)
+
+
+    def test_scope_with_comprehension(self):
+        """
+        fix for https://github.com/kellyjonbrazil/jello/issues/46
+        """
+        sample = '''\
+        {
+          "foods": [
+            { "name": "carrot" },
+            { "name": "banana" }
+          ],
+          "people": [
+            { "name": "alice", "likes": "apples" },
+            { "name": "bob", "likes": "banana" },
+            { "name": "carrol", "likes": "carrot" },
+            { "name": "dave", "likes": "donuts" }
+          ]
+        }'''
+        query = '''\
+foods = set(f.name for f in _.foods)
+[p.name for p in _.people if p.likes not in foods]'''
+        expected = '''[
+  "alice",
+  "dave"
+]
+'''
+
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', query]
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
+        self.assertEqual(f.getvalue(), expected)
+
+    def test_scope_with_comprehension2(self):
+        """
+        fix for https://github.com/kellyjonbrazil/jello/issues/46
+        """
+        sample = '''\
+        {
+          "foods": [
+            { "name": "carrot" },
+            { "name": "banana" }
+          ],
+          "people": [
+            { "name": "alice", "likes": "apples" },
+            { "name": "bob", "likes": "banana" },
+            { "name": "carrol", "likes": "carrot" },
+            { "name": "dave", "likes": "donuts" }
+          ]
+        }'''
+        query = '''\
+[p.name for p in _.people if p.likes not in (f.name for f in _.foods)]'''
+        expected = '''[
+  "alice",
+  "dave"
+]
+'''
+
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', query]
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
         self.assertEqual(f.getvalue(), expected)
 
 
