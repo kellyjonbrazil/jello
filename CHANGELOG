@@ -1,8 +1,9 @@
 jello changelog
 
-20211216 v1.5.3 (in progress)
-- remove old man page from source package
-- clean up tests
+20220626 v1.5.3
+- Fix scope issue in query function
+- Remove old man page from source package
+- Clean up tests
 
 20211216 v1.5.2
 - Enhance error output with text wrapping
