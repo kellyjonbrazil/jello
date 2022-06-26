@@ -375,108 +375,91 @@ def warning_message(message_lines):
         print(message, file=sys.stderr)
 
 
-def pyquery(_θ_data, _θ_query):
-    """Sets options and runs the user's query. This function uses odd variable names so they don't
-    collide with user defined names."""
-    _θ_output = None
+def pyquery(data, query):
+    """Sets options and runs the user's query."""
+    output = None
 
     # read data into '_' variable
     # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
-    if isinstance(_θ_data, list):
+    if isinstance(data, list):
         _ = [DotMap(i, _dynamic=False, _prevent_method_masking=True) if isinstance(i, dict)
-             else i for i in _θ_data]
+             else i for i in data]
 
-    elif isinstance(_θ_data, dict):
-        _ = DotMap(_θ_data, _dynamic=False, _prevent_method_masking=True)
+    elif isinstance(data, dict):
+        _ = DotMap(data, _dynamic=False, _prevent_method_masking=True)
 
     else:
-        _ = _θ_data
-
-    del _θ_data
+        _ = data
 
     # read initialization file to set colors, options, and user-defined functions
-    _θ_jelloconf = ''
-    _θ_conf_file = ''
+    jelloconf = ''
+    conf_file = ''
 
     if opts.initialize:
         if sys.platform.startswith('win32'):
-            _θ_conf_file = os.path.join(os.environ['APPDATA'], '.jelloconf.py')
+            conf_file = os.path.join(os.environ['APPDATA'], '.jelloconf.py')
         else:
-            _θ_conf_file = os.path.join(os.environ["HOME"], '.jelloconf.py')
+            conf_file = os.path.join(os.environ["HOME"], '.jelloconf.py')
 
         try:
-            with open(_θ_conf_file, 'r') as _θ_f:
-                _θ_jelloconf = _θ_f.read()
-                del _θ_f
+            with open(conf_file, 'r') as f:
+                jelloconf = f.read()
+
         except FileNotFoundError:
-            raise FileNotFoundError(f'-i used and initialization file not found: {_θ_conf_file}')
+            raise FileNotFoundError(f'-i used and initialization file not found: {conf_file}')
 
-    _θ_warn_options = False
-    _θ_warn_colors = False
+    warn_options = False
+    warn_colors = False
 
-    _θ_i_block = ast.parse(_θ_jelloconf, mode='exec')
-    exec(compile(_θ_i_block, '<string>', mode='exec'))
+    i_block = ast.parse(jelloconf, mode='exec')
+    exec(compile(i_block, '<string>', mode='exec'))
 
-    for _θ_option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.force_color, opts.mono, opts.schema, opts.types]:
-        if not isinstance(_θ_option, bool) and _θ_option is not None:
+    for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.force_color, opts.mono, opts.schema, opts.types]:
+        if not isinstance(option, bool) and option is not None:
             opts.compact = opts.raw = opts.lines = opts.nulls = opts.force_color = opts.mono = opts.schema = opts.types = False
-            _θ_warn_options = True
+            warn_options = True
 
-    for _θ_color_config in [opts.keyname_color, opts.keyword_color, opts.number_color, opts.string_color]:
-        _θ_valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack',
-                           'brightred', 'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan',
-                           'white']
+    for color_config in [opts.keyname_color, opts.keyword_color, opts.number_color, opts.string_color]:
+        valid_colors = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'gray', 'brightblack',
+                        'brightred', 'brightgreen', 'brightyellow', 'brightblue', 'brightmagenta', 'brightcyan',
+                        'white']
 
-        if _θ_color_config not in _θ_valid_colors and _θ_color_config is not None:
+        if color_config not in valid_colors and color_config is not None:
             opts.keyname_color = opts.keyword_color = opts.number_color = opts.string_color = None
-            _θ_warn_colors = True
+            warn_colors = True
 
-    if _θ_warn_options:
+    if warn_options:
         warning_message([
-            f'Options must be set to True or False in {_θ_conf_file}',
+            f'Options must be set to True or False in {conf_file}',
             'Unsetting all options.'
         ])
 
-    if _θ_warn_colors:
-        _θ_valid_colors_string = ', '.join(_θ_valid_colors)
+    if warn_colors:
+        valid_colors_string = ', '.join(valid_colors)
         warning_message([
-            f'Colors must be set to one of: {_θ_valid_colors_string} in {_θ_conf_file}',
+            f'Colors must be set to one of: {valid_colors_string} in {conf_file}',
             'Unsetting all colors.'
         ])
 
-    # clean up variables
-    del _θ_color_config
-    del _θ_conf_file
-    del _θ_i_block
-    del _θ_jelloconf
-    del _θ_option
-    del _θ_valid_colors
-    del _θ_warn_colors
-    del _θ_warn_options
-
     # run the query
-    _θ_block = ast.parse(_θ_query, mode='exec')
-    del _θ_query
-    _θ_last = ast.Expression(_θ_block.body.pop().value)    # assumes last node is an expression
-
-    exec(compile(_θ_block, '<string>', mode='exec'))
-    del _θ_block
-
-    _θ_output = eval(compile(_θ_last, '<string>', mode='eval'))
-    del _θ_last
+    block = ast.parse(query, mode='exec')
+    last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
+    scope = {'_': _, 'os': os}
+    exec(compile(block, '<string>', mode='exec'), scope)
+    output = eval(compile(last, '<string>', mode='eval'), scope)
 
     # convert output back to normal dict
-    if isinstance(_θ_output, list):
-        _θ_output = [i.toDict() if isinstance(i, DotMap) else i for i in _θ_output]
+    if isinstance(output, list):
+        output = [i.toDict() if isinstance(i, DotMap) else i for i in output]
 
-    elif isinstance(_θ_output, DotMap):
-        _θ_output = _θ_output.toDict()
+    elif isinstance(output, DotMap):
+        output = output.toDict()
 
     # if DotMap returns a bound function then we know it was a reserved attribute name
-    if hasattr(_θ_output, '__self__'):
+    if hasattr(output, '__self__'):
         raise ValueError('Reserved key name. Use bracket notation to access this key.')
 
-    return _θ_output
+    return output
 
 
 if __name__ == '__main__':
