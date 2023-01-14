@@ -5,6 +5,7 @@ import sys
 import ast
 import json
 import shutil
+from keyword import iskeyword
 from textwrap import TextWrapper
 from jello.dotmap import DotMap
 
@@ -20,6 +21,10 @@ try:
     PYGMENTS_INSTALLED = True
 except Exception:
     PYGMENTS_INSTALLED = False
+
+
+def is_valid_variable_name(name: str) -> bool:
+    return name.isidentifier() and not iskeyword(name)
 
 
 class opts:
@@ -177,11 +182,11 @@ class Schema(JelloTheme):
             self._schema_list.append(f'{path} = {val};{padding}{val_type}')
 
             for k, v in src.items():
-                # encapsulate key in brackets if it includes spaces
-                if ' ' in k:
-                    k = f'["{k}"]'
-                else:
+                # encapsulate key in brackets if it is not a valid variable name
+                if is_valid_variable_name(k):
                     k = f'.{k}'
+                else:
+                    k = f'["{k}"]'
 
                 if isinstance(v, list):
                     # print empty brackets as first list definition
