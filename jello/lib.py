@@ -351,7 +351,7 @@ def load_json(data):
     except Exception as e:
         try:
             # if json.loads fails, try loading as json lines
-            json_dict = [json.loads(i) for i in data.splitlines()]
+            json_dict = [json.loads(i) for i in data.splitlines() if i.strip()]
         except Exception:
             # raise original JSON exception instead of JSON Lines exception
             raise e
