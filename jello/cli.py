@@ -209,4 +209,4 @@ def main(data=None, query='_'):
 
 
 if __name__ == '__main__':
-    pass
+    main()

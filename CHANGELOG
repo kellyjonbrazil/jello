@@ -1,5 +1,8 @@
 jello changelog
 
+20220730 v1.5.4
+- Add `__main__.py` to package for `python -m jello` use cases
+
 20220626 v1.5.3
 - Fix scope issue in query function
 - Remove old man page from source package

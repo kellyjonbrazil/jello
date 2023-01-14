@@ -70,7 +70,7 @@ cat data.json | jello '_["foo"]'
 - `-v` version info
 
 #### Simple Examples
-`jello` simply pretty prints the JSON if there are no options passed:
+`jello` simply pretty prints the JSON if there are no options  or query passed:
 ```bash
 echo '{"foo":"bar","baz":[1,2,3]}' | jello
 
@@ -340,10 +340,9 @@ crontab_u
 ...
 ```
 
-### Environment Variables
+### Expressions and Environment Variables
 ```bash
-echo '{"login_name": "joeuser"}' | jello '\
-True if os.getenv("LOGNAME") == _.login_name else False'
+echo '{"login_name": "joeuser"}' | jello 'os.getenv("LOGNAME") == _.login_name'
 
 true
 ```
