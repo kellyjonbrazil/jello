@@ -1,6 +1,6 @@
 jello changelog
 
-20230113 v1.5.4
+20230114 v1.5.5
 - Fix schema output to ensure invalid variable names are enclosed in bracket notation
 - Fix to allow blank lines when slurping JSON Lines objects
 
