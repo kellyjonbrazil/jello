@@ -5,6 +5,7 @@ import sys
 import ast
 import json
 import shutil
+from keyword import iskeyword
 from textwrap import TextWrapper
 from jello.dotmap import DotMap
 
@@ -20,6 +21,21 @@ try:
     PYGMENTS_INSTALLED = True
 except Exception:
     PYGMENTS_INSTALLED = False
+
+
+def is_valid_variable_name(name: str) -> bool:
+    dict_methods = [
+        '__class__', '__class_getitem__', '__contains__', '__delattr__',
+        '__delitem__', '__dir__', '__eq__', '__format__', '__ge__',
+        '__getattribute__', '__getitem__', '__getstate__', '__gt__',
+        '__init__', '__init_subclass__', '__ior__', '__iter__', '__le__',
+        '__len__', '__lt__', '__ne__', '__new__', '__or__', '__reduce__',
+        '__reduce_ex__', '__repr__', '__reversed__', '__ror__', '__setattr__',
+        '__setitem__', '__sizeof__', '__str__', '__subclasshook__', 'clear',
+        'copy', 'fromkeys', 'get', 'items', 'keys', 'pop', 'popitem',
+        'setdefault', 'update', 'values'
+    ]
+    return name.isidentifier() and not iskeyword(name) and name not in dict_methods
 
 
 class opts:
@@ -177,11 +193,11 @@ class Schema(JelloTheme):
             self._schema_list.append(f'{path} = {val};{padding}{val_type}')
 
             for k, v in src.items():
-                # encapsulate key in brackets if it includes spaces
-                if ' ' in k:
-                    k = f'["{k}"]'
-                else:
+                # encapsulate key in brackets if it is not a valid variable name
+                if is_valid_variable_name(k):
                     k = f'.{k}'
+                else:
+                    k = f'["{k}"]'
 
                 if isinstance(v, list):
                     # print empty brackets as first list definition
@@ -335,7 +351,7 @@ def load_json(data):
     except Exception as e:
         try:
             # if json.loads fails, try loading as json lines
-            json_dict = [json.loads(i) for i in data.splitlines()]
+            json_dict = [json.loads(i) for i in data.splitlines() if i.strip()]
         except Exception:
             # raise original JSON exception instead of JSON Lines exception
             raise e

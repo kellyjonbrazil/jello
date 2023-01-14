@@ -1,5 +1,9 @@
 jello changelog
 
+20230114 v1.5.5
+- Fix schema output to ensure invalid variable names are enclosed in bracket notation
+- Fix to allow blank lines when slurping JSON Lines objects
+
 20220730 v1.5.4
 - Add `__main__.py` to package for `python -m jello` use cases
 
