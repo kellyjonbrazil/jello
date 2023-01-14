@@ -139,6 +139,16 @@ class MyTests(unittest.TestCase):
 
         self.deep_nest_sample = [[[[{"foo":[[[[1,2,3]]]]}]]]]
 
+        self.reserved_or_invalid_keynames_sample = {
+            "True": 1,
+            "get": 1,
+            "fromkeys": 1,
+            "aquaero-hid-3-1cb1": 1,
+            "if": 1,
+            "return": 1,
+            "__class__": 1
+        }
+
     # ------------ Tests ------------
 
     #
@@ -533,6 +543,19 @@ class MyTests(unittest.TestCase):
         data_in = self.deep_nest_sample
         expected = '_ = [];\n_[0] = [];\n_[0][0] = [];\n_[0][0][0] = [];\n_[0][0][0][0] = {};\n_[0][0][0][0].foo = [];\n_[0][0][0][0].foo[0] = [];\n_[0][0][0][0].foo[0][0] = [];\n_[0][0][0][0].foo[0][0][0] = [];\n_[0][0][0][0].foo[0][0][0][0] = 1;\n_[0][0][0][0].foo[0][0][0][1] = 2;\n_[0][0][0][0].foo[0][0][0][2] = 3;'
         self.assertEqual(self.schema.create_schema(data_in), expected)
+
+    #
+    # Handle invalid or reserved key names
+    #
+
+    def test_dict_reserved_or_invalid_keynames(self):
+        """
+        Test self.reserved_or_invalid_keynames_sample
+        """
+        data_in = self.reserved_or_invalid_keynames_sample
+        expected = '_ = {};\n_["True"] = 1;\n_["get"] = 1;\n_["fromkeys"] = 1;\n_["aquaero-hid-3-1cb1"] = 1;\n_["if"] = 1;\n_["return"] = 1;\n_["__class__"] = 1;'
+        output = self.schema.create_schema(data_in)
+        self.assertEqual(output, expected)
 
 if __name__ == '__main__':
     unittest.main()
