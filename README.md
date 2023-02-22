@@ -3,7 +3,7 @@
 
 >Built on `jello`:
 >- [Jello Explorer](https://github.com/kellyjonbrazil/jellex) (aka `jellex`) interactive TUI
->- `jello` [web demo](https://jello-web-demo.herokuapp.com/)
+>- `jello` [web demo](https://jello-web.onrender.com)
 
 # jello
 Filter JSON and JSON Lines data with Python syntax
