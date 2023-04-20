@@ -408,14 +408,14 @@ def pyquery(data, query):
     else:
         _ = data
 
-    pyquery._ = _  # allows the data to be available to the initialization file, if used
-
     # read initialization file to set colors, options, and user-defined functions
     jelloconf = ''
     conf_file = ''
     jcnf_dict = None
 
     if opts.initialize:
+        pyquery._ = _  # allows the data to be available to the initialization file
+
         if sys.platform.startswith('win32'):
             conf_file_dir = os.environ['APPDATA']
         else:
