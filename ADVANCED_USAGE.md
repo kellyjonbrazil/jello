@@ -85,4 +85,8 @@ jc -a | jello -i 'darwin_compatible()'
 ]
 ```
 
-> Tip: Add a line to print a message to STDERR in your `.jelloconf.py` file to show when the initialization file is being used: `print('Running initialization file', file=sys.stderr)`
+Tip: Add a the following to print a message to STDERR in your `.jelloconf.py` file to show when the initialization file is being used:
+```python
+import sys
+print('Running initialization file', file=sys.stderr)
+```
