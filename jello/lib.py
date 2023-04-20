@@ -411,7 +411,7 @@ def pyquery(data, query):
     # read initialization file to set colors, options, and user-defined functions
     jelloconf = ''
     conf_file = ''
-    jcnf_dict = None
+    jcnf_dict = {}
 
     if opts.initialize:
         pyquery._ = _  # allows the data to be available to the initialization file
@@ -471,8 +471,7 @@ def pyquery(data, query):
 
     # add any functions in initialization file to the scope
     scope = {'_': _, 'os': os}
-    if jcnf_dict:
-        scope.update(jcnf_dict)
+    scope.update(jcnf_dict)
 
     # run the query
     block = ast.parse(query, mode='exec')
