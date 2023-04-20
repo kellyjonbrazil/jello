@@ -10,7 +10,7 @@ The file must be named `.jelloconf.py` and must be located in the proper directo
 
 ##### Setting Options
 To set `jello` options in the `.jelloconf.py` file, import the `jello.lib.opts` class, add any of the following and set to `True` or `False`:
-```
+```python
 from jello.lib import opts
 opts.mono = True            # -m option
 opts.compact = True         # -c option
@@ -22,7 +22,7 @@ opts.types = True           # -t option
 ```
 ##### Setting Colors
 You can customize the colors by importing the `jello.lib.opts` class and setting the following variables to one of the following string values: `'black'`, `'red'`, `'green'`, `'yellow'`, `'blue'`, `'magenta'`, `'cyan'`, `'gray'`, `'brightblack'`, `'brightred'`, `'brightgreen'`, `'brightyellow'`, `'brightblue'`, `'brightmagenta'`, `'brightcyan'`, or `'white'`.
-```
+```python
 from jello.lib import opts
 opts.keyname_color = 'blue'            # Key names
 opts.keyword_color = 'brightblack'     # true, false, null
@@ -33,7 +33,7 @@ opts.string_color = 'green'            # strings
 
 ##### Importing Modules
 To import a module (e.g. `glom`) during initialization, just add the `import` statement to your `.jelloconf.py` file:
-```
+```python
 from glom import *
 ```
 Then you can use `glom` in your `jello` filters without importing:
@@ -44,10 +44,10 @@ jc -a | jello -i 'glom(_, "parsers.25.name")'
 
 ##### Adding Functions
 You can also add functions to your initialization file.  For example, you could simplify `glom` use by adding the following function to `.jelloconf.py`:
-```
-def g(q, data=_):
+```python
+def g(query):
     import glom
-    return glom.glom(data, q)
+    return glom.glom(_, query)
 ```
 
 Then you can use the following syntax to filter the JSON data:
@@ -60,6 +60,28 @@ jc -a | jello -i 'g("parsers.6.compatible")'
   "win32",
   "aix",
   "freebsd"
+]
+```
+
+Or you can predefine often-used queries by defining them as functions in `.jelloconf.py`:
+```python
+def darwin_compatible():
+    result = []
+    for entry in _.parsers:
+      if "darwin" in entry.compatible:
+        result.append(entry.name)
+    return result
+```
+
+Then you can use the predefined query like so:
+```bash
+jc -a | jello -i 'darwin_compatible()'
+[
+  "airport",
+  "airport_s",
+  "arp",
+  "asciitable",
+  ...
 ]
 ```
 
