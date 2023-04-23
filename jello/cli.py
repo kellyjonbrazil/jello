@@ -140,11 +140,9 @@ def main(data=None, query='_'):
 
         elif arg_section == 'data_files':
             try:
-                data += read_file(arg)
+                data += '\n' + read_file(arg)
             except Exception as e:
                 print_error(f'Issue reading data file: {e}')
-            finally:
-                arg_section = ''
 
         elif arg.startswith('-') and not arg.startswith('--'):
              options.extend(arg[1:])
