@@ -391,6 +391,9 @@ def warning_message(message_lines):
         message = next_wrapper.fill(line)
         print(message, file=sys.stderr)
 
+def read_file(file_path):
+    with open(file_path, 'r') as f:
+        return f.read()
 
 def pyquery(data, query):
     """Sets options and runs the user's query."""
@@ -423,8 +426,7 @@ def pyquery(data, query):
 
         try:
             conf_file = os.path.join(conf_file_dir, '.jelloconf.py')
-            with open(conf_file, 'r') as f:
-                jelloconf = f.read()
+            jelloconf = read_file(conf_file)
 
             # inject the data into the initialization module
             conf_prepend = 'from jello.lib import pyquery as __q__\n'

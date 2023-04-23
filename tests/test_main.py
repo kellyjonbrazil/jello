@@ -3696,5 +3696,24 @@ foods = set(f.name for f in _.foods)
         self.assertEqual(f.getvalue(), expected)
 
 
+    def test_initialization_file(self):
+
+        # patch read_file function to mock initialization file
+        old_read_file = jello.lib.read_file
+        jello.lib.read_file = lambda x: 'init_var = "test"'
+
+        sample = '''{"a": "hello world"}'''
+        expected = '"test"\n'
+
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-i', 'init_var']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
+
+        jello.lib.read_file = old_read_file
+        self.assertEqual(f.getvalue(), expected)
+
+
 if __name__ == '__main__':
     unittest.main()
