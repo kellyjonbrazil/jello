@@ -7,7 +7,7 @@ import shutil
 import textwrap
 from textwrap import TextWrapper
 import jello
-from jello.lib import opts, load_json, pyquery, Schema, Json
+from jello.lib import opts, load_json, read_file, pyquery, Schema, Json
 
 
 def ctrlc(signum, frame):
@@ -120,20 +120,47 @@ def main(data=None, query='_'):
 
     options = []
     long_options = {}
+    arg_section = ''  # query_file or data_files
 
     for arg in sys.argv[1:]:
-        if arg.startswith('-') and not arg.startswith('--'):
-            options.extend(arg[1:])
+        if arg == '-q':
+            arg_section = 'query_file'
+
+        elif arg == '-f':
+            data = ''
+            arg_section = 'data_files'
+
+        elif arg_section == 'query_file':
+            try:
+                query = read_file(arg)
+            except Exception as e:
+                print_error(f'Issue reading query file: {e}')
+            finally:
+                arg_section = ''
+
+        elif arg_section == 'data_files':
+            try:
+                data += read_file(arg)
+            except Exception as e:
+                print_error(f'Issue reading data file: {e}')
+            finally:
+                arg_section = ''
+
+        elif arg.startswith('-') and not arg.startswith('--'):
+             options.extend(arg[1:])
+             arg_section = ''
 
         elif arg.startswith('--'):
             try:
                 k, v = arg[2:].split('=')
                 long_options[k] = int(v)
+                arg_section = ''
             except Exception:
                 print_help()
 
         else:
             query = arg
+            arg_section = ''
 
     opts.compact = opts.compact or 'c' in options
     opts.initialize = opts.initialize or 'i' in options
