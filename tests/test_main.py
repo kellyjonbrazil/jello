@@ -4,6 +4,7 @@ import os
 import sys
 import io
 import contextlib
+import copy
 import unittest
 from unittest.mock import patch
 import jello.cli
@@ -22,6 +23,7 @@ class MyTests(unittest.TestCase):
         opts.helpme = None
         opts.compact = None
         opts.nulls = None
+        opts.empty = None
         opts.raw = None
         opts.lines = None
         opts.force_color = None
@@ -3699,7 +3701,7 @@ foods = set(f.name for f in _.foods)
     def test_initialization_file(self):
 
         # patch read_file function to mock initialization file
-        old_read_file = jello.lib.read_file
+        old_read_file = copy.copy(jello.lib.read_file)
         jello.lib.read_file = lambda x: 'init_var = "test"'
 
         sample = '''{"a": "hello world"}'''
@@ -3712,6 +3714,60 @@ foods = set(f.name for f in _.foods)
                 _ = jello.cli.main(data=sample)
 
         jello.lib.read_file = old_read_file
+        self.assertEqual(f.getvalue(), expected)
+
+
+    def test_query_file(self):
+
+        # patch read_file function to mock initialization file
+        old_read_file = copy.copy(jello.cli.read_file)
+        jello.cli.read_file = lambda x: 'init_var = "test"\ninit_var'
+
+        sample = '''{"a": "hello world"}'''
+        expected = '"test"\n'
+
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-q', 'myqueryfile']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
+
+        jello.cli.read_file = old_read_file
+        self.assertEqual(f.getvalue(), expected)
+
+
+    def test_data_file(self):
+
+        # patch read_file function to mock initialization file
+        old_read_file = copy.copy(jello.cli.read_file)
+        jello.cli.read_file = lambda x: '''{"a": "hello world"}'''
+
+        sample = ''
+        expected = '"hello world"\n'
+
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '_.a', '-f', 'mydatafile']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
+
+        jello.cli.read_file = old_read_file
+        self.assertEqual(f.getvalue(), expected)
+
+
+    def test_empty_data_option(self):
+        sample = ''
+        expected = '''\
+{
+  "a": "test"
+}
+'''
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', '-e', '{"a": "test"}']
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
+
         self.assertEqual(f.getvalue(), expected)
 
 
