@@ -27,7 +27,8 @@ def print_help():
     print(textwrap.dedent('''\
         jello:  query JSON at the command line with python syntax
 
-        Usage:  cat data.json | jello [OPTIONS] [QUERY]
+        Usage:  cat data.json | jello [OPTIONS] [QUERY | -q <query_file>]
+                jello [OPTIONS] [QUERY | -q <query_file>] [-f <input_files>]
 
                 -c   compact JSON output
                 -C   force color output even when using pipes (overrides -m)

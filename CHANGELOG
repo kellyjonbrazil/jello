@@ -2,7 +2,7 @@ jello changelog
 
 20230423 v1.6.0
 - Add the ability to directly use a JSON file or JSON Lines files as data input (`-f`)
-- Add the ability to run a query from a file (`-q`)
+- Add the ability to load a query from a file (`-q`)
 - Add the empty data option (`-e`)
 - Fix user-defined functions in ~/.jelloconf initialization file
 
