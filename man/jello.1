@@ -435,16 +435,6 @@ You can also add functions to your initialization file. For example, you could s
 def g(query):
     import glom
     return glom.glom(_, query)
-
-or
-
-def darwin_compatible():
-    result = []
-    for entry in _.parsers:
-      if "darwin" in entry.compatible:
-        result.append(entry.name)
-    return result
-\f[R]
 .fi
 .PP
 Then you can use the following syntax to filter the JSON data:
@@ -460,7 +450,23 @@ $ jc -a | jello -i \[aq]g(\[dq]parsers.6.compatible\[dq])\[aq]
   \[dq]aix\[dq],
   \[dq]freebsd\[dq]
 ]
-
+.fi
+.PP
+Or create names for commonly used queries:
+.IP
+.nf
+def darwin_compatible():
+    result = []
+    for entry in _.parsers:
+      if "darwin" in entry.compatible:
+        result.append(entry.name)
+    return result
+\f[R]
+.fi
+.PP
+Then use the predefined query like so:
+.IP
+.nf
 $ jc -a | jello -i \[aq]darwin_compatible()\[aq]
 [
   \[dq]airport\[dq],
