@@ -44,6 +44,7 @@ class opts:
     version_info = None
     helpme = None
     compact = None
+    empty = None
     nulls = None
     raw = None
     lines = None
