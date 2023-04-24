@@ -134,7 +134,7 @@ def main(data=None, query='_'):
             try:
                 query = read_file(arg)
             except Exception as e:
-                print_error(f'Issue reading query file: {e}')
+                print_error(f'jello:  Issue reading query file: {e}')
             finally:
                 arg_section = ''
 
@@ -142,7 +142,7 @@ def main(data=None, query='_'):
             try:
                 data += '\n' + read_file(arg)
             except Exception as e:
-                print_error(f'Issue reading data file: {e}')
+                print_error(f'jello:  Issue reading data file: {e}')
 
         elif arg.startswith('-') and not arg.startswith('--'):
              options.extend(arg[1:])
