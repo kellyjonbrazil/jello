@@ -1,5 +1,11 @@
 jello changelog
 
+20230423 v1.6.0
+- Add the ability to directly use a JSON file or JSON Lines files as data input (`-f`)
+- Add the ability to load a query from a file (`-q`)
+- Add the empty data option (`-e`)
+- Fix user-defined functions in ~/.jelloconf initialization file
+
 20230114 v1.5.5
 - Fix schema output to ensure invalid variable names are enclosed in bracket notation
 - Fix to allow blank lines when slurping JSON Lines objects

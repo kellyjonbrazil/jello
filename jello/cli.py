@@ -7,7 +7,7 @@ import shutil
 import textwrap
 from textwrap import TextWrapper
 import jello
-from jello.lib import opts, load_json, pyquery, Schema, Json
+from jello.lib import opts, load_json, read_file, pyquery, Schema, Json
 
 
 def ctrlc(signum, frame):
@@ -27,15 +27,19 @@ def print_help():
     print(textwrap.dedent('''\
         jello:  query JSON at the command line with python syntax
 
-        Usage:  cat data.json | jello [OPTIONS] [QUERY]
+        Usage:  cat data.json | jello [OPTIONS] [QUERY | -q <query_file>]
+                jello [OPTIONS] [QUERY | -q <query_file>] [-f <input_files>]
 
                 -c   compact JSON output
                 -C   force color output even when using pipes (overrides -m)
+                -e   empty data (don't process data from STDIN or file)
+                -f   load input data from JSON file or JSON Lines files
                 -i   initialize environment with .jelloconf.py
                      located at ~ (linux) or %appdata% (Windows)
                 -l   output as lines suitable for assignment to a bash array
                 -m   monochrome output
                 -n   print selected null values
+                -q   load query from a file
                 -r   raw string output (no quotes)
                 -s   print the JSON schema in grep-able format
                 -t   print type annotations in schema view
@@ -47,7 +51,8 @@ def print_help():
 
         Examples:
                 cat data.json | jello _.foo
-                cat data.json | jello '_["foo"]'
+                jello _.foo -f data.json
+                jello '_["foo"]' -f data.json
                 variable=($(cat data.json | jello -l _.foo))
     '''))
     sys.exit()
@@ -120,24 +125,50 @@ def main(data=None, query='_'):
 
     options = []
     long_options = {}
+    arg_section = ''  # can be query_file or data_files
 
     for arg in sys.argv[1:]:
-        if arg.startswith('-') and not arg.startswith('--'):
-            options.extend(arg[1:])
+        if arg == '-q':
+            arg_section = 'query_file'
+
+        elif arg == '-f':
+            data = ''
+            arg_section = 'data_files'
+
+        elif arg_section == 'query_file':
+            try:
+                query = read_file(arg)
+            except Exception as e:
+                print_error(f'jello:  Issue reading query file: {e}')
+            finally:
+                arg_section = ''
+
+        elif arg_section == 'data_files':
+            try:
+                data += '\n' + read_file(arg)
+            except Exception as e:
+                print_error(f'jello:  Issue reading data file: {e}')
+
+        elif arg.startswith('-') and not arg.startswith('--'):
+             options.extend(arg[1:])
+             arg_section = ''
 
         elif arg.startswith('--'):
             try:
                 k, v = arg[2:].split('=')
                 long_options[k] = int(v)
+                arg_section = ''
             except Exception:
                 print_help()
 
         else:
             query = arg
+            arg_section = ''
 
     opts.compact = opts.compact or 'c' in options
     opts.initialize = opts.initialize or 'i' in options
     opts.lines = opts.lines or 'l' in options
+    opts.empty = opts.empty or 'e' in options
     opts.force_color = opts.force_color or 'C' in options
     opts.mono = opts.mono or ('m' in options or bool(os.getenv('NO_COLOR')))
     opts.nulls = opts.nulls or 'n' in options
@@ -160,52 +191,52 @@ def main(data=None, query='_'):
         '''))
         sys.exit()
 
-    if data is None:
-        print_error('jello:  missing piped JSON or JSON Lines data\n')
+    if data is None and not opts.empty:
+        print_error('jello:  Missing JSON or JSON Lines data via STDIN or file via -f option.\n')
 
-    # only process if there is data
-    if data and not data.isspace():
+    if opts.empty:
+        data = '{}'
 
-        # load the JSON or JSON Lines into a dict or list of dicts
-        try:
-            data = load_json(data)
-        except Exception as e:
-            print_exception(e, ex_type='JSON Load')
+    # load the JSON or JSON Lines into a dict or list of dicts
+    try:
+        data = load_json(data)
+    except Exception as e:
+        print_exception(e, ex_type='JSON Load')
 
-        # Read .jelloconf.py (if it exists) and run the query
-        response = ''
-        try:
-            response = pyquery(data, query)
-        except Exception as e:
-            print_exception(e, data, query, ex_type='Query')
+    # Read .jelloconf.py (if it exists) and run the query
+    response = ''
+    try:
+        response = pyquery(data, query)
+    except Exception as e:
+        print_exception(e, data, query, ex_type='Query')
 
-        # reset opts.mono after pyquery since initialization in pyquery can change values
-        if opts.force_color:
-            opts.mono = False
+    # reset opts.mono after pyquery since initialization in pyquery can change values
+    if opts.force_color:
+        opts.mono = False
 
-        # Create and print schema or JSON/JSON-Lines/Lines
-        output = ''
-        try:
-            if opts.schema:
-                schema = Schema()
-                output = schema.create_schema(response)
+    # Create and print schema or JSON/JSON-Lines/Lines
+    output = ''
+    try:
+        if opts.schema:
+            schema = Schema()
+            output = schema.create_schema(response)
 
-                if not opts.mono and (sys.stdout.isatty() or opts.force_color):
-                    schema.set_colors()
-                    output = schema.color_output(output)
+            if not opts.mono and (sys.stdout.isatty() or opts.force_color):
+                schema.set_colors()
+                output = schema.color_output(output)
 
-            else:
-                json_out = Json()
-                output = json_out.create_json(response)
+        else:
+            json_out = Json()
+            output = json_out.create_json(response)
 
-                if (not opts.mono and not opts.raw) and (sys.stdout.isatty() or opts.force_color):
-                    json_out.set_colors()
-                    output = json_out.color_output(output)
+            if (not opts.mono and not opts.raw) and (sys.stdout.isatty() or opts.force_color):
+                json_out.set_colors()
+                output = json_out.color_output(output)
 
-            print(output)
+        print(output)
 
-        except Exception as e:
-            print_exception(e, data, query, response, ex_type='Output')
+    except Exception as e:
+        print_exception(e, data, query, response, ex_type='Output')
 
 
 if __name__ == '__main__':

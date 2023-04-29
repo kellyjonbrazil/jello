@@ -1,4 +1,4 @@
-.TH jello 1 2022-06-26 1.5.3 "Jello JSON Filter"
+.TH jello 1 2022-06-26 1.6.0 "Jello JSON Filter"
 .SH NAME
 Jello \- Filter JSON and JSON Lines data with Python syntax
 .SH SYNOPSIS
@@ -16,15 +16,23 @@ grep-able schema.
 
 .SH USAGE
 
-cat data.json | jello [OPTIONS] [QUERY]
+.RS
+cat data.json | jello [OPTIONS] [QUERY | -q <query_file>]
+
+jello [OPTIONS] [QUERY | -q <query_file>] [-f <input_files>]
+.RE
 
 .fi
 .PP
-QUERY is optional and can be most any valid python code.
-`\fB_\fP` is the sanitized JSON from \fBSTDIN\fP presented as a python dict
-or list of dicts.
-If QUERY is omitted then the original JSON input will simply
+QUERY is optional and can be most any valid python code. Alternatively, a
+query file can be specified with `\fB-q\fP` to load the query from a file.
+Within the query, `\fB_\fP` is the sanitized JSON from \fBSTDIN\fP or the
+specified input file(s) (via the `\fB-f\fP` option) presented as a python
+dict or list of dicts.
+
+If QUERY or a query file is omitted then the original JSON input will simply
 be pretty printed.
+
 You can use dot notation or traditional python bracket notation to
 access key names.
 .RS
@@ -50,11 +58,23 @@ or
 $ cat data.json | jello \[aq]_[\[dq]foo\[dq]]\[aq]
 
 .fi
+.PP
+or
+.IP
+.nf
+
+$ jello _.foo -f data.json
+
+.fi
 .SS Options
 .IP
 \fB-c\fP compact print JSON output instead of pretty printing
 .IP
 \fB-C\fP force color output even when using pipes (overrides \fB-m\fP and the \fBNO_COLOR\fP env variable)
+.IP
+\fB-e\fP empty data (don't process data from STDIN or file)
+.IP
+\fB-f\fP load input data from JSON file or JSON Lines files (must be the final option, if used)
 .IP
 \fB-i\fP initialize environment with a custom config file
 .IP
@@ -63,6 +83,8 @@ $ cat data.json | jello \[aq]_[\[dq]foo\[dq]]\[aq]
 \fB-m\fP monochrome output
 .IP
 \fB-n\fP print selected null values
+.IP
+\fB-q\fP load query from a file
 .IP
 \fB-r\fP raw output of selected strings (no quotes)
 .IP
@@ -410,10 +432,9 @@ You can also add functions to your initialization file. For example, you could s
 .IP
 .nf
 \f[C]
-def g(q, data=_):
+def g(query):
     import glom
-    return glom.glom(data, q)
-\f[R]
+    return glom.glom(_, query)
 .fi
 .PP
 Then you can use the following syntax to filter the JSON data:
@@ -428,6 +449,29 @@ $ jc -a | jello -i \[aq]g(\[dq]parsers.6.compatible\[dq])\[aq]
   \[dq]win32\[dq],
   \[dq]aix\[dq],
   \[dq]freebsd\[dq]
+]
+.fi
+.PP
+Or create names for commonly used queries:
+.IP
+.nf
+def darwin_compatible():
+    result = []
+    for entry in _.parsers:
+      if "darwin" in entry.compatible:
+        result.append(entry.name)
+    return result
+\f[R]
+.fi
+.PP
+Then use the predefined query like so:
+.IP
+.nf
+$ jc -a | jello -i \[aq]darwin_compatible()\[aq]
+[
+  \[dq]airport\[dq],
+  \[dq]airport-s\[dq],
+  \[dq]arp\[dq]
 ]
 \f[R]
 .fi
@@ -477,6 +521,6 @@ Kelly Brazil (kellyjonbrazil@gmail.com)
 https://github.com/kellyjonbrazil/jello
 
 .SH COPYRIGHT
-Copyright (c) 2020-2022 Kelly Brazil
+Copyright (c) 2020-2023 Kelly Brazil
 
 License: MIT License

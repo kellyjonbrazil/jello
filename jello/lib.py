@@ -2,6 +2,7 @@
 
 import os
 import sys
+import types
 import ast
 import json
 import shutil
@@ -43,6 +44,7 @@ class opts:
     version_info = None
     helpme = None
     compact = None
+    empty = None
     nulls = None
     raw = None
     lines = None
@@ -390,6 +392,9 @@ def warning_message(message_lines):
         message = next_wrapper.fill(line)
         print(message, file=sys.stderr)
 
+def read_file(file_path):
+    with open(file_path, 'r') as f:
+        return f.read()
 
 def pyquery(data, query):
     """Sets options and runs the user's query."""
@@ -410,25 +415,35 @@ def pyquery(data, query):
     # read initialization file to set colors, options, and user-defined functions
     jelloconf = ''
     conf_file = ''
+    jcnf_dict = {}
 
     if opts.initialize:
+        pyquery._ = _  # allows the data to be available to the initialization file
+
         if sys.platform.startswith('win32'):
-            conf_file = os.path.join(os.environ['APPDATA'], '.jelloconf.py')
+            conf_file_dir = os.environ['APPDATA']
         else:
-            conf_file = os.path.join(os.environ["HOME"], '.jelloconf.py')
+            conf_file_dir = os.environ["HOME"]
 
         try:
-            with open(conf_file, 'r') as f:
-                jelloconf = f.read()
+            conf_file = os.path.join(conf_file_dir, '.jelloconf.py')
+            jelloconf = read_file(conf_file)
+
+            # inject the data into the initialization module
+            conf_prepend = 'from jello.lib import pyquery as __q__\n'
+            conf_prepend += '_ = __q__._\n'
+            jelloconf = conf_prepend + jelloconf
+
+            # create and import the modified .jelloconf file as a normal module
+            jcnf = types.ModuleType('jcnf')
+            exec(jelloconf, jcnf.__dict__)
+            jcnf_dict = {f: getattr(jcnf, f) for f in dir(jcnf) if not f.startswith('__')}
 
         except FileNotFoundError:
             raise FileNotFoundError(f'-i used and initialization file not found: {conf_file}')
 
     warn_options = False
     warn_colors = False
-
-    i_block = ast.parse(jelloconf, mode='exec')
-    exec(compile(i_block, '<string>', mode='exec'))
 
     for option in [opts.compact, opts.raw, opts.lines, opts.nulls, opts.force_color, opts.mono, opts.schema, opts.types]:
         if not isinstance(option, bool) and option is not None:
@@ -457,10 +472,17 @@ def pyquery(data, query):
             'Unsetting all colors.'
         ])
 
+    # add any functions in initialization file to the scope
+    scope = {'_': _, 'os': os}
+    scope.update(jcnf_dict)
+
     # run the query
     block = ast.parse(query, mode='exec')
+
+    if len(block.body) < 1:
+        raise ValueError('No query found.')
+
     last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
-    scope = {'_': _, 'os': os}
     exec(compile(block, '<string>', mode='exec'), scope)
     output = eval(compile(last, '<string>', mode='eval'), scope)
 
