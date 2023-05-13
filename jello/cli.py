@@ -5,6 +5,7 @@ import sys
 import signal
 import shutil
 import textwrap
+import traceback
 from textwrap import TextWrapper
 import jello
 from jello.lib import opts, load_json, read_file, pyquery, Schema, Json
@@ -71,10 +72,20 @@ def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
     if split_length < 10:
         split_length = 10
 
+    # prepare short info where the error occurred
+    stacktrace = traceback.extract_tb(e.__traceback__)
+    lineinfo = ""
+    if len(stacktrace):
+        if stacktrace[-1].filename == "<string>":
+            # we get <string> as filename when exception occurs in a exec() call
+            lineinfo = f" in line {stacktrace[-1].lineno}"
+        else:
+            lineinfo = f" in line {stacktrace[-1].lineno} of {stacktrace[-1].filename}"
+
     wrapper = TextWrapper(width=term_width,
                                 initial_indent='',
                                 subsequent_indent=' ' * 12)
-    exception_message = wrapper.fill(f'jello:  {ex_type} Exception:  {e.__class__.__name__}') + '\n'
+    exception_message = wrapper.fill(f'jello:  {ex_type} Exception:  {e.__class__.__name__}{lineinfo}') + '\n'
 
     wrapper = TextWrapper(width=term_width,
                           initial_indent=' ' * 8,
