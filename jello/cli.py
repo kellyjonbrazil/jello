@@ -74,22 +74,33 @@ def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
 
     # prepare short info where the error occurred
     stacktrace = traceback.extract_tb(e.__traceback__)
-    lineinfo = ""
+    stacklines = []
     if len(stacktrace):
         if stacktrace[-1].filename == "<string>":
             # we get <string> as filename when exception occurs in a exec() call
-            lineinfo = f" in line {stacktrace[-1].lineno}"
+            stacklines.append(f"Jello query, line {stacktrace[-1].lineno}")
+            # lineno begins with 1, lists with 0 -> subtract 1
+            stacklines.append("  " + query.split('\n')[stacktrace[-1].lineno-1])
         else:
-            lineinfo = f" in line {stacktrace[-1].lineno} of {stacktrace[-1].filename}"
+            # exception somewhere outside the exec() call: let python format the location info
+            stackend = traceback.StackSummary.from_list([ stacktrace[-1] ])
+            stacklines = stackend.format()
 
     wrapper = TextWrapper(width=term_width,
                                 initial_indent='',
                                 subsequent_indent=' ' * 12)
-    exception_message = wrapper.fill(f'jello:  {ex_type} Exception:  {e.__class__.__name__}{lineinfo}') + '\n'
+    exception_message = wrapper.fill(f'jello:  {ex_type} Exception:  {e.__class__.__name__}') + '\n'
 
     wrapper = TextWrapper(width=term_width,
                           initial_indent=' ' * 8,
                           subsequent_indent=' ' * 12)
+
+    # add pre-formatted stacktrace text: flatten the info into lines, normalize newlines
+    for errstring in stacklines:
+        for errline in errstring.split('\n'):
+            if len(errline.replace('\n', '')):
+                exception_message += wrapper.fill(errline.replace('\n', '')) + '\n'
+
     exception_message += wrapper.fill(f'{e}') + '\n'
 
     e_text = ''
