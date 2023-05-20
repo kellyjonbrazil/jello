@@ -178,6 +178,9 @@ jello -R 'import yaml;_ = yaml.safe_load(_)' -f values.yaml
 }
 ```
 
+> Note: Dot notation is not supported with the `-R` option unless the library used to
+> convert the raw string supports this. (e.g. `python-benedict`)
+
 ### Setting Custom Colors via Environment Variable
 Custom colors can be set via the `JELLO_COLORS` environment variable. Any colors set in the environment variable will take precedence over any colors set in the initialization file. (see [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md))
 
