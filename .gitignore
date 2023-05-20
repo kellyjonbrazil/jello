@@ -5,3 +5,4 @@ build/
 *.egg-info/
 .github/
 _config.yml
+.vscode/
