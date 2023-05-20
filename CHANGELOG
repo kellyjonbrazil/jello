@@ -1,5 +1,9 @@
 jello changelog
 
+20230520 v1.6.1
+- Add more information to query errors
+- Add the ability to add more information to the query scope
+
 20230423 v1.6.0
 - Add the ability to directly use a JSON file or JSON Lines files as data input (`-f`)
 - Add the ability to load a query from a file (`-q`)
