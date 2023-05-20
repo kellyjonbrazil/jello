@@ -74,6 +74,7 @@ jello '_["foo"]' -f data.json
 - `-n` print selected `null` values
 - `-q` load query from a file
 - `-r` raw output of selected strings (no quotes)
+- `-R` raw string input (don't auto convert input to dict/list)
 - `-s` print the JSON schema in grep-able format
 - `-t` print type annotations in schema view
 - `-h` help
@@ -150,6 +151,27 @@ variable=()
 while read -r value; do
     variable+=("$value")
 done < <(cat data.json | jello -rl _.foo)
+```
+
+### Non-JSON Data Input (YAML, CSV, etc.)
+You can work with other types of data with the `-R` (raw string input) option. For example,
+if you would like to read in YAML data you can load the data as a raw string, import
+the `yaml` library, and load the string data into `_` with the `yaml` library:
+```
+% cat values.yaml
+var1: value1
+var2: value2
+text: |
+  Here a text
+  that i like to write like this on multiple line.
+  It will be an HTML text so i’ll add <br> for line return.
+  and here i finish
+% jello -R 'import yaml;_ = yaml.safe_load(_)' -f values.yaml
+{
+  "var1": "value1",
+  "var2": "value2",
+  "text": "Here a text\nthat i like to write like this on multiple line.\nIt will be an HTML text so i’ll add <br> for line return.\nand here i finish"
+}
 ```
 
 ### Setting Custom Colors via Environment Variable
