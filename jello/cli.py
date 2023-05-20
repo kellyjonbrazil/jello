@@ -81,10 +81,6 @@ def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
             stacklines.append(f"Jello query, line {stacktrace[-1].lineno}")
             # lineno begins with 1, lists with 0 -> subtract 1
             stacklines.append("  " + query.split('\n')[stacktrace[-1].lineno-1])
-        else:
-            # exception somewhere outside the exec() call: let python format the location info
-            stackend = traceback.StackSummary.from_list([ stacktrace[-1] ])
-            stacklines = stackend.format()
 
     wrapper = TextWrapper(width=term_width,
                                 initial_indent='',
