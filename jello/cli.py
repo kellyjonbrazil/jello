@@ -42,6 +42,7 @@ def print_help():
                 -n   print selected null values
                 -q   load query from a file
                 -r   raw string output (no quotes)
+                -R   raw string input (don't auto convert input to dict/list)
                 -s   print the JSON schema in grep-able format
                 -t   print type annotations in schema view
                 -v   version info
@@ -191,6 +192,7 @@ def main(data=None, query='_'):
     opts.mono = opts.mono or ('m' in options or bool(os.getenv('NO_COLOR')))
     opts.nulls = opts.nulls or 'n' in options
     opts.raw = opts.raw or 'r' in options
+    opts.raw_input = opts.raw_input or 'R' in options
     opts.schema = opts.schema or 's' in options
     opts.types = opts.types or 't' in options
     opts.version_info = opts.version_info or 'v' in options
@@ -215,11 +217,16 @@ def main(data=None, query='_'):
     if opts.empty:
         data = '{}'
 
-    # load the JSON or JSON Lines into a dict or list of dicts
-    try:
-        data = load_json(data)
-    except Exception as e:
-        print_exception(e, ex_type='JSON Load')
+    # load the data as a raw string or JSON
+    if opts.raw_input:
+        data = str(data).rstrip('\r\n')
+
+    else:
+        # load the JSON or JSON Lines into a dict or list of dicts
+        try:
+            data = load_json(data)
+        except Exception as e:
+            print_exception(e, ex_type='JSON Load')
 
     # Read .jelloconf.py (if it exists) and run the query
     response = ''

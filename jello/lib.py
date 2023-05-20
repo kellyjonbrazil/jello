@@ -47,6 +47,7 @@ class opts:
     empty = None
     nulls = None
     raw = None
+    raw_input = None
     lines = None
     force_color = None
     mono = None
