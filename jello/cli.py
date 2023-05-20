@@ -5,6 +5,7 @@ import sys
 import signal
 import shutil
 import textwrap
+import traceback
 from textwrap import TextWrapper
 import jello
 from jello.lib import opts, load_json, read_file, pyquery, Schema, Json
@@ -71,6 +72,20 @@ def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
     if split_length < 10:
         split_length = 10
 
+    # prepare short info where the error occurred
+    stacktrace = traceback.extract_tb(e.__traceback__)
+    stacklines = []
+    if len(stacktrace):
+        if stacktrace[-1].filename == "<string>":
+            # we get <string> as filename when exception occurs in a exec() call
+            stacklines.append(f"Jello query, line {stacktrace[-1].lineno}")
+            # lineno begins with 1, lists with 0 -> subtract 1
+            stacklines.append("  " + query.split('\n')[stacktrace[-1].lineno-1])
+        else:
+            # exception somewhere outside the exec() call: let python format the location info
+            stackend = traceback.StackSummary.from_list([ stacktrace[-1] ])
+            stacklines = stackend.format()
+
     wrapper = TextWrapper(width=term_width,
                                 initial_indent='',
                                 subsequent_indent=' ' * 12)
@@ -79,6 +94,13 @@ def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
     wrapper = TextWrapper(width=term_width,
                           initial_indent=' ' * 8,
                           subsequent_indent=' ' * 12)
+
+    # add pre-formatted stacktrace text: flatten the info into lines, normalize newlines
+    for errstring in stacklines:
+        for errline in errstring.split('\n'):
+            if len(errline.replace('\n', '')):
+                exception_message += wrapper.fill(errline.replace('\n', '')) + '\n'
+
     exception_message += wrapper.fill(f'{e}') + '\n'
 
     e_text = ''
