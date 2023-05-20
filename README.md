@@ -157,20 +157,24 @@ done < <(cat data.json | jello -rl _.foo)
 You can work with other types of data with the `-R` (raw string input) option. For example,
 if you would like to read in YAML data you can load the data as a raw string, import
 the `yaml` library, and load the string data into `_` with the `yaml` library:
-```
-% cat values.yaml
+
+```bash
+cat values.yaml
+
 var1: value1
 var2: value2
 text: |
-  Here a text
-  that i like to write like this on multiple line.
-  It will be an HTML text so i’ll add <br> for line return.
-  and here i finish
-% jello -R 'import yaml;_ = yaml.safe_load(_)' -f values.yaml
+  Here is some text
+  that I would like to span multiple lines.
+  It will be an HTML string so I’ll add <br> for line return.
+  And here is the last line.
+
+jello -R 'import yaml;_ = yaml.safe_load(_)' -f values.yaml
+
 {
   "var1": "value1",
   "var2": "value2",
-  "text": "Here a text\nthat i like to write like this on multiple line.\nIt will be an HTML text so i’ll add <br> for line return.\nand here i finish"
+  "text": "Here is some text\nthat I would like to span multiple lines.\nIt will be an HTML string so I’ll add <br> for line return.\nAnd here is the last line."
 }
 ```
 
