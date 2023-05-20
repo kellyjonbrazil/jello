@@ -163,11 +163,7 @@ cat values.yaml
 
 var1: value1
 var2: value2
-text: |
-  Here is some text
-  that I would like to span multiple lines.
-  It will be an HTML string so I’ll add <br> for line return.
-  And here is the last line.
+var3: value3
 
 jello -Rr '
 import yaml
