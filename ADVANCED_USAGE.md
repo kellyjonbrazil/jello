@@ -14,8 +14,11 @@ To set `jello` options in the `.jelloconf.py` file, import the `jello.lib.opts` 
 from jello.lib import opts
 opts.mono = True            # -m option
 opts.compact = True         # -c option
+opts.empty = True           # -e option
 opts.lines = True           # -l option
 opts.raw = True             # -r option
+opts.raw_input = True       # -R option
+opts.force_color = True     # -C option
 opts.nulls = True           # -n option
 opts.schema = True          # -s option
 opts.types = True           # -t option

@@ -159,13 +159,13 @@ if you would like to read in YAML data you can load the data as a raw string, im
 the `yaml` library, and load the string data into `_` with the `yaml` library:
 
 ```bash
-cat values.yaml
+$ cat values.yaml
 
 var1: value1
 var2: value2
 var3: value3
 
-jello -Rr '
+$ jello -Rr '
 import yaml
 _ = yaml.safe_load(_)
 _["var2"]

@@ -367,6 +367,33 @@ glom(_, (\[dq]parsers\[dq], [\[dq]name\[dq]]))\[aq]
 ]
 
 .fi
+.SS Non-JSON Data Input (YAML, CSV, etc.)
+.PP
+You can work with other types of data with the \fB-R\fP (raw string input) option. For example,
+if you would like to read in YAML data you can load the data as a raw string, import
+the \fByaml\fP library, and load the string data into \fB_\fP with the \fByaml\fP library:
+.IP
+.nf
+
+$ cat values.yaml
+var1: value1
+var2: value2
+var3: value3
+
+$ jello -Rr \[aq]
+import yaml
+_ = yaml.safe_load(_)
+_[\[dq]var2\[dq]]
+\[aq] -f values.yaml
+
+value2
+
+.PP
+Note: Dot notation is not supported with the \fB-R\fP option unless the library used to
+convert the raw string supports this. (e.g. \fBpython-benedict\fP)
+.IP
+
+.fi
 
 .SH ADVANCED USAGE
 .SS Custom Configuration File
@@ -386,8 +413,10 @@ To set jello options in the \fB.jelloconf.py\fP file, import the \fBjello.lib.op
 from jello.lib import opts
 opts.mono = True            # -m option
 opts.compact = True         # -c option
+opts.empty = True           # -e option
 opts.lines = True           # -l option
 opts.raw = True             # -r option
+opts.raw_input = True       # -R option
 opts.force_color = True     # -C option
 opts.nulls = True           # -n option
 opts.schema = True          # -s option
