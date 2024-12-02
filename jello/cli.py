@@ -8,7 +8,7 @@ import textwrap
 import traceback
 from textwrap import TextWrapper
 import jello
-from jello.lib import opts, load_json, read_file, pyquery, Schema, Json
+from jello.lib import opts, load_json, read_file, pyquery, format_response
 
 
 def ctrlc(signum, frame):
@@ -35,6 +35,7 @@ def print_help():
                 -C   force color output even when using pipes (overrides -m)
                 -e   empty data (don't process data from STDIN or file)
                 -f   load input data from JSON file or JSON Lines files
+                -F   flatten output list/iterator to newline-delimited json
                 -i   initialize environment with .jelloconf.py
                      located at ~ (linux) or %appdata% (Windows)
                 -l   output as lines suitable for assignment to a bash array
@@ -189,6 +190,7 @@ def main(data=None, query='_'):
     opts.lines = opts.lines or 'l' in options
     opts.empty = opts.empty or 'e' in options
     opts.force_color = opts.force_color or 'C' in options
+    opts.flatten = opts.flatten or 'F' in options
     opts.mono = opts.mono or ('m' in options or bool(os.getenv('NO_COLOR')))
     opts.nulls = opts.nulls or 'n' in options
     opts.raw = opts.raw or 'r' in options
@@ -240,26 +242,8 @@ def main(data=None, query='_'):
         opts.mono = False
 
     # Create and print schema or JSON/JSON-Lines/Lines
-    output = ''
     try:
-        if opts.schema:
-            schema = Schema()
-            output = schema.create_schema(response)
-
-            if not opts.mono and (sys.stdout.isatty() or opts.force_color):
-                schema.set_colors()
-                output = schema.color_output(output)
-
-        else:
-            json_out = Json()
-            output = json_out.create_json(response)
-
-            if (not opts.mono and not opts.raw) and (sys.stdout.isatty() or opts.force_color):
-                json_out.set_colors()
-                output = json_out.color_output(output)
-
-        print(output)
-
+        format_response(response)
     except Exception as e:
         print_exception(e, data, query, response, ex_type='Output')
 

@@ -1,12 +1,12 @@
 """jello - query JSON at the command line with python syntax"""
 
+import collections.abc
 import os
 import sys
 import types
 import ast
 import json
 import shutil
-import types
 from keyword import iskeyword
 from textwrap import TextWrapper
 from jello.dotmap import DotMap
@@ -58,6 +58,7 @@ class opts:
     keyword_color = None
     number_color = None
     string_color = None
+    flatten = None
 
 
 class JelloTheme:
@@ -348,6 +349,46 @@ class Json(JelloTheme):
             # this code should not run, but just in case something slips by above
             raise TypeError(f'Object is not JSON serializable')
 
+ 
+def format_response(response):
+    """Create schema or JSON/JSON-Lines/Lines"""
+
+    if opts.flatten:
+        it = None
+        if isinstance(response, collections.abc.Iterator):
+            it = response
+        elif isinstance(response, list):
+            it = iter(response)
+        else:
+            raise TypeError('-F/flatten requires the query to return an iterator/generator or list')
+        for item in it:
+            _format_single_response(item)
+    else:
+        _format_single_response(response)
+
+
+def _format_single_response(response):
+    if isinstance(response, collections.abc.Iterator):
+        response = list(response)
+
+    if opts.schema:
+        schema = Schema()
+        output = schema.create_schema(response)
+
+        if not opts.mono and (sys.stdout.isatty() or opts.force_color):
+            schema.set_colors()
+            output = schema.color_output(output)
+
+    else:
+        json_out = Json()
+        output = json_out.create_json(response)
+
+        if (not opts.mono and not opts.raw) and (sys.stdout.isatty() or opts.force_color):
+            json_out.set_colors()
+            output = json_out.color_output(output)
+
+    print(output)
+
 
 def load_json(data):
     try:
@@ -524,6 +565,16 @@ def _inialize_config_and_options(_, add_to_scope):
 
 
 def _convert_output(output):
+    if not isinstance(output, collections.abc.Iterator):
+        return _convert_single_output(output)
+
+    def convert_lazily():
+        for item in output:
+            yield _convert_single_output(item)
+    return convert_lazily()
+
+
+def _convert_single_output(output):
     # convert output back to normal dict
     if isinstance(output, list):
         return [i.toDict() if isinstance(i, DotMap) else i for i in output]
@@ -570,8 +621,6 @@ def pyquery(data, query, add_to_scope=None):
     func = scope['_jello_function']
 
     output = func()
-    if isinstance(output, types.GeneratorType):
-        output = list(output)
     output = _convert_output(output)
 
     return output
