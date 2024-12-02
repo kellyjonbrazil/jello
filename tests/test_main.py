@@ -3698,6 +3698,50 @@ foods = set(f.name for f in _.foods)
         self.assertEqual(f.getvalue(), expected)
 
 
+    def test_yield(self):
+        sample = '''[1, 2, 3, 4]'''
+        query = '''\
+for i in _:
+  yield i
+'''
+        expected = '''[
+  1,
+  2,
+  3,
+  4
+]
+'''
+
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', query]
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
+        self.assertEqual(f.getvalue(), expected)
+
+
+    def test_yield_from(self):
+        sample = '''[[1, 2], [3, 4]]'''
+        query = '''\
+for l in _:
+  yield from l
+'''
+        expected = '''[
+  1,
+  2,
+  3,
+  4
+]
+'''
+
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            testargs = ['jello', query]
+            with patch.object(sys, 'argv', testargs):
+                _ = jello.cli.main(data=sample)
+        self.assertEqual(f.getvalue(), expected)
+
+
     def test_initialization_file(self):
 
         # patch read_file function to mock initialization file

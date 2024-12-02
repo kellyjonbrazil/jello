@@ -6,6 +6,7 @@ import types
 import ast
 import json
 import shutil
+import types
 from keyword import iskeyword
 from textwrap import TextWrapper
 from jello.dotmap import DotMap
@@ -397,22 +398,63 @@ def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.read()
 
-def pyquery(data, query, add_to_scope=None):
-    """Sets options and runs the user's query."""
-    output = None
 
-    # read data into '_' variable
-    # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
-    if isinstance(data, list):
-        _ = [DotMap(i, _dynamic=False, _prevent_method_masking=True) if isinstance(i, dict)
-             else i for i in data]
+def _compile_query(query):
+    """
+    Compile the provided python code block into a function to transform json.
 
-    elif isinstance(data, dict):
-        _ = DotMap(data, _dynamic=False, _prevent_method_masking=True)
+    Wrapping in a function allows the block to yield/yield from.
 
-    else:
-        _ = data
+    The last statement, if an expression, will be converted into a return
+    statement.  If the function does not return a generator this value will be
+    used to serialize json.  If the function does return a generator, and so
+    this value will be the "value" of the StopIteration exception, the value
+    will later be discarded.
 
+    Returns the compiled AST with the function named "_jello_function".  Any
+    free variables must be supplied by placing in "globals" when calling exec.
+    Once execed the function may be retrieved from the exec'ed "globals" and
+    then called.
+    """
+
+    obj = ast.parse(query)
+    body = obj.body
+    if len(body) < 1:
+        raise ValueError('No query found.')
+    last_statement = body[-1]
+    if isinstance(last_statement, ast.Expr):
+        expression = last_statement.value
+        return_expr = ast.Return(
+            value=expression,
+            lineno=last_statement.lineno,
+            col_offset=last_statement.col_offset)
+        body[-1] = return_expr
+
+    function_def = ast.FunctionDef(
+        name="_jello_function",
+        args=ast.arguments(
+            posonlyargs=[],
+            args=[],
+            kwonlyargs=[],
+            kw_defaults=[],
+            defaults=[]),
+        body=body,
+        decorator_list=[],
+        returns=None,
+        type_comment=None,
+        lineno=0,
+        col_offset=0
+    )
+    m = ast.Module(
+        body=(
+            [function_def]
+        ),
+        type_ignores=[]
+    )
+    return compile(source=m, filename="<string>", mode="exec")
+
+
+def _inialize_config_and_options(_, add_to_scope):
     # read initialization file to set colors, options, and user-defined functions
     jelloconf = ''
     conf_file = ''
@@ -478,27 +520,59 @@ def pyquery(data, query, add_to_scope=None):
     scope.update(jcnf_dict)
     if add_to_scope is not None:
         scope.update(add_to_scope)
+    return jcnf_dict
 
-    # run the query
-    block = ast.parse(query, mode='exec')
 
-    if len(block.body) < 1:
-        raise ValueError('No query found.')
-
-    last = ast.Expression(block.body.pop().value)    # assumes last node is an expression
-    exec(compile(block, '<string>', mode='exec'), scope)
-    output = eval(compile(last, '<string>', mode='eval'), scope)
-
+def _convert_output(output):
     # convert output back to normal dict
     if isinstance(output, list):
-        output = [i.toDict() if isinstance(i, DotMap) else i for i in output]
+        return [i.toDict() if isinstance(i, DotMap) else i for i in output]
 
-    elif isinstance(output, DotMap):
-        output = output.toDict()
+    if isinstance(output, DotMap):
+        return output.toDict()
 
     # if DotMap returns a bound function then we know it was a reserved attribute name
     if hasattr(output, '__self__'):
         raise ValueError('Reserved key name. Use bracket notation to access this key.')
+
+    return output
+
+
+def pyquery(data, query, add_to_scope=None):
+    """Sets options and runs the user's query."""
+    output = None
+
+    # read data into '_' variable
+    # if data is a list of dictionaries, then need to iterate through and convert all dictionaries to DotMap
+    if isinstance(data, list):
+        _ = [DotMap(i, _dynamic=False, _prevent_method_masking=True) if isinstance(i, dict)
+             else i for i in data]
+
+    elif isinstance(data, dict):
+        _ = DotMap(data, _dynamic=False, _prevent_method_masking=True)
+
+    elif isinstance(data, collections.abc.Iterator):
+        _ = (DotMap(i, _dynamic=False, _prevent_method_masking=True) if isinstance(i, dict)
+             else i for i in data)
+
+    else:
+        _ = data
+
+    jcnf_dict = _inialize_config_and_options(_, add_to_scope)
+
+    # add any functions in initialization file to the scope
+    scope = {'_': _, 'os': os}
+    scope.update(jcnf_dict)
+
+    # run the query
+    compiled = _compile_query(query)
+    exec(compiled, scope)
+    func = scope['_jello_function']
+
+    output = func()
+    if isinstance(output, types.GeneratorType):
+        output = list(output)
+    output = _convert_output(output)
 
     return output
 
