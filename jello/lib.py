@@ -1,6 +1,7 @@
 """jello - query JSON at the command line with python syntax"""
 
 import collections.abc
+from io import StringIO
 import os
 import sys
 import types
@@ -59,6 +60,7 @@ class opts:
     number_color = None
     string_color = None
     flatten = None
+    stream_input = None
 
 
 class JelloTheme:
@@ -438,6 +440,172 @@ def warning_message(message_lines):
 def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.read()
+
+
+def read_data_nonstreaming(initial_data, stdin, data_files):
+    sio = StringIO()
+    sep = ""
+    if initial_data is not None:
+        sio.write(initial_data)
+        sio.write("\n")
+        sep = "\n"
+    if stdin:
+        sio.write(sep)
+        sio.write(stdin.read())
+        sep = "\n"
+    for file in data_files:
+        sio.write(sep)
+        # let the JsonDecoderError raise
+        sio.write(read_file(file))
+        sep = "\n"
+    return sio.getvalue()
+
+
+class StreamingJsonError(Exception):
+    '''
+    Wraps exceptions raised while loading and parsing json data.
+    Raised from exception so that __cause__ provides the underlying error.
+
+    When streaming data is not deserialized until pulled from an iterator during
+    user query execution or output formatting (when using -F to flatten and
+    stream the output).  One cannot rely on where an exception is caught to
+    indicate what went wrong.  This class signifies that an exception occurred
+    during reading or deserializing input data even when the exception
+    propagates from later function calls.
+    '''
+
+
+class CloseableIterator(collections.abc.Iterator):
+    '''
+    Iterator that also provides close() method.
+    Provides for safe file closing when reading from files within
+    iterators/generators, where the scope cannot be controlled to use a context
+    manager.
+    '''
+    closer = None
+    it = None
+
+    def __init__(self, closer, it):
+        self.closer = closer
+        self.it = it
+
+    def close(self):
+        self.closer()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self.it)
+
+
+def _generate_json_from_lines_iter(lines_iter):
+    """
+    Returns iterator of json objects from newline-delimited json input iterable.
+    lines_iter is any iterable whose iterator returns strings of individual json
+    objects.  For example, a list of strings or a file-like object of ndjson.
+    """
+
+    # the set of exceptions file readline() may throw is not documented.
+    # separating this apart to isolate exceptions arising from reading an
+    # underlying iterator and file.
+    it = iter(lines_iter)
+    while True:
+        try:
+            line = next(it)
+        except StopIteration:
+            return
+        except Exception as e:
+            raise StreamingJsonError from e
+
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        try:
+            yield json.loads(stripped)
+        except json.JSONDecodeError as e:
+            raise StreamingJsonError from e
+
+
+class StreamingJsonInput:
+    """
+    Iterator and context manager for streaming json from stdin and files.
+    """
+
+    # these are "closeable iterators" when backed by a closeable file
+    current_iterator = None
+    # functions to construct remaining cloaseable iterators
+    remaining_iterator_factories = None
+
+    def __init__(self, initial_data, stdin, files):
+        """
+        initial_data.  String from cli.main.
+        stdin_or_files.  sys.stdin or data file paths.
+        """
+        # set up the iterators
+        self.remaining_iterator_factories = collections.deque()
+        if initial_data:
+            self.remaining_iterator_factories.append(
+                lambda: CloseableIterator(
+                    lambda: None,
+                    _generate_json_from_lines_iter(initial_data.splitlines())
+                )
+            )
+
+        if stdin:
+            self.remaining_iterator_factories.append(
+                lambda f=stdin: CloseableIterator(
+                    # don't close stdin
+                    lambda: None,
+                    _generate_json_from_lines_iter(f)
+                ),
+            )
+
+        for file in files:
+            def create_file_iterator(f=file):
+                # the file must live beyond this function call.
+                # StreamingJsonInput closes it as a context manager via
+                # CloseableIterator
+                # pylint: disable-next=R1732:consider-using-with
+                try:
+                    opened_file = open(f, 'r')
+                except OSError as e:
+                    raise StreamingJsonError from e
+                return CloseableIterator(
+                    lambda f2=opened_file: f2.close(),
+                    _generate_json_from_lines_iter(opened_file)
+                )
+            self.remaining_iterator_factories.append(create_file_iterator)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.current_iterator:
+            self.current_iterator.close()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        """
+        Returns the next json object.
+        Raises StreamingJsonException on any deserialization error, with
+        __cause__ as the original Exception.
+        """
+        while True:
+            if self.current_iterator is None:
+                if not self.remaining_iterator_factories:
+                    raise StopIteration
+                factory = self.remaining_iterator_factories.popleft()
+                self.current_iterator = factory()
+
+            try:
+                return next(self.current_iterator)
+            except StopIteration:
+                self.current_iterator.close()
+                self.current_iterator = None
 
 
 def _compile_query(query):
