@@ -1,6 +1,6 @@
 jello changelog
 
-20230520 v1.6.1
+20250529 v1.6.1
 - Add the `-R` option to ingest the data as a raw string instead of converting to a dict/list
 - Add more information to query errors
 - Add the ability to add more information to the query scope

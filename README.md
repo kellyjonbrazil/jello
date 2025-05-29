@@ -1,4 +1,3 @@
-[![Tests](https://github.com/kellyjonbrazil/jello/workflows/Tests/badge.svg?branch=master)](https://github.com/kellyjonbrazil/jello/actions)
 [![Pypi](https://img.shields.io/pypi/v/jello.svg)](https://pypi.org/project/jello/)
 
 >Built on `jello`:

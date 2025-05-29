@@ -4,5 +4,5 @@
 __version__ = '1.6.1'
 AUTHOR = 'Kelly Brazil'
 WEBSITE = 'https://github.com/kellyjonbrazil/jello'
-COPYRIGHT = '© 2020-2023 Kelly Brazil'
+COPYRIGHT = '© 2020-2025 Kelly Brazil'
 LICENSE = 'MIT License'
