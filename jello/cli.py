@@ -202,8 +202,11 @@ def main(data=None, query='_'):
         print_help()
 
     if opts.version_info:
+        py_ver: str = '.'.join((str(sys.version_info.major), str(sys.version_info.minor), str(sys.version_info.micro)))
         print(textwrap.dedent(f'''\
             jello:  Version: {jello.__version__}
+                    Python Version: {py_ver}
+                    Python Path: {sys.executable}
                     Author: {jello.AUTHOR}
                     Website: {jello.WEBSITE}
                     Copyright: {jello.COPYRIGHT}
