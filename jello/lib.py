@@ -47,6 +47,7 @@ class opts:
     empty = None
     nulls = None
     raw = None
+    raw_input = None
     lines = None
     force_color = None
     mono = None
@@ -396,7 +397,7 @@ def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.read()
 
-def pyquery(data, query):
+def pyquery(data, query, add_to_scope=None):
     """Sets options and runs the user's query."""
     output = None
 
@@ -475,6 +476,8 @@ def pyquery(data, query):
     # add any functions in initialization file to the scope
     scope = {'_': _, 'os': os}
     scope.update(jcnf_dict)
+    if add_to_scope is not None:
+        scope.update(add_to_scope)
 
     # run the query
     block = ast.parse(query, mode='exec')

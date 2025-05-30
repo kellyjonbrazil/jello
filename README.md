@@ -1,4 +1,3 @@
-[![Tests](https://github.com/kellyjonbrazil/jello/workflows/Tests/badge.svg?branch=master)](https://github.com/kellyjonbrazil/jello/actions)
 [![Pypi](https://img.shields.io/pypi/v/jello.svg)](https://pypi.org/project/jello/)
 
 >Built on `jello`:
@@ -74,6 +73,7 @@ jello '_["foo"]' -f data.json
 - `-n` print selected `null` values
 - `-q` load query from a file
 - `-r` raw output of selected strings (no quotes)
+- `-R` raw string input (don't auto convert input to dict/list)
 - `-s` print the JSON schema in grep-able format
 - `-t` print type annotations in schema view
 - `-h` help
@@ -151,6 +151,30 @@ while read -r value; do
     variable+=("$value")
 done < <(cat data.json | jello -rl _.foo)
 ```
+
+### Non-JSON Data Input (YAML, CSV, etc.)
+You can work with other types of data with the `-R` (raw string input) option. For example,
+if you would like to read in YAML data you can load the data as a raw string, import
+the `yaml` library, and load the string data into `_` with the `yaml` library:
+
+```bash
+$ cat values.yaml
+
+var1: value1
+var2: value2
+var3: value3
+
+$ jello -Rr '
+import yaml
+_ = yaml.safe_load(_)
+_["var2"]
+' -f values.yaml
+
+value2
+```
+
+> Note: Dot notation is not supported with the `-R` option unless the library used to
+> convert the raw string supports this. (e.g. `python-benedict`)
 
 ### Setting Custom Colors via Environment Variable
 Custom colors can be set via the `JELLO_COLORS` environment variable. Any colors set in the environment variable will take precedence over any colors set in the initialization file. (see [Advanced Usage](https://github.com/kellyjonbrazil/jello/blob/master/ADVANCED_USAGE.md))

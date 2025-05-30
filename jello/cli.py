@@ -5,6 +5,7 @@ import sys
 import signal
 import shutil
 import textwrap
+import traceback
 from textwrap import TextWrapper
 import jello
 from jello.lib import opts, load_json, read_file, pyquery, Schema, Json
@@ -41,6 +42,7 @@ def print_help():
                 -n   print selected null values
                 -q   load query from a file
                 -r   raw string output (no quotes)
+                -R   raw string input (don't auto convert input to dict/list)
                 -s   print the JSON schema in grep-able format
                 -t   print type annotations in schema view
                 -v   version info
@@ -71,6 +73,16 @@ def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
     if split_length < 10:
         split_length = 10
 
+    # prepare short info where the error occurred
+    stacktrace = traceback.extract_tb(e.__traceback__)
+    stacklines = []
+    if len(stacktrace):
+        if stacktrace[-1].filename == "<string>":
+            # we get <string> as filename when exception occurs in a exec() call
+            stacklines.append(f"Jello query, line {stacktrace[-1].lineno}")
+            # lineno begins with 1, lists with 0 -> subtract 1
+            stacklines.append("  " + query.split('\n')[stacktrace[-1].lineno-1])
+
     wrapper = TextWrapper(width=term_width,
                                 initial_indent='',
                                 subsequent_indent=' ' * 12)
@@ -79,6 +91,13 @@ def print_exception(e=None, data='', query='', response='', ex_type='Runtime'):
     wrapper = TextWrapper(width=term_width,
                           initial_indent=' ' * 8,
                           subsequent_indent=' ' * 12)
+
+    # add pre-formatted stacktrace text: flatten the info into lines, normalize newlines
+    for errstring in stacklines:
+        for errline in errstring.split('\n'):
+            if len(errline.replace('\n', '')):
+                exception_message += wrapper.fill(errline.replace('\n', '')) + '\n'
+
     exception_message += wrapper.fill(f'{e}') + '\n'
 
     e_text = ''
@@ -173,6 +192,7 @@ def main(data=None, query='_'):
     opts.mono = opts.mono or ('m' in options or bool(os.getenv('NO_COLOR')))
     opts.nulls = opts.nulls or 'n' in options
     opts.raw = opts.raw or 'r' in options
+    opts.raw_input = opts.raw_input or 'R' in options
     opts.schema = opts.schema or 's' in options
     opts.types = opts.types or 't' in options
     opts.version_info = opts.version_info or 'v' in options
@@ -182,8 +202,11 @@ def main(data=None, query='_'):
         print_help()
 
     if opts.version_info:
+        py_ver: str = '.'.join((str(sys.version_info.major), str(sys.version_info.minor), str(sys.version_info.micro)))
         print(textwrap.dedent(f'''\
             jello:  Version: {jello.__version__}
+                    Python Version: {py_ver}
+                    Python Path: {sys.executable}
                     Author: {jello.AUTHOR}
                     Website: {jello.WEBSITE}
                     Copyright: {jello.COPYRIGHT}
@@ -197,11 +220,16 @@ def main(data=None, query='_'):
     if opts.empty:
         data = '{}'
 
-    # load the JSON or JSON Lines into a dict or list of dicts
-    try:
-        data = load_json(data)
-    except Exception as e:
-        print_exception(e, ex_type='JSON Load')
+    # load the data as a raw string or JSON
+    if opts.raw_input:
+        data = str(data).rstrip('\r\n')
+
+    else:
+        # load the JSON or JSON Lines into a dict or list of dicts
+        try:
+            data = load_json(data)
+        except Exception as e:
+            print_exception(e, ex_type='JSON Load')
 
     # Read .jelloconf.py (if it exists) and run the query
     response = ''
