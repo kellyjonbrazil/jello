@@ -1,0 +1,32 @@
+[project]
+name = "jello"
+version = "1.6.1"
+description = "Filter JSON and JSON Lines data with Python syntax."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Kelly Brazil", email = "kellyjonbrazil@gmail.com" }]
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Utilities",
+]
+dependencies = ["Pygments>=2.4.2"]
+
+[project.urls]
+Homepage = "https://github.com/kellyjonbrazil/jello"
+
+[project.scripts]
+jello = "jello.cli:main"
+
+[tool.setuptools.data-files]
+"share/man/man1" = ["man/*.1"]
+
+[tool.setuptools.packages.find]
+include = ["jello*"]
+exclude = ["*tests*"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
