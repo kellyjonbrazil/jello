@@ -321,6 +321,15 @@ class Json(JelloTheme):
                         else:
                             flat_list += f'"{entry}"' + '\n'
 
+                    else:
+                        # queries can produce arbitrary Python objects
+                        # (e.g. tuples or sets); serialize them instead of
+                        # silently dropping the entry
+                        try:
+                            flat_list += json.dumps(entry, separators=separators, ensure_ascii=False) + '\n'
+                        except TypeError:
+                            flat_list += f'"{entry}"' + '\n'
+
                 return flat_list.rstrip()
 
         # naked single item return case
