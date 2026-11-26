@@ -4,6 +4,7 @@ import os
 import sys
 import signal
 import shutil
+import subprocess
 import textwrap
 import traceback
 from textwrap import TextWrapper
@@ -17,11 +18,41 @@ def ctrlc(signum, frame):
 
 
 def get_stdin():
-    """return STDIN data"""
+    """return STDIN data, decoded as UTF-8 like files read with -f"""
     if sys.stdin.isatty():
         return None
-    else:
+
+    buffer = getattr(sys.stdin, 'buffer', None)
+    if buffer is None:
         return sys.stdin.read()
+
+    # sys.stdin uses the locale encoding (e.g. cp1252 on Windows), not UTF-8
+    return buffer.read().decode('utf-8-sig')
+
+
+def enable_windows_colors():
+    """
+    Enable colors in a Windows cmd.exe terminal. Only needed when STDOUT is a
+    console. cmd.exe does not get our STDIN: when STDIN is a redirected file,
+    cmd.exe moves its position to the end and jello then reads no input.
+    """
+    if sys.platform.startswith('win32') and sys.stdout.isatty():
+        subprocess.run('', shell=True, stdin=subprocess.DEVNULL)
+
+
+def utf8_stdout():
+    """
+    Write UTF-8 to a redirected or piped STDOUT. Otherwise Python uses the
+    locale encoding (e.g. cp1252 on Windows), which cannot encode most
+    non-Latin text. An encoding set with PYTHONIOENCODING is kept, and a
+    terminal is left as is.
+    """
+    if (os.getenv('PYTHONIOENCODING')
+            or not hasattr(sys.stdout, 'reconfigure')
+            or sys.stdout.isatty()):
+        return
+
+    sys.stdout.reconfigure(encoding='utf-8')
 
 
 def print_help():
@@ -135,9 +166,7 @@ def main(data=None, query='_'):
     except AttributeError:
         pass
 
-    # enable colors for Windows cmd.exe terminal
-    if sys.platform.startswith('win32'):
-        os.system('')
+    enable_windows_colors()
 
     if data is None:
         data = get_stdin()
@@ -261,6 +290,7 @@ def main(data=None, query='_'):
                 json_out.set_colors()
                 output = json_out.color_output(output)
 
+        utf8_stdout()
         print(output)
 
     except Exception as e:
